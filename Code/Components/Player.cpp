@@ -96,6 +96,8 @@ void CPlayerComponent::ProcessEvent(const SEntityEvent& event)
 		camDefaultMatrix.SetRotation33(Matrix33(m_pEntity->GetWorldRotation()));
 		m_pCameraComponent->SetTransformMatrix(camDefaultMatrix);
 
+		// This IF checks if the flag is set to true during game start or exit. If it is, and the cvar value is already set to 1, the 2nd if will be executed to setup the ship correctly regardless.
+		// There are code safeties inside CharacterSwitcher() to not do anything if we are not in GameMode, so the entities look correct in the editor.
 		if (shouldStartOnVehicle == true)
 		{
 			if (gEnv->pConsole->GetCVar("fps_use_ship")->GetIVal() != 1)
