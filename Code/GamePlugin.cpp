@@ -35,9 +35,6 @@ bool CGamePlugin::Initialize(SSystemGlobalEnvironment& env, const SSystemInitPar
 	//Create SpawnAndUseShip cvar
 	fps_use_ship = REGISTER_INT("fps_use_ship", value , VF_CHEAT, "Switch between ship and player through commands");
 	fps_use_ship->Set(value);
-	// Uses a speciifc component to handle player switching
-	fps_use_ship->AddOnChange([this]() {CPlayerManager::GetInstance().CharacterSwitcher();});
-
 	return true;
 }
 
@@ -54,6 +51,8 @@ void CGamePlugin::OnSystemEvent(ESystemEvent event, UINT_PTR wparam, UINT_PTR lp
 				// Load the example map in client server mode
 				gEnv->pConsole->ExecuteString("map example s", false, true);
 			}
+			// Uses a specifc component to handle player switching
+			fps_use_ship->AddOnChange([this]() {CPlayerManager::GetInstance().CharacterSwitcher(); });
 		}
 		break;
 

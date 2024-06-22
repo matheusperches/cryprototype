@@ -16,6 +16,7 @@
 #include <DefaultComponents/Input/InputComponent.h>
 #include <DefaultComponents/Physics/CharacterControllerComponent.h>
 #include <DefaultComponents/Geometry/AdvancedAnimationComponent.h>
+#include <Components/PlayerManager.h>
 
 #define MOUSE_DELTA_TRESHOLD 0.0001f
 
@@ -41,11 +42,6 @@ void CPlayerComponent::Initialize()
 	InitializeHumanInput();
 }
 
-Cry::Entity::EventFlags CPlayerComponent::GetEventMask() const
-{
-	return Cry::Entity::EEvent::GameplayStarted | Cry::Entity::EEvent::Update | Cry::Entity::EEvent::Reset;
-}
-
 void CPlayerComponent::ProcessEvent(const SEntityEvent& event)
 {
 	switch (event.event)
@@ -53,13 +49,12 @@ void CPlayerComponent::ProcessEvent(const SEntityEvent& event)
 	case Cry::Entity::EEvent::GameplayStarted:
 	{
 		hasGameStarted = true;
-			// ------------------------- //
-			// Can be uncommented to start with the human. Needs to check if other entities are setting camera to active during GameplayStarted first.
-			// ------------------------- //
+		// ------------------------- //
+		// Can be uncommented to start with the human. Needs to check if other entities are setting camera to active during GameplayStarted first.
+		// ------------------------- //
 		if (gEnv->pConsole->GetCVar("fps_use_ship")->GetIVal() == 0)
 		{
 			m_pCameraComponent->Activate();
-
 		}
 	}
 	break;
@@ -100,18 +95,48 @@ void CPlayerComponent::ProcessEvent(const SEntityEvent& event)
 		camDefaultMatrix.SetTranslation(m_cameraDefaultPos);
 		camDefaultMatrix.SetRotation33(Matrix33(m_pEntity->GetWorldRotation()));
 		m_pCameraComponent->SetTransformMatrix(camDefaultMatrix);
-		if (shouldStartOnVehicle == false)
+
+		if (shouldStartOnVehicle == true)
+		{
+			if (gEnv->pConsole->GetCVar("fps_use_ship")->GetIVal() != 1)
+			gEnv->pConsole->GetCVar("fps_use_ship")->Set(1);
+			else
+			{
+				//Forcing a call in case the value was already set, because we are reliant on the Cvar OnChange event trigger to move between actors.
+				CPlayerManager::GetInstance().CharacterSwitcher();
+			}
+		}
+		else if (shouldStartOnVehicle == false)
 		{
 			gEnv->pConsole->GetCVar("fps_use_ship")->Set(0);
 		}
-		else gEnv->pConsole->GetCVar("fps_use_ship")->Set(1);
-
-		// Additional validation if the client leaves gamemode back to the editor to 
-		if (!gEnv->IsEditorGameMode() && gEnv->pConsole->GetCVar("fps_use_ship")->GetIVal() == 1)
-			m_pEntity->DetachThis();
+		else if (gEnv->pConsole->GetCVar("fps_use_ship")->GetIVal() == 1)
+		{
+		}
+	}
+	break;
+	case Cry::Entity::EEvent::EditorPropertyChanged:
+	{
+		/*
+		if (shouldStartOnVehicle == false)
+		{
+			gEnv->pConsole->GetCVar("fps_use_ship")->Set(0);
+			CryLog("Value changed to 0");
+		}
+		else
+		{
+			gEnv->pConsole->GetCVar("fps_use_ship")->Set(1);
+			CryLog("Value changed to 1");
+		}
+		*/
 	}
 	break;
 	}
+}
+
+Cry::Entity::EventFlags CPlayerComponent::GetEventMask() const
+{
+	return Cry::Entity::EEvent::GameplayStarted | Cry::Entity::EEvent::Update | Cry::Entity::EEvent::Reset | Cry::Entity::EEvent::EditorPropertyChanged;
 }
 
 void CPlayerComponent::InitializeHumanInput()

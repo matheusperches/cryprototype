@@ -10,10 +10,11 @@
 // Forward declaration
 #include <DefaultComponents/Input/InputComponent.h>
 #include <DefaultComponents/Physics/RigidBodyComponent.h>
-
+#include<DefaultComponents/Physics/ThrusterComponent.h>
+#include <Components/VehicleComponent.h>
 
 // Registers the component to be used in the engine
-static void RegisterCustomComponent(Schematyc::IEnvRegistrar& registrar)
+static void RegisterFlightController(Schematyc::IEnvRegistrar& registrar)
 {
 	Schematyc::CEnvRegistrationScope scope = registrar.Scope(IEntity::GetEntityScopeGUID());
 	{
@@ -24,13 +25,14 @@ static void RegisterCustomComponent(Schematyc::IEnvRegistrar& registrar)
 	}
 }
 
-CRY_STATIC_AUTO_REGISTER_FUNCTION(&RegisterCustomComponent)
+CRY_STATIC_AUTO_REGISTER_FUNCTION(&RegisterFlightController)
 
 
 void CFlightController::Initialize()
 {
 	// Initialize stuff
 	GetVehicleInputManager();
+	m_pThrusterComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CThrusterComponent>();
 }
 
 Cry::Entity::EventFlags CFlightController::GetEventMask() const
@@ -68,8 +70,6 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 	}
 }
 
-
-
 void CFlightController::GetVehicleInputManager()
 {
 	m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
@@ -96,23 +96,29 @@ float CFlightController::AxisGetter(const std::string& axisName)
 
 void CFlightController::CreateThrust()
 {
-	if (Validator() && AxisGetter("accelforward") > 0.0f)
+	if (Validator())
 	{
-		//CryLog("fwd axis value: %f", AxisGetter("accelforward"));
-		//CryLog("boosting: %d", IsKeyPressed("boost"));
-		IPhysicalEntity* pPhysicalEntity = m_pEntity->GetPhysics();
-		if (pPhysicalEntity)
+		if (AxisGetter("accelforward") > 0.0f)
 		{
-			Vec3 bottomCenter = m_pEntity->GetWorldPos();
-			Vec3 forceDirection = Vec3(0.f, 1.f, 0.f);  // Example force direction (downwards)
+			m_pThrusterComponent->ApplySingleThrust(fwdThrust);
 
-			// Apply the force at the specified position
-			pe_action_impulse impulseAction;
-			impulseAction.impulse = forceDirection * fwdThrust;
-			impulseAction.point = bottomCenter;
-			pPhysicalEntity->Action(&impulseAction);
+
+			/*
+			//CryLog("fwd axis value: %f", AxisGetter("accelforward"));
+			//CryLog("boosting: %d", IsKeyPressed("boost"));
+			IPhysicalEntity* pPhysicalEntity = m_pEntity->GetPhysics();
+			if (pPhysicalEntity)
+			{
+				Vec3 bottomCenter = m_pEntity->GetWorldPos();
+				Vec3 forceDirection = Vec3(0.f, 1.f, 0.f);  // Example force direction (downwards)
+
+				// Apply the force at the specified position
+				pe_action_impulse impulseAction;
+				impulseAction.impulse = forceDirection * fwdThrust;
+				impulseAction.point = bottomCenter;
+				pPhysicalEntity->Action(&impulseAction);
+			}
+			*/
 		}
-
 	}
 }
-

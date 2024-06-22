@@ -11,7 +11,6 @@
 // Forward declaration
 #include <DefaultComponents/Input/InputComponent.h>
 
-
 // Registers the component to be used in the engine
 static void RegisterCPlayerManager(Schematyc::IEnvRegistrar& registrar)
 {
@@ -25,7 +24,6 @@ static void RegisterCPlayerManager(Schematyc::IEnvRegistrar& registrar)
 }
 
 CRY_STATIC_AUTO_REGISTER_FUNCTION(&RegisterCPlayerManager)
-
 
 void CPlayerManager::Initialize()
 {
@@ -53,15 +51,16 @@ void CPlayerManager::ProcessEvent(const SEntityEvent& event)
 	break;
 	case Cry::Entity::EEvent::Reset:
 	{
-		// 
+		//
 	}
 	break;
 	}
 }
 
+
+
 void CPlayerManager::CharacterSwitcher()
 {
-	// Bug: FPS model gets stuck flying mid air if gamemode ends with Value = 1 / probably not resetting things correctly
 	fps_use_ship = gEnv->pConsole->GetCVar("fps_use_ship");
 	if (gEnv->pEntitySystem)
 	{
@@ -111,5 +110,8 @@ void CPlayerManager::CharacterSwitcher()
 					playerEntity ? playerEntity->GetName() : "null");
 			}
 		}
+		// Additional validation if the client leaves gamemode back to the editor
+		else if (!gEnv->IsEditorGameMode() && playerEntity->GetParent())
+			playerEntity->DetachThis();
 	}
 }

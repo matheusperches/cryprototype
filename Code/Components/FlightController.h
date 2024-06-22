@@ -4,23 +4,25 @@
 
 namespace Cry::DefaultComponents
 {
-	class CCameraComponent;
 	class CInputComponent;
-	class CCharacterControllerComponent;
-	class CAdvancedAnimationComponent;
 	class CRigidBodyComponent;
+	class CVehicleComponent;
+	class CThrusterComponent;
 }
 
-enum class EFlightControllerState
+enum class EFlightMode
 {
-	Boosting,
 	Coupled,
 	Decoupled,
-
 };
-////////////////////////////////////////////////////////
-// Spawn point
-////////////////////////////////////////////////////////
+
+enum class EThrusterState
+{
+	Active, 
+	Inactive, 
+	Overclocked,
+};
+
 class CFlightController final : public IEntityComponent
 {
 public:
@@ -41,18 +43,18 @@ public:
 	virtual void Initialize() override;
 	virtual Cry::Entity::EventFlags GetEventMask() const override;
 
-
-	float m_force = 0.0f;
-
 protected:
 private:
 	// Default Components
-	Cry::DefaultComponents::CCameraComponent* m_pCameraComponent;
 	Cry::DefaultComponents::CInputComponent* m_pInputComponent;
 	Cry::DefaultComponents::CRigidBodyComponent* m_pRigidBodyComponent;
+	Cry::DefaultComponents::CThrusterComponent* m_pThrusterComponent;
 
 	// Variables
 	bool hasGameStarted = false;
+	EFlightMode m_pFlightControllerState;
+	EThrusterState m_pThrusterState;
+
 
 	// Receive the input map from VehicleComponent
 	void GetVehicleInputManager();
