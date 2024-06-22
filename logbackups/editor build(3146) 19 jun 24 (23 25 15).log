@@ -1,0 +1,487 @@
+BackupNameAttachment=" Build(3146) 19 Jun 24 (23 25 15)"  -- used by backup system
+
+Log Started at Wed Jun 19 23:25:15 2024
+Built on May 18 2022 02:19:29
+Built for: Windows Version: 0x00000600
+Command Line: "C:/Users/mathe/AppData/Local/Programs/CRYENGINE Launcher/Engines/crytek/cryengine-57-lts/5.7.1/bin/win_x64/Sandbox.exe" -project "C:/Users/mathe/Documents/CRYENGINE Projects/fpscpptest/Code/../Game.cryproject"
+Executable: C:\Users\mathe\AppData\Local\Programs\CRYENGINE Launcher\Engines\crytek\cryengine-57-lts\5.7.1\bin\win_x64\Sandbox.exe
+FileVersion: 5.7.1.3146
+ProductVersion: 5.7.1.3146
+Loading Config file %ENGINEROOT%/system.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\system.cfg)
+[Warning] Cannot open Pak file c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\config.pak
+ 
+con_debug=0 [  ]
+con_display_last_messages=0 [  ]
+con_font_size=14 [  ]
+con_line_buffer_size=1000 [  ]
+con_restricted=0 [ RESTRICTEDMODE ]
+con_showonload=0 [  ]
+ 
+con_debug=0 [  ]
+con_display_last_messages=0 [  ]
+con_font_size=14 [  ]
+con_line_buffer_size=1000 [  ]
+con_restricted=0 [ RESTRICTEDMODE ]
+con_showonload=0 [  ]
+ 
+con_debug=0 [  ]
+ 
+con_debug=0 [  ]
+Project fpscpptest
+Using Project Folder C:/Users/mathe/Documents/CRYENGINE Projects/fpscpptest
+Using Engine Folder C:\Users\mathe\AppData\Local\Programs\CRYENGINE Launcher\Engines\crytek\cryengine-57-lts\5.7.1/
+Using Asset Folder c:/users/mathe/documents/cryengine projects/fpscpptest/assets
+
+Total number of logical processors: 16
+Number of available logical processors: 16
+Total number of system cores: 8
+Number of cores available to process: 8
+ 
+Processor 0:
+  CPU: AMD AMD Ryzen 7 5800X3D 8-Core Processor           
+  Family: 15, Model: 1, Stepping: 2, FPU: On-Chip
+  Features: FP16, SSE, SSE2, SSE3, SSE4.2, AVX, AVX2, FMA3
+ 
+Processor 1:
+  CPU: AMD AMD Ryzen 7 5800X3D 8-Core Processor           
+  Family: 15, Model: 1, Stepping: 2, FPU: On-Chip
+  Features: FP16, SSE, SSE2, SSE3, SSE4.2, AVX, AVX2, FMA3
+ 
+Processor 2:
+  CPU: AMD AMD Ryzen 7 5800X3D 8-Core Processor           
+  Family: 15, Model: 1, Stepping: 2, FPU: On-Chip
+  Features: FP16, SSE, SSE2, SSE3, SSE4.2, AVX, AVX2, FMA3
+ 
+Processor 3:
+  CPU: AMD AMD Ryzen 7 5800X3D 8-Core Processor           
+  Family: 15, Model: 1, Stepping: 2, FPU: On-Chip
+  Features: FP16, SSE, SSE2, SSE3, SSE4.2, AVX, AVX2, FMA3
+ 
+Processor 4:
+  CPU: AMD AMD Ryzen 7 5800X3D 8-Core Processor           
+  Family: 15, Model: 1, Stepping: 2, FPU: On-Chip
+  Features: FP16, SSE, SSE2, SSE3, SSE4.2, AVX, AVX2, FMA3
+ 
+Processor 5:
+  CPU: AMD AMD Ryzen 7 5800X3D 8-Core Processor           
+  Family: 15, Model: 1, Stepping: 2, FPU: On-Chip
+  Features: FP16, SSE, SSE2, SSE3, SSE4.2, AVX, AVX2, FMA3
+ 
+Processor 6:
+  CPU: AMD AMD Ryzen 7 5800X3D 8-Core Processor           
+  Family: 15, Model: 1, Stepping: 2, FPU: On-Chip
+  Features: FP16, SSE, SSE2, SSE3, SSE4.2, AVX, AVX2, FMA3
+ 
+Processor 7:
+  CPU: AMD AMD Ryzen 7 5800X3D 8-Core Processor           
+  Family: 15, Model: 1, Stepping: 2, FPU: On-Chip
+  Features: FP16, SSE, SSE2, SSE3, SSE4.2, AVX, AVX2, FMA3
+ 
+<23:25:15> creating CVarGroups from directory 'assets/Config/CVarGroups' ...
+<23:25:15> creating CVarGroups from directory '%ENGINE%/Config/CVarGroups' ...
+<23:25:15> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_full.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_full.cfg)
+<23:25:15> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_gameeffects.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_gameeffects.cfg)
+<23:25:15> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_light.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_light.cfg)
+<23:25:15> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_objectdetail.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_objectdetail.cfg)
+<23:25:15> [Error] [CVARS]: [MISSING] [r_UseZPass] specified in console variable group [sys_spec_objectdetail] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_MeshPoolSize] specified in console variable group [sys_spec_objectdetail] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_MeshInstancePoolSize] specified in console variable group [sys_spec_objectdetail] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [e_StreamCgfPoolSize] specified in console variable group [sys_spec_objectdetail] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [e_GeomCacheBufferSize] specified in console variable group [sys_spec_objectdetail] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_UseZPass] specified in console variable group [sys_spec_objectdetail] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_MeshPoolSize] specified in console variable group [sys_spec_objectdetail] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_MeshInstancePoolSize] specified in console variable group [sys_spec_objectdetail] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [e_StreamCgfPoolSize] specified in console variable group [sys_spec_objectdetail] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [e_GeomCacheBufferSize] specified in console variable group [sys_spec_objectdetail] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [ca_FacialAnimationRadius] specified in console variable group [sys_spec_objectdetail] = [7], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [ca_StreamCHR] specified in console variable group [sys_spec_objectdetail] = [7], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [ca_FacialAnimationRadius] specified in console variable group [sys_spec_objectdetail] = [8], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [ca_StreamCHR] specified in console variable group [sys_spec_objectdetail] = [8], but missing from default group
+<23:25:15> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_particles.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_particles.cfg)
+<23:25:15> [Error] [CVARS]: [MISSING] [e_ParticlesPoolSize] specified in console variable group [sys_spec_particles] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [e_ParticlesVertexPoolSize] specified in console variable group [sys_spec_particles] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [e_ParticlesPoolSize] specified in console variable group [sys_spec_particles] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [e_ParticlesVertexPoolSize] specified in console variable group [sys_spec_particles] = [6], but missing from default group
+<23:25:15> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_physics.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_physics.cfg)
+<23:25:15> [Error] [CVARS]: [MISSING] [p_num_threads] specified in console variable group [sys_spec_physics] = [7], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [p_num_threads] specified in console variable group [sys_spec_physics] = [8], but missing from default group
+<23:25:15> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_postprocessing.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_postprocessing.cfg)
+<23:25:15> [Error] [CVARS]: [MISSING] [r_HDRBloomQuality] specified in console variable group [sys_spec_postprocessing] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_FlareHQShafts] specified in console variable group [sys_spec_postprocessing] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_AntiAliasingMode] specified in console variable group [sys_spec_postprocessing] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_HDRBloomQuality] specified in console variable group [sys_spec_postprocessing] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_FlareHQShafts] specified in console variable group [sys_spec_postprocessing] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_AntiAliasingMode] specified in console variable group [sys_spec_postprocessing] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_HDRBloomQuality] specified in console variable group [sys_spec_postprocessing] = [7], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_FlareHQShafts] specified in console variable group [sys_spec_postprocessing] = [7], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_HDRBloomQuality] specified in console variable group [sys_spec_postprocessing] = [8], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_FlareHQShafts] specified in console variable group [sys_spec_postprocessing] = [8], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_AntiAliasingMode] specified in console variable group [sys_spec_postprocessing] = [8], but missing from default group
+<23:25:15> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_quality.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_quality.cfg)
+<23:25:15> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_shading.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_shading.cfg)
+<23:25:15> [Error] [CVARS]: [MISSING] [r_SSDO] specified in console variable group [sys_spec_shading] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_SSDOColorBleeding] specified in console variable group [sys_spec_shading] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_volumetricfogtexdepth] specified in console variable group [sys_spec_shading] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_volumetricfogtexscale] specified in console variable group [sys_spec_shading] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_DeferredShadingTiled] specified in console variable group [sys_spec_shading] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [e_svoTI_NumStreamingThreads] specified in console variable group [sys_spec_shading] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_SSDO] specified in console variable group [sys_spec_shading] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_volumetricfogtexdepth] specified in console variable group [sys_spec_shading] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_volumetricfogtexscale] specified in console variable group [sys_spec_shading] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_DeferredShadingTiled] specified in console variable group [sys_spec_shading] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [e_svoTI_NumStreamingThreads] specified in console variable group [sys_spec_shading] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_SSDO] specified in console variable group [sys_spec_shading] = [7], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_volumetricfogtexdepth] specified in console variable group [sys_spec_shading] = [7], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_volumetricfogtexscale] specified in console variable group [sys_spec_shading] = [7], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [e_svoTI_NumStreamingThreads] specified in console variable group [sys_spec_shading] = [7], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_SSDO] specified in console variable group [sys_spec_shading] = [8], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_volumetricfogtexdepth] specified in console variable group [sys_spec_shading] = [8], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_volumetricfogtexscale] specified in console variable group [sys_spec_shading] = [8], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [e_svoTI_NumStreamingThreads] specified in console variable group [sys_spec_shading] = [8], but missing from default group
+<23:25:15> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_shadows.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_shadows.cfg)
+<23:25:15> [Error] [CVARS]: [MISSING] [q_ShaderShadow] specified in console variable group [sys_spec_shadows] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_ShadowsScreenSpace] specified in console variable group [sys_spec_shadows] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [e_ShadowsClouds] specified in console variable group [sys_spec_shadows] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_ShadowTexFormat] specified in console variable group [sys_spec_shadows] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [q_ShaderShadow] specified in console variable group [sys_spec_shadows] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_ShadowsScreenSpace] specified in console variable group [sys_spec_shadows] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [e_ShadowsClouds] specified in console variable group [sys_spec_shadows] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_ShadowTexFormat] specified in console variable group [sys_spec_shadows] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [q_ShaderShadow] specified in console variable group [sys_spec_shadows] = [7], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_ShadowsScreenSpace] specified in console variable group [sys_spec_shadows] = [7], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [e_ShadowsClouds] specified in console variable group [sys_spec_shadows] = [7], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_ShadowsStaticMap] specified in console variable group [sys_spec_shadows] = [7], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [q_ShaderShadow] specified in console variable group [sys_spec_shadows] = [8], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_ShadowsScreenSpace] specified in console variable group [sys_spec_shadows] = [8], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [e_ShadowsClouds] specified in console variable group [sys_spec_shadows] = [8], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_ShadowsStaticMap] specified in console variable group [sys_spec_shadows] = [8], but missing from default group
+<23:25:15> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_sound.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_sound.cfg)
+<23:25:15> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_texture.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_texture.cfg)
+<23:25:15> [Error] [CVARS]: [MISSING] [r_texturesstreaming] specified in console variable group [sys_spec_texture] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_texturesstreampooldefragmentation] specified in console variable group [sys_spec_texture] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_buffer_banksize] specified in console variable group [sys_spec_texture] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_buffer_pool_defrag_static] specified in console variable group [sys_spec_texture] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_buffer_pool_defrag_dynamic] specified in console variable group [sys_spec_texture] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_buffer_pool_defrag_max_moves] specified in console variable group [sys_spec_texture] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_TexturesstreamingMinUsableMips] specified in console variable group [sys_spec_texture] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_TexturesStreamingSkipMips] specified in console variable group [sys_spec_texture] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_TexturesStreamPoolSize] specified in console variable group [sys_spec_texture] = [5], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_texturesstreaming] specified in console variable group [sys_spec_texture] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_texturesstreampooldefragmentation] specified in console variable group [sys_spec_texture] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_buffer_banksize] specified in console variable group [sys_spec_texture] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_buffer_pool_defrag_static] specified in console variable group [sys_spec_texture] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_buffer_pool_defrag_dynamic] specified in console variable group [sys_spec_texture] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_buffer_pool_defrag_max_moves] specified in console variable group [sys_spec_texture] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_TexturesstreamingMinUsableMips] specified in console variable group [sys_spec_texture] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_TexturesStreamingSkipMips] specified in console variable group [sys_spec_texture] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_TexturesStreamPoolSize] specified in console variable group [sys_spec_texture] = [6], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_texturesstreaming] specified in console variable group [sys_spec_texture] = [7], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_TexturesstreamingMinUsableMips] specified in console variable group [sys_spec_texture] = [7], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_TexturesStreamingSkipMips] specified in console variable group [sys_spec_texture] = [7], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_TexturesStreamPoolSize] specified in console variable group [sys_spec_texture] = [7], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_texturesstreaming] specified in console variable group [sys_spec_texture] = [8], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_TexturesstreamingMinUsableMips] specified in console variable group [sys_spec_texture] = [8], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_TexturesStreamingSkipMips] specified in console variable group [sys_spec_texture] = [8], but missing from default group
+<23:25:15> [Error] [CVARS]: [MISSING] [r_TexturesStreamPoolSize] specified in console variable group [sys_spec_texture] = [8], but missing from default group
+<23:25:15> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_textureresolution.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_textureresolution.cfg)
+<23:25:15> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_volumetriceffects.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_volumetriceffects.cfg)
+<23:25:15> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_water.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_water.cfg)
+<23:25:15> <ThreadConfigInfo>: Thread profile loaded: "pc_Common" (%engine%/config/engine_core.thread_config)  
+<23:25:15> [Warning] <ThreadConfigInfo>: (pc: 16 core) Unable to find platform config "pc_8". Next valid config found was pc_8.
+<23:25:15> <ThreadConfigInfo>: Thread profile loaded: "pc_8" (%engine%/config/engine_core.thread_config)  
+<23:25:15> <ThreadConfigInfo>: Thread profile loaded: "pc_Common" (%engine%/config/engine_sandbox.thread_config)  
+<23:25:15> [Warning] <ThreadConfigInfo>: (pc: 16 core) Unable to find platform config "pc_8". Next valid config found was pc_8.
+<23:25:15> <ThreadConfigInfo>: Thread profile loaded: "pc_8" (%engine%/config/engine_sandbox.thread_config)  
+<23:25:15> UDR initialization
+<23:25:15> Loading Module CryUDR.dll...
+<23:25:15> Initializing CryUDR done, MemUsage=336Kb
+<23:25:15> Windows 10 64 bit (build 10.0.22631)
+<23:25:15> User name: "mathe"
+<23:25:15> System language: Portuguese
+<23:25:15> Windows Directory: "C:\Windows"
+<23:25:15> Local time is 23:25:15 06/19/24, system running for 3085 minutes
+<23:25:15> 32677MB physical memory installed, 23182MB available, 134217727MB virtual memory installed, 29 percent of memory in use
+<23:25:15> PageFile usage: 64MB, Working Set: 73MB, Peak PageFile usage: 64MB,
+<23:25:15> Current display mode is 2560x1440x32, (Unknown graphics card)
+<23:25:15> IBM enhanced (101/102-key) keyboard and 16+ button mouse installed
+<23:25:15> --------------------------------------------------------------------------------
+<23:25:15> Stream Engine Initialization
+<23:25:15> BuildTime: May 18 2022 02:19:29
+<23:25:15> Physics initialization
+<23:25:15> Loading Module CryPhysics.dll...
+<23:25:15> Initializing CryPhysics done, MemUsage=1908Kb
+<23:25:15> [Warning] Cannot open Pak file assets\localization\english_xml.pak
+<23:25:15> Localized language content(english) not available or modified from the original installation.
+<23:25:15> [Warning] Cannot open Pak file assets\localization\english.pak
+<23:25:15> Localized language content(english) not available or modified from the original installation.
+<23:25:15> [Warning] Cannot open Pak file assets\localization\english.pak
+<23:25:15> Localized language content(english) not available or modified from the original installation.
+<23:25:15> [Error] <Localization> No localization files found!
+<23:25:15> <Audio>: AudioSystem initialization
+<23:25:15> Loading Module CryAudioSystem.dll...
+<23:25:15> <Audio>: CryAudioImplSDLMixer loaded
+<23:25:15> Initializing CryAudioSystem done, MemUsage=3328Kb
+<23:25:15> C# Backend initialization
+<23:25:15> Loading Module CryMonoBridge.dll...
+<23:25:15> Initializing CryMonoBridge done, MemUsage=700Kb
+<23:25:15> Loading plug-in CryDefaultEntities
+<23:25:15> Loading plug-in CrySensorSystem
+<23:25:15> Loading plug-in CryScaleformSchematyc
+<23:25:15> Loading plug-in CryPerceptionSystem
+<23:25:15> Loading plug-in Game
+<23:25:15> [Warning] Unable to load cursor from texture file. Path %ENGINE%/EngineAssets/Textures/Cursor_Green.dds
+<23:25:15> Initialized hardware mouse (game is allowed to confine mouse to window)
+<23:25:15> Renderer initialization
+<23:25:15> Logging video adapters:
+<23:25:15> - NVIDIA GeForce RTX 4070 Ti (vendor = 0x10de, device = 0x2782)
+<23:25:15>   - Adapter index: 0
+<23:25:15>   - Dedicated video memory: 11996 MB
+<23:25:15>   - Feature level: D3D 11_1 (SM 5.x)
+<23:25:15>   - Displays connected: yes
+<23:25:15>   - Suitable rendering device: yes
+<23:25:15> - Microsoft Basic Render Driver (vendor = 0x1414, device = 0x008c)
+<23:25:15>   - Adapter index: 1
+<23:25:15>   - Dedicated video memory: 0 MB
+<23:25:15>   - Feature level: D3D 11_1 (SM 5.x)
+<23:25:15>   - Displays connected: no
+<23:25:15>   - Suitable rendering device: no
+<23:25:15> Loading Module CryRenderD3D11.dll...
+<23:25:15> CRenderer sizeof(Vec2f16)=4 sizeof(Vec3f16)=8
+<23:25:15> Initializing CryRenderD3D11 done, MemUsage=3764Kb
+<23:25:15> Initializing Direct3D and creating game window:
+<23:25:15> Direct3D driver is creating...
+<23:25:15> Crytek Direct3D driver version 3.00 (May 18 2022 <02:19:44>)
+<23:25:15> Creating window called 'fpscpptest' (32x32)
+<23:25:15> D3D Adapter: Description: NVIDIA GeForce RTX 4070 Ti
+<23:25:15> D3D Adapter: Driver version (UMD): 32.00.15.5599
+<23:25:15> D3D Adapter: VendorId = 0x10DE
+<23:25:15> D3D Adapter: DeviceId = 0x2782
+<23:25:15> D3D Adapter: SubSysId = 0x40C61458
+<23:25:15> D3D Adapter: Revision = 161
+<23:25:15> NVAPI: API init ok (0)
+<23:25:15> NVAPI: Single GPU system
+<23:25:15> NVDBT supported
+<23:25:15> D3D Detected: NVIDIA video card
+<23:25:15> Active GPUs: 1
+<23:25:15> Using pixel texture formats:
+<23:25:15>   R8G8B8A8S, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   R8G8B8A8, mips, sRGB, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   A8, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   R8, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   R8S, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   R16, mips, RT (blendable) (multi-sampled), sample (comparable), gather (comparable)
+<23:25:15>   R16S, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   R16F, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   R32F, mips, RT (blendable) (multi-sampled), sample (comparable), gather (comparable)
+<23:25:15>   R8G8, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   R8G8S, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   R16G16, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   R16G16S, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   R16G16F, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   R32G32F, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   R11G11B10F, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   R10G10B10A2, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   R16G16B16A16, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   R16G16B16A16S, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   R16G16B16A16F, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   R32G32B32A32F, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   BC1, mips, sRGB, sample, gather
+<23:25:15>   BC2, mips, sRGB, sample, gather
+<23:25:15>   BC3, mips, sRGB, sample, gather
+<23:25:15>   BC4, mips, sample, gather
+<23:25:15>   BC4S, mips, sample, gather
+<23:25:15>   BC5, mips, sample, gather
+<23:25:15>   BC5S, mips, sample, gather
+<23:25:15>   BC6UH, mips, sample, gather
+<23:25:15>   BC6SH, mips, sample, gather
+<23:25:15>   BC7, mips, sRGB, sample, gather
+<23:25:15>   R9G9B9E5, mips, sample, gather
+<23:25:15>   D32FS8 (R32G8T), mips, DS (multi-sampled)
+<23:25:15>   D32F (R32T), mips, DS (multi-sampled)
+<23:25:15>   D24S8 (R24G8T), mips, DS (multi-sampled)
+<23:25:15>   D16 (R16T), mips, DS (multi-sampled)
+<23:25:15>   B5G6R5, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   B5G5R5, mips, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   B4G4R4A4, mips, sample, gather
+<23:25:15>   B8G8R8A8, mips, sRGB, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>   B8G8R8X8, mips, sRGB, RT (blendable) (multi-sampled), sample, gather
+<23:25:15>  Renderer DepthBits: 24
+<23:25:15>  ****** CryRender InfoDump ******
+<23:25:15>  Driver description: NVIDIA GeForce RTX 4070 Ti
+<23:25:15>  API Version: Direct3D 11.0
+<23:25:15>  Feature level: D3D 11_1
+<23:25:15>  Vertex Shaders version 5.1
+<23:25:15>  Pixel Shaders version 5.1
+<23:25:15>  Full stats: 
+<23:25:15>  Rasterizer: Hardware
+<23:25:15>  Current Resolution: 0x0x32 Windowed
+<23:25:15>  Occlusion queries: Supported
+<23:25:15>  Geometry instancing: Supported
+<23:25:15>  NormalMaps compression : Supported
+<23:25:15>  Gamma control: Hardware
+<23:25:15>  Used GeomInstancingThreshold is 8
+<23:25:15>  Shader model usage: 'SM.5.0'
+<23:25:15>  *****************************************
+<23:25:15>  
+<23:25:15> Init Shaders
+<23:25:15>  General shader quality: Medium
+<23:25:15>  Metal shader quality: Medium
+<23:25:15>  Glass shader quality: Medium
+<23:25:15>  Vegetation shader quality: Medium
+<23:25:15>  Ice shader quality: Medium
+<23:25:15>  Terrain shader quality: Medium
+<23:25:15>  Shadow shader quality: Medium
+<23:25:15>  Water shader quality: Medium
+<23:25:15>  FX shader quality: Medium
+<23:25:15>  PostProcess shader quality: Medium
+<23:25:15>  HDR shader quality: Medium
+<23:25:15> Render quality: VeryHigh
+<23:25:15> Init textures management (11996 Mb of video memory is available)...
+<23:25:15>   Enabling of textures streaming...
+<23:25:15>   Using 6536 Mb of textures pool for streaming...
+<23:25:15>   Video textures: Dynamic managed max size: 48 Mb
+<23:25:15>   Finished initializing textures streaming...
+<23:25:16> Initializing CryScaleformHelper done, MemUsage=0Kb
+<23:25:16> Using Scaleform GFx 3.3.94
+<23:25:16>   Using dynamic pool
+<23:25:16> [Warning] <ThreadInfo>: Unable to find config for thread:GFxVideo_Decoder_2
+<23:25:16> Font initialization
+<23:25:16> Loading Module CryFont.dll...
+<23:25:16> Using FreeType 2.5.5
+<23:25:16> Initializing CryFont done, MemUsage=288Kb
+<23:25:16> *** Init system render resources ***
+<23:25:16> Loading Module CryNetwork.dll...
+<23:25:16> [LagProfiles] Could not load "". 6 default profiles activated.
+<23:25:16> [Error] Scheduler policy name should not exceed 4 characters.
+<23:25:16> [net] Socket IO management: External [iocp], Internal [iocp]
+<23:25:16> network hostname: matheuspc
+<23:25:16>   ip:192.168.1.193
+<23:25:16> [Network Version]: PROFILE DEVELOPMENT BUILD
+<23:25:16> Initializing CryNetwork done, MemUsage=2396Kb
+<23:25:16> Loading Module CryMovie.dll...
+<23:25:16> Initializing CryMovie done, MemUsage=564Kb
+<23:25:16> Engine installed on drive: 
+<23:25:16> Time initialization
+<23:25:16> Input initialization
+<23:25:16> Loading Module CryInput.dll...
+<23:25:16> Initializing DirectInput
+
+<23:25:16> Initializing Keyboard
+
+<23:25:16> Input locale changed to 00010416
+<23:25:16> Initializing mouse
+<23:25:16> Initializing CryInput done, MemUsage=1608Kb
+<23:25:16> Initializing Animation System
+<23:25:16> Loading Module CryAnimation.dll...
+<23:25:16> Initializing CryAnimation done, MemUsage=2028Kb
+<23:25:16> Init 3D Engine
+<23:25:16> Loading Module Cry3DEngine.dll...
+<23:25:16> Sky light: Optical lookup tables loaded off disc.
+<23:25:16> Initializing Cry3DEngine done, MemUsage=5668Kb
+<23:25:16> Script System Initialization
+<23:25:16> Loading Module CryScriptSystem.dll...
+<23:25:16> [Warning] [Lua Error] Failed to load script file scripts/common.lua
+<23:25:16> Initializing CryScriptSystem done, MemUsage=768Kb
+<23:25:16> Schematyc initialization
+<23:25:16> Loading Module CrySchematyc.dll...
+<23:25:16> Initializing CrySchematyc done, MemUsage=1728Kb
+<23:25:16> Entity system initialization
+<23:25:16> Loading Module CryEntitySystem.dll...
+<23:25:16> Initializing CryEntitySystem done, MemUsage=2184Kb
+<23:25:16> LiveCreate initialization
+<23:25:16> LiveCreateHost not created, using NULL implementation.
+<23:25:16> Dynamic Response System initialization
+<23:25:16> Loading Module CryDynamicResponseSystem.dll...
+<23:25:16> Initializing CryDynamicResponseSystem done, MemUsage=660Kb
+<23:25:16> Loading Module CryFlowGraph.dll...
+<23:25:16> Successfully registered flownode 'AI:PerceptionState'
+<23:25:16> Successfully registered flownode 'AI:EventListener'
+<23:25:16> Initializing CryFlowGraph done, MemUsage=992Kb
+<23:25:16> AI initialization
+<23:25:16> Loading Module CryAISystem.dll...
+<23:25:16> Initializing CryAISystem done, MemUsage=1524Kb
+<23:25:16> Initializing AI System
+<23:25:16> AI: [AISYSTEM] Initialization started.
+<23:25:16> [Error] [CVARS]: [DUPLICATE] CXConsole::RegisterString(const char*): variable [ai_DebugDrawNavigationQueryListFilterByCaller] is already registered
+<23:25:16> [Warning] XML reader: Can't open file (Scripts/AI/Navigation.xml)
+<23:25:16> [Warning] AI: Failed to open XML file 'Scripts/AI/Navigation.xml'...
+<23:25:16> [Warning] XML reader: Can't open file (Scripts/AI/Communication/CommunicationSystemConfiguration.xml)
+<23:25:16> [Warning] AI: Failed to open XML file 'Scripts/AI/Communication/CommunicationSystemConfiguration.xml'...
+<23:25:16> [Warning] XML reader: Can't open file (Scripts/AI/lookup.xml)
+<23:25:16> [Warning] [Lua Error] Failed to load script file scripts/ai/aiconfig.lua
+<23:25:16> Registering CentralInterestManager with EntitySystem
+<23:25:16> [Warning] XML reader: Can't open file (Libs/AITargetStimulusConfig.xml)
+<23:25:16> [Warning] AI: CTargetTrackManager::Init() Warning: Failed to load configuration file 'Libs/AITargetStimulusConfig.xml'
+<23:25:16> Modular behavior tree node 'Sequence' has a class size of 88 bytes.
+<23:25:16> Modular behavior tree node 'Selector' has a class size of 88 bytes.
+<23:25:16> Modular behavior tree node 'Priority' has a class size of 88 bytes.
+<23:25:16> Modular behavior tree node 'Parallel' has a class size of 96 bytes.
+<23:25:16> Modular behavior tree node 'Loop' has a class size of 88 bytes.
+<23:25:16> Modular behavior tree node 'LoopUntilSuccess' has a class size of 88 bytes.
+<23:25:16> Modular behavior tree node 'StateMachine' has a class size of 88 bytes.
+<23:25:16> Modular behavior tree node 'SendTransitionEvent' has a class size of 96 bytes.
+<23:25:16> Modular behavior tree node 'IfCondition' has a class size of 120 bytes.
+<23:25:16> Modular behavior tree node 'AssertCondition' has a class size of 104 bytes.
+<23:25:16> Modular behavior tree node 'Timeout' has a class size of 72 bytes.
+<23:25:16> Modular behavior tree node 'IfTime' has a class size of 120 bytes.
+<23:25:16> Modular behavior tree node 'Wait' has a class size of 72 bytes.
+<23:25:16> Modular behavior tree node 'MonitorCondition' has a class size of 104 bytes.
+<23:25:16> Modular behavior tree node 'WaitForEvent' has a class size of 104 bytes.
+<23:25:16> Modular behavior tree node 'WaitUntilTime' has a class size of 104 bytes.
+<23:25:16> Modular behavior tree node 'Fail' has a class size of 64 bytes.
+<23:25:16> Modular behavior tree node 'RandomGate' has a class size of 88 bytes.
+<23:25:16> Modular behavior tree node 'SendEvent' has a class size of 104 bytes.
+<23:25:16> Modular behavior tree node 'SuppressFailure' has a class size of 80 bytes.
+<23:25:16> Modular behavior tree node 'AssertTime' has a class size of 104 bytes.
+<23:25:16> Modular behavior tree node 'Halt' has a class size of 64 bytes.
+<23:25:16> Modular behavior tree node 'Log' has a class size of 72 bytes.
+<23:25:16> Modular behavior tree node 'Breakpoint' has a class size of 64 bytes.
+<23:25:16> Modular behavior tree node 'AimAroundWhileUsingAMachingGun' has a class size of 72 bytes.
+<23:25:16> Modular behavior tree node 'AnimationTagWrapper' has a class size of 96 bytes.
+<23:25:16> Modular behavior tree node 'CheckIfTargetCanBeReached' has a class size of 72 bytes.
+<23:25:16> Modular behavior tree node 'GoalPipe' has a class size of 72 bytes.
+<23:25:16> Modular behavior tree node 'LuaWrapper' has a class size of 112 bytes.
+<23:25:16> Modular behavior tree node 'SmartObjectStatesWrapper' has a class size of 96 bytes.
+<23:25:16> Modular behavior tree node 'ThrowGrenade' has a class size of 104 bytes.
+<23:25:16> Modular behavior tree node 'TurnBody' has a class size of 88 bytes.
+<23:25:16> Modular behavior tree node 'AdjustCoverStance' has a class size of 80 bytes.
+<23:25:16> Modular behavior tree node 'Aim' has a class size of 80 bytes.
+<23:25:16> Modular behavior tree node 'Animate' has a class size of 80 bytes.
+<23:25:16> Modular behavior tree node 'AssertLua' has a class size of 616 bytes.
+<23:25:16> Modular behavior tree node 'Bubble' has a class size of 88 bytes.
+<23:25:16> Modular behavior tree node 'ClearTargets' has a class size of 64 bytes.
+<23:25:16> Modular behavior tree node 'Communicate' has a class size of 112 bytes.
+<23:25:16> Modular behavior tree node 'ExecuteLua' has a class size of 616 bytes.
+<23:25:16> Modular behavior tree node 'GroupScope' has a class size of 96 bytes.
+<23:25:16> Modular behavior tree node 'Look' has a class size of 72 bytes.
+<23:25:16> Modular behavior tree node 'LuaBehavior' has a class size of 72 bytes.
+<23:25:16> Modular behavior tree node 'LuaGate' has a class size of 632 bytes.
+<23:25:16> Modular behavior tree node 'Move' has a class size of 264 bytes.
+<23:25:16> Modular behavior tree node 'PullDownThreatLevel' has a class size of 64 bytes.
+<23:25:16> Modular behavior tree node 'QueryTPS' has a class size of 80 bytes.
+<23:25:16> Modular behavior tree node 'SendTransitionSignal' has a class size of 80 bytes.
+<23:25:16> Modular behavior tree node 'SetAlertness' has a class size of 72 bytes.
+<23:25:16> Modular behavior tree node 'Shoot' has a class size of 104 bytes.
+<23:25:16> Modular behavior tree node 'ShootFromCover' has a class size of 80 bytes.
+<23:25:16> Modular behavior tree node 'Signal' has a class size of 80 bytes.
+<23:25:16> Modular behavior tree node 'Stance' has a class size of 80 bytes.
+<23:25:16> Modular behavior tree node 'StopMovement' has a class size of 72 bytes.
+<23:25:16> Modular behavior tree node 'Basic_MoveToPosition' has a class size of 248 bytes.
+<23:25:16> Modular behavior tree node 'Basic_MoveToCover' has a class size of 248 bytes.
+<23:25:16> AI: [AISYSTEM] Initialization finished.
+<23:25:16> [Warning] XML reader: Can't open file (Scripts/AI/Cover.xml)
+<23:25:16> [Warning] AI: Failed to open XML file 'Scripts/AI/Cover.xml'...
+<23:25:16> Initializing additional systems
+<23:25:16> Loading Module CryAction.dll...
+<23:25:16> [Warning] XML reader: Can't open file (Libs/Levels/leveltypes.xml)
+<23:25:16> [Warning] [Lua Error] Failed to load script file Scripts/Entities/Vehicles/VehicleSystem.lua
+<23:25:16> [Warning] XML reader: Can't open file (Scripts/Network/StatsConfig.xml)
+<23:25:16> Modular behavior tree node 'AnimateFragment' has a class size of 80 bytes.
+<23:25:16> [Warning] [Lua Error] Failed to load script file Scripts/Entities/Vehicles/VehiclePartDetached.lua
+<23:25:16> Ending game context...
+<23:25:16> [Warning] XML reader: Can't open file (Libs/GameForceFeedback/ForceFeedbackEffects.xml)
+<23:25:16> [Warning] [ForceFeedback System] Could not load force feedback system data. Invalid XML file 'Libs/GameForceFeedback/ForceFeedbackEffects.xml'! 
+<23:25:16> Initializing default materials...
+<23:25:16> [Warning] XML reader: Can't open file (materials/material_layers_default.mtl)
+<23:25:16> [Warning] [Lua Error] Failed to load script file scripts/main.lua
+<23:25:16> [Warning] [CScriptSystem::BeginCall] Function OnInit not found(check for syntax errors or if the file wasn't loaded)
