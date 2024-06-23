@@ -49,6 +49,23 @@ private:
 	bool hasGameStarted = false;
 	EFlightMode m_pFlightControllerState;
 
+	// struct to combine thruster axis and actuation, simplifying code
+	struct AxisThrustParams {
+		std::string axisName;
+		Vec3 direction;
+		float thrustAmount;
+	};
+
+	// List to receive the thrust directions dinamically
+	// Remmeber to add the rest of the variables
+	std::vector<AxisThrustParams> axisThrusterParamsList = {
+		{"accelforward", Vec3(0.f, 0.f, 1.f), fwdThrust},
+		{"accelbackward", Vec3(0.f,0.f,-1.f), 0.f},
+		{"accelright", Vec3(1.f, 0.f, 0.f), 0.f},
+		{"accelleft", Vec3(-1.f, 0.f, 0.f), 0.f},
+		{"accelup", Vec3(0.f, 1.f, 0.f), 0.f},
+		{"acceldown", Vec3(0.f,-1.f,0.f), 0.f},
+	};
 
 	// Receive the input map from VehicleComponent
 	void GetVehicleInputManager();
@@ -59,6 +76,9 @@ private:
 	// Getting the key states and axis values from the Vehicle
 	bool IsKeyPressed(const std::string& actionName);
 	float AxisGetter(const std::string& axisName);
+
+	// Calculate the thrust direction
+	Vec3 CalculateThrustDirection();
 
 
 	// Flight Behavior

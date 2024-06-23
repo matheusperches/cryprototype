@@ -94,34 +94,44 @@ float CFlightController::AxisGetter(const std::string& axisName)
 	return m_pEntity->GetComponent<CVehicleComponent>()->GetAxisValue(axisName);
 }
 
+
+Vec3 CFlightController::CalculateThrustDirection()
+{
+	// Initializing a Vec3
+	Vec3 thrustDirection(0.f, 0.f, 0.f);
+
+	//flag to check if any input was detected
+	bool hasInput = false;
+
+	// Iterating over the axis and input value 
+	for (const auto& AxisThrustParams : axisThrusterParamsList)
+	{
+		float inputValue = AxisGetter(AxisThrustParams.axisName);
+
+		if (inputValue != 0.f)
+		{
+			hasInput = true;
+			// thrust direction calculated based on axis input, combined for multiple axis
+			thrustDirection += AxisThrustParams.direction * inputValue;
+		}
+	}
+	if (hasInput)
+	thrustDirection.normalize(); // normalizing the vector only if there was input.
+
+	return thrustDirection;
+}
+
 void CFlightController::CalculateThrust()
 {
 	if (Validator())
 	{
-		if (AxisGetter("accelforward") > 0.0f)
+		IPhysicalEntity* physEntity = m_pEntity->GetPhysicalEntity();
+		Vec3 worldPos = m_pEntity->GetWorldPos(); //placeholder
+		Vec3 thrustDirection = CalculateThrustDirection();
+		if (!thrustDirection.IsZero())
 		{
-			IPhysicalEntity* physEntity = m_pEntity->GetPhysicalEntity();
-			Vec3 worldPos = m_pEntity->GetWorldPos();
-			ThrusterParams tParams = ThrusterParams(worldPos, Vec3(0.f, 0.f, 1.0f), fwdThrust);
-			//m_pThrusterComponent->ApplySingleThrust(fwdThrust);
+			ThrusterParams tParams = ThrusterParams(worldPos, thrustDirection, fwdThrust);
 			m_pShipThrusterComponent->ApplyThrust(physEntity, tParams);
-
-			/*
-			//CryLog("fwd axis value: %f", AxisGetter("accelforward"));
-			//CryLog("boosting: %d", IsKeyPressed("boost"));
-			IPhysicalEntity* pPhysicalEntity = m_pEntity->GetPhysics();
-			if (pPhysicalEntity)
-			{
-				Vec3 bottomCenter = m_pEntity->GetWorldPos();
-				Vec3 forceDirection = Vec3(0.f, 1.f, 0.f);  // Example force direction (downwards)
-
-				// Apply the force at the specified position
-				pe_action_impulse impulseAction;
-				impulseAction.impulse = forceDirection * fwdThrust;
-				impulseAction.point = bottomCenter;
-				pPhysicalEntity->Action(&impulseAction);
-			}
-			*/
 		}
 	}
 }

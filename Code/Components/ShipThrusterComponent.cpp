@@ -75,7 +75,7 @@ void CShipThrusterComponent::ApplyThrust(IPhysicalEntity* pPhysicalEntity, Thrus
 	{
 		if (pPhysicalEntity)
 		{
-			// Apply the force at the specified position
+			// Apply the force at the specified position and rotation
 			impulseAction.impulse = tParams.rotation * tParams.force;
 			impulseAction.point = tParams.translation;
 			pPhysicalEntity->Action(&impulseAction);
