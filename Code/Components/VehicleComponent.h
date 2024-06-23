@@ -2,13 +2,13 @@
 
 #pragma once
 
+
 namespace Cry::DefaultComponents
 {
 	class CCameraComponent;
 	class CInputComponent;
 	class CRigidBodyComponent;
 }
-
 
 ////////////////////////////////////////////////////////
 // Spawn point
@@ -62,4 +62,7 @@ private:
 
 	// Get CVar value
 	int GetFpsUseShip();
+
+	// Ref flight controller
+	CFlightController* m_pFlightController;
 };

@@ -10,8 +10,8 @@
 // Forward declaration
 #include <DefaultComponents/Input/InputComponent.h>
 #include <DefaultComponents/Physics/RigidBodyComponent.h>
-#include<DefaultComponents/Physics/ThrusterComponent.h>
 #include <Components/VehicleComponent.h>
+#include <Components/ShipThrusterComponent.h>
 
 // Registers the component to be used in the engine
 static void RegisterFlightController(Schematyc::IEnvRegistrar& registrar)
@@ -32,7 +32,7 @@ void CFlightController::Initialize()
 {
 	// Initialize stuff
 	GetVehicleInputManager();
-	m_pThrusterComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CThrusterComponent>();
+	m_pShipThrusterComponent = m_pEntity->GetOrCreateComponent<CShipThrusterComponent>();
 }
 
 Cry::Entity::EventFlags CFlightController::GetEventMask() const
@@ -57,7 +57,7 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 			// Execute Flight controls
 			// Check if self is valid
 			if (m_pEntity)
-			CreateThrust();
+			CalculateThrust();
 		}
 	}
 	break;
@@ -94,14 +94,17 @@ float CFlightController::AxisGetter(const std::string& axisName)
 	return m_pEntity->GetComponent<CVehicleComponent>()->GetAxisValue(axisName);
 }
 
-void CFlightController::CreateThrust()
+void CFlightController::CalculateThrust()
 {
 	if (Validator())
 	{
 		if (AxisGetter("accelforward") > 0.0f)
 		{
-			m_pThrusterComponent->ApplySingleThrust(fwdThrust);
-
+			IPhysicalEntity* physEntity = m_pEntity->GetPhysicalEntity();
+			Vec3 worldPos = m_pEntity->GetWorldPos();
+			ThrusterParams tParams = ThrusterParams(worldPos, Vec3(0.f, 0.f, 1.0f), fwdThrust);
+			//m_pThrusterComponent->ApplySingleThrust(fwdThrust);
+			m_pShipThrusterComponent->ApplyThrust(physEntity, tParams);
 
 			/*
 			//CryLog("fwd axis value: %f", AxisGetter("accelforward"));

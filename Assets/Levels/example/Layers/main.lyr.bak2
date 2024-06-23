@@ -1,5 +1,5 @@
 <ObjectLayer>
- <Layer Name="Main" FullName="Main" GUID="1dd3a559-e494-4742-a501-7dab4afbbf72" Hidden="0" Frozen="0" Expanded="0" Type="0" Exportable="1" ExportLayerPak="1" DefaultLoaded="0" HavePhysics="1" IsDefaultColor="1" Color="4671303" Timestamp="1719018655">
+ <Layer Name="Main" FullName="Main" GUID="1dd3a559-e494-4742-a501-7dab4afbbf72" Hidden="0" Frozen="0" Expanded="0" Type="0" Exportable="1" ExportLayerPak="1" DefaultLoaded="0" HavePhysics="1" IsDefaultColor="1" Color="4671303" Timestamp="1719021654">
   <LayerObjects>
    <Object Type="Designer" Layer="Main" LayerGUID="1dd3a559-e494-4742-a501-7dab4afbbf72" Id="4ccb90a3-1dbb-4500-99bf-25286ff6daf7" Name="Designer Box3" Pos="80,66,32" Rotate="1,0,0,0" Scale="1,1,1" ColorRGB="16777215" UseCustomLevelLayerColor="0" Material="%ENGINE%/EngineAssets/Materials/material_default" MinSpec="0" RndFlags="1073741832" StaticObjFlags="0" ViewDistRatio="100">
     <Brush DesignerModeFlags="0" SubdivisionLevel="0" SubdivisionSmoothingGroup="0" MirrorPlaneNormal="0,0,0" MirrorPlaneDistance="0">
@@ -386,7 +386,7 @@
     <Properties />
     <Components>
      <Component CryXmlVersion="2" TypeGUID="63f4c0c6-32af-4acb-8fb0-57d45dd14725" TypeName="CPlayerComponent" GUID="80e417a9-4f52-704e-38d2-a91bfd03594a" Name="" UserAdded="true">
-      <properties playerwalkspeed="4" playerrunspeed="10" playerrotationspeed="0.00050000002" playerjumpheight="10" camerapitchmax="1.5" camerapitchmin="-1.2" playerinteractionrange="10">
+      <properties playerwalkspeed="4" playerrunspeed="10" playerrotationspeed="0.00050000002" playerjumpheight="10" camerapitchmax="1.5" camerapitchmin="-1.2" playerinteractionrange="10" shouldstartonvehicle="true">
        <cameradefaultpos x="0" y="0" z="1.75"/>
       </properties>
      </Component>
@@ -399,11 +399,11 @@
          <element element="1.75"/>
         </position>
        </translation>
-       <rotation x="65.084366" y="-66.963623" z="176.29263"/>
+       <rotation x="-0.00026768379" y="0.001367392" z="170.6158"/>
        <scale>
-        <element element="0.99999988"/>
-        <element element="0.99999988"/>
-        <element element="0.99999994"/>
+        <element element="0.9999997"/>
+        <element element="0.9999997"/>
+        <element element="1"/>
        </scale>
       </Transform>
       <properties Type="Default" Active="false" NearPlane="0.25" FarPlane="1024" FieldOfView="1.2217305"/>
@@ -478,11 +478,11 @@
       <properties Type="RenderAndCollider" FilePath="%engine%/engineassets/objects/primitive_cube.cgf" Material="%ENGINE%/EngineAssets/Objects/editorprimitive">
        <IEditorEntityComponent />
        <Render ShadowSpec="Low" IgnoreVisArea="false" IgnoreTerrainLayerBlend="false" IgnoreDecalBlend="false" ViewDistRatio="100" LODDistance="100" GIMode="None"/>
-       <Physics WeightType="EWeightType::Mass" Density="9.9999997e-05" Mass="10"/>
+       <Physics WeightType="EWeightType::Mass" Density="9.9999997e-05" Mass="100"/>
       </properties>
      </Component>
      <Component CryXmlVersion="2" TypeGUID="dde72471-ef55-4aba-b4d0-ecd9d57f4c88" TypeName="CVehicleComponent" GUID="5aff1898-52b1-c331-47b6-3f67db65bca2" Name="" UserAdded="true">
-      <properties forwardaxis="1"/>
+      <properties />
      </Component>
      <Component CryXmlVersion="2" TypeGUID="a4cb0508-5f07-46b4-b6d4-ab76bfd550f4" TypeName="Cry::DefaultComponents::CCameraComponent" GUID="1b75ead5-d067-ee54-09c7-2f3d3846fdcf" Name="" UserAdded="false">
       <Transform>
@@ -512,7 +512,7 @@
       </properties>
      </Component>
      <Component CryXmlVersion="2" TypeGUID="52d14abc-6525-4408-bbfd-d55b6710ecab" TypeName="CFlightController" GUID="c837e340-a8c3-9f05-ee39-c15ee42c8042" Name="" UserAdded="true">
-      <properties />
+      <properties forwardaxis="15"/>
      </Component>
     </Components>
    </Object>

@@ -1,5 +1,5 @@
 <ObjectLayer>
- <Layer Name="Main" FullName="Main" GUID="1dd3a559-e494-4742-a501-7dab4afbbf72" Hidden="0" Frozen="0" Expanded="0" Type="0" Exportable="1" ExportLayerPak="1" DefaultLoaded="0" HavePhysics="1" IsDefaultColor="1" Color="4671303" Timestamp="1719021654">
+ <Layer Name="Main" FullName="Main" GUID="1dd3a559-e494-4742-a501-7dab4afbbf72" Hidden="0" Frozen="0" Expanded="0" Type="0" Exportable="1" ExportLayerPak="1" DefaultLoaded="0" HavePhysics="1" IsDefaultColor="1" Color="4671303" Timestamp="1719111048">
   <LayerObjects>
    <Object Type="Designer" Layer="Main" LayerGUID="1dd3a559-e494-4742-a501-7dab4afbbf72" Id="4ccb90a3-1dbb-4500-99bf-25286ff6daf7" Name="Designer Box3" Pos="80,66,32" Rotate="1,0,0,0" Scale="1,1,1" ColorRGB="16777215" UseCustomLevelLayerColor="0" Material="%ENGINE%/EngineAssets/Materials/material_default" MinSpec="0" RndFlags="1073741832" StaticObjFlags="0" ViewDistRatio="100">
     <Brush DesignerModeFlags="0" SubdivisionLevel="0" SubdivisionSmoothingGroup="0" MirrorPlaneNormal="0,0,0" MirrorPlaneDistance="0">
@@ -399,7 +399,7 @@
          <element element="1.75"/>
         </position>
        </translation>
-       <rotation x="-0.00026768379" y="0.001367392" z="170.6158"/>
+       <rotation x="-0.00026768385" y="0.0013673925" z="170.6158"/>
        <scale>
         <element element="0.9999997"/>
         <element element="0.9999997"/>
@@ -511,7 +511,10 @@
        <Simulation MaxTimeStep="0.02" SleepSpeed="0.039999999" Damping="0"/>
       </properties>
      </Component>
-     <Component CryXmlVersion="2" TypeGUID="52d14abc-6525-4408-bbfd-d55b6710ecab" TypeName="CFlightController" GUID="c837e340-a8c3-9f05-ee39-c15ee42c8042" Name="" UserAdded="true">
+     <Component CryXmlVersion="2" TypeGUID="f0fd2a0a-dd3f-45d5-bbe7-4bcbbbf296bd" TypeName="CShipThrusterComponent" GUID="63c9417c-9f99-4555-f95d-d943abe14adb" Name="" UserAdded="false">
+      <properties />
+     </Component>
+     <Component CryXmlVersion="2" TypeGUID="52d14abc-6525-4408-bbfd-d55b6710ecab" TypeName="CFlightController" GUID="02a57932-3672-028b-4beb-6b2917afdc76" Name="" UserAdded="false">
       <properties forwardaxis="15"/>
      </Component>
     </Components>

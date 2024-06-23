@@ -1,6 +1,8 @@
 // Copyright 2017-2021 Crytek GmbH / Crytek Group. All rights reserved.
 
 #pragma once
+#include "ShipThrusterComponent.h"
+#include "ThrusterParams.h"
 
 namespace Cry::DefaultComponents
 {
@@ -16,13 +18,6 @@ enum class EFlightMode
 	Decoupled,
 };
 
-enum class EThrusterState
-{
-	Active, 
-	Inactive, 
-	Overclocked,
-};
-
 class CFlightController final : public IEntityComponent
 {
 public:
@@ -36,7 +31,7 @@ public:
 		desc.SetGUID("{52D14ABC-6525-4408-BBFD-D55B6710ECAB}"_cry_guid);
 		desc.SetEditorCategory("Flight");
 		desc.SetLabel("FlightController");
-		desc.SetDescription("Contains flight logic only.");
+		desc.SetDescription("Executes flight calculations.");
 		desc.AddMember(&CFlightController::fwdThrust, 'fwax', "forwardaxis", "Forward Axis thrust", "Point force generator on the forward axis", ZERO);
 	}
 	virtual void ProcessEvent(const SEntityEvent& event) override;
@@ -53,7 +48,6 @@ private:
 	// Variables
 	bool hasGameStarted = false;
 	EFlightMode m_pFlightControllerState;
-	EThrusterState m_pThrusterState;
 
 
 	// Receive the input map from VehicleComponent
@@ -61,13 +55,18 @@ private:
 
 	// Validator functions checking if the code can be run properly.
 	bool Validator();
+
+	// Getting the key states and axis values from the Vehicle
 	bool IsKeyPressed(const std::string& actionName);
 	float AxisGetter(const std::string& axisName);
 
 
 	// Flight Behavior
-	void CreateThrust();
+	void CalculateThrust();
 
 	// Performance variables
 	float fwdThrust = 0.f;
+
+	// Thruster Reference
+	CShipThrusterComponent* m_pShipThrusterComponent = nullptr;
 };

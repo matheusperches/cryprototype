@@ -12,7 +12,6 @@
 #include <DefaultComponents/Input/InputComponent.h>
 #include <DefaultComponents/Physics/RigidBodyComponent.h>
 
-
 // Registers the component to be used in the engine
 static void RegisterVehicleComponent(Schematyc::IEnvRegistrar& registrar)
 {
@@ -33,6 +32,7 @@ void CVehicleComponent::Initialize()
 	m_pCameraComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CCameraComponent>();
 	m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
 	m_pRigidBodyComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CRigidBodyComponent>();
+	m_pFlightController = m_pEntity->GetOrCreateComponent<CFlightController>();
 	InitializeInput();
 }
 

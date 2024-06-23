@@ -30,12 +30,15 @@ add_sources("Components_uber.cpp"
 		"Components/PlayerManager.cpp"
 		"Components/SpawnPoint.cpp"
 		"Components/VehicleComponent.cpp"
+        "Components/ShipThrusterComponent.cpp"
 		"Components/Bullet.h"
 		"Components/FlightController.h"
 		"Components/Player.h"
 		"Components/PlayerManager.h"
 		"Components/SpawnPoint.h"
 		"Components/VehicleComponent.h"
+        "Components/ShipThrusterComponent.h"
+        "Components/ThrusterParams.h"
 )
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/CVarOverrides.h")
