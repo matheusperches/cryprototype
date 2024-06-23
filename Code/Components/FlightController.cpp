@@ -33,6 +33,7 @@ void CFlightController::Initialize()
 	// Initialize stuff
 	GetVehicleInputManager();
 	m_pShipThrusterComponent = m_pEntity->GetOrCreateComponent<CShipThrusterComponent>();
+	physEntity = m_pEntity->GetPhysicalEntity();
 }
 
 Cry::Entity::EventFlags CFlightController::GetEventMask() const
@@ -48,6 +49,7 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 	case EEntityEvent::GameplayStarted:
 	{
 		hasGameStarted = true;
+		InitializeAxisThrustParamsVector();
 	}
 	break;
 	case EEntityEvent::Update:
@@ -57,7 +59,9 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 			// Execute Flight controls
 			// Check if self is valid
 			if (m_pEntity)
-			CalculateThrust();
+			{
+				ProcessFlight();
+			}
 		}
 	}
 	break;
@@ -84,6 +88,21 @@ bool CFlightController::Validator()
 	else return false;
 }
 
+void CFlightController::InitializeAxisThrustParamsVector()
+{
+	// Initializing the list with the values of our accels
+	// To rework Vec3 with something more dynamic 
+	 axisThrusterParamsList = {
+		{"accel_forward", Vec3(0.f, -1.f, 0.f), fwdAccel},
+		{"accel_backward", Vec3(0.f, 1.f, 0.f), bwdAccel},
+		{"accel_left", Vec3(1.f, 0.f, 0.f), leftAccel},
+		{"accel_right", Vec3(-1.f, 0.f, 0.f), rightAccel},
+		{"accel_up", Vec3(0.f, 0.f, 1.f), upAccel},
+		{"roll_left", Vec3(0.f, 0.f, 0.f), rollAccel},
+		{"roll_right", Vec3(0.f, 0.f, 0.f), rollAccel},
+	};
+}
+
 bool CFlightController::IsKeyPressed(const std::string& actionName)
 {
 	return m_pEntity->GetComponent<CVehicleComponent>()->IsKeyPressed(actionName);
@@ -94,44 +113,71 @@ float CFlightController::AxisGetter(const std::string& axisName)
 	return m_pEntity->GetComponent<CVehicleComponent>()->GetAxisValue(axisName);
 }
 
-
-Vec3 CFlightController::CalculateThrustDirection()
+Vec3 CFlightController::CalculateAccelDirectionAndScale()
 {
-	// Initializing a Vec3
-	Vec3 thrustDirection(0.f, 0.f, 0.f);
+	// Initializing vectors for acceleration direction and desired acceleration
+	Vec3 accelDirection(0.f, 0.f, 0.f);   // Vector to accumulate the direction of applied accelerations
+	Vec3 desiredAccel(0.f, 0.f, 0.f);     // Vector to accumulate desired acceleration magnitudes
+	Vec3 scaledAccelDirection(0.f, 0.f, 0.f); // Scaled acceleration vector, with direction and acceleration magnitudes combined
 
-	//flag to check if any input was detected
-	bool hasInput = false;
-
-	// Iterating over the axis and input value 
+	// Iterating over the list of axis and their input values
 	for (const auto& AxisThrustParams : axisThrusterParamsList)
 	{
-		float inputValue = AxisGetter(AxisThrustParams.axisName);
+		float inputValue = AxisGetter(AxisThrustParams.axisName);   // Retrieve input value for the current axis
 
-		if (inputValue != 0.f)
-		{
-			hasInput = true;
-			// thrust direction calculated based on axis input, combined for multiple axis
-			thrustDirection += AxisThrustParams.direction * inputValue;
-		}
+		// Calculate acceleration direction based on axis input, combining for multiple axes
+		accelDirection += AxisThrustParams.direction * inputValue;
+
+		// Calculate desired acceleration based on thrust amount and input value, combining for multiple axes
+		desiredAccel += AxisThrustParams.direction * AxisThrustParams.AccelAmount * inputValue;
+
+		// Log the accumulated desired acceleration for debugging purposes
+		//CryLog("desiredAccel:(%f, %f, %f)", desiredAccel.x, desiredAccel.y, desiredAccel.z);
 	}
-	if (hasInput)
-	thrustDirection.normalize(); // normalizing the vector only if there was input.
 
-	return thrustDirection;
+	// Calculate the dot product of accelDirection and desiredAccel to preserve the direction
+	float dotProduct = accelDirection.dot(desiredAccel);
+
+	// Scale accelDirection by the dot product to get the final scaled acceleration direction
+	scaledAccelDirection = accelDirection * dotProduct;
+
+	// Log the scaled acceleration direction for debugging purposes
+	CryLog("scaledAccelDirection: x= %f, y = %f, z = %f", scaledAccelDirection.x, scaledAccelDirection.y, scaledAccelDirection.z);
+
+	return scaledAccelDirection;   // Return the scaled acceleration direction vector
 }
 
-void CFlightController::CalculateThrust()
+Vec3 CFlightController::CalculateThrust(Vec3 desiredAccel)
 {
 	if (Validator())
 	{
-		IPhysicalEntity* physEntity = m_pEntity->GetPhysicalEntity();
-		Vec3 worldPos = m_pEntity->GetWorldPos(); //placeholder
-		Vec3 thrustDirection = CalculateThrustDirection();
-		if (!thrustDirection.IsZero())
+		if (physEntity)
 		{
-			ThrusterParams tParams = ThrusterParams(worldPos, thrustDirection, fwdThrust);
-			m_pShipThrusterComponent->ApplyThrust(physEntity, tParams);
+			pe_status_dynamics dynamics;
+			if (physEntity->GetStatus(&dynamics))
+			{
+				float mass = dynamics.mass;
+				Vec3 thrust = desiredAccel * mass;
+				//CryLog("desiredAccel: x= %f, y= %f, z=%f", desiredAccel.x, desiredAccel.y, desiredAccel.z);
+				//CryLog("thrust: x= %f, y= %f, z=%f", thrust.x, thrust.y, thrust.z);
+				//CryLog("Entity velocity: x= %f", dynamics.v);
+				return thrust;
+			}
 		}
 	}
+	return Vec3(0.f, 0.f, 0.f);
+}
+void CFlightController::ProcessFlight()
+{
+	/*
+	Vec3 inputDirection = CalculateThrustDirection();
+	CryLog("inputDirection x= %f, y= %f, z= %f", inputDirection.x, inputDirection.y, inputDirection.z);
+	Vec3 desiredAccel = InputToAccelScaler(inputDirection);
+	CryLog("desiredAccel: x = % f, y = % f, z = % f", desiredAccel.x, desiredAccel.y, desiredAccel.z);
+	*/
+	Vec3 desiredAccelDir = CalculateAccelDirectionAndScale();
+	Vec3 thrust = CalculateThrust(desiredAccelDir);
+
+	Vec3 worldPos = m_pEntity->GetWorldPos();
+	m_pShipThrusterComponent->ApplyThrust(physEntity, thrust);
 }

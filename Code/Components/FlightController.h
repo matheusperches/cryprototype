@@ -32,7 +32,13 @@ public:
 		desc.SetEditorCategory("Flight");
 		desc.SetLabel("FlightController");
 		desc.SetDescription("Executes flight calculations.");
-		desc.AddMember(&CFlightController::fwdThrust, 'fwax', "forwardaxis", "Forward Axis thrust", "Point force generator on the forward axis", ZERO);
+		desc.AddMember(&CFlightController::fwdAccel, 'fwdr', "forwarddir", "Forward direction acceleration", "Point force generator on the forward direction", ZERO);
+		desc.AddMember(&CFlightController::bwdAccel, 'bwdr', "backwarddir", "Backward direction acceleration", "Point force generator on the backward direction", ZERO);
+		desc.AddMember(&CFlightController::leftAccel, 'lfdr', "leftdir", "Left direction acceleration", "Point force generator on the left direction", ZERO);
+		desc.AddMember(&CFlightController::rightAccel, 'rtdr', "rightdir", "Right direction acceleration", "Point force generator on the right direction", ZERO);
+		desc.AddMember(&CFlightController::upAccel, 'updr', "updir", "Upward direction acceleration", "Point force generator on the upward direction", ZERO);
+		desc.AddMember(&CFlightController::downAccel, 'dndr', "downdir", "Downward direction acceleration", "Point force generator on the downards direction", ZERO);
+		desc.AddMember(&CFlightController::rollAccel, 'rlac', "rollaccel", "Roll acceleration", "Point force generator for rolling", ZERO);
 	}
 	virtual void ProcessEvent(const SEntityEvent& event) override;
 	virtual void Initialize() override;
@@ -53,19 +59,13 @@ private:
 	struct AxisThrustParams {
 		std::string axisName;
 		Vec3 direction;
-		float thrustAmount;
+		float AccelAmount;
 	};
+	// Defining a list to receive the thrust directions dinamically
+	std::vector<AxisThrustParams> axisThrusterParamsList = {};
 
-	// List to receive the thrust directions dinamically
-	// Remmeber to add the rest of the variables
-	std::vector<AxisThrustParams> axisThrusterParamsList = {
-		{"accelforward", Vec3(0.f, 0.f, 1.f), fwdThrust},
-		{"accelbackward", Vec3(0.f,0.f,-1.f), 0.f},
-		{"accelright", Vec3(1.f, 0.f, 0.f), 0.f},
-		{"accelleft", Vec3(-1.f, 0.f, 0.f), 0.f},
-		{"accelup", Vec3(0.f, 1.f, 0.f), 0.f},
-		{"acceldown", Vec3(0.f,-1.f,0.f), 0.f},
-	};
+	// Axis Vector initializer
+	void InitializeAxisThrustParamsVector();
 
 	// Receive the input map from VehicleComponent
 	void GetVehicleInputManager();
@@ -73,20 +73,31 @@ private:
 	// Validator functions checking if the code can be run properly.
 	bool Validator();
 
-	// Getting the key states and axis values from the Vehicle
+	// Getting the key states from the Vehicle
 	bool IsKeyPressed(const std::string& actionName);
+	// Getting the Axis values from the Vehicle
 	float AxisGetter(const std::string& axisName);
 
-	// Calculate the thrust direction
-	Vec3 CalculateThrustDirection();
+	// Scales the acceleration asked, according to input magnitude, taking into account the inputs pressed
+	Vec3 CalculateAccelDirectionAndScale();
 
+	Vec3 CalculateThrust(Vec3 desiredAccel); // Calculates the thrust force in Vec3, containing direction. 
 
-	// Flight Behavior
-	void CalculateThrust();
+	// Execute the calculations
+	void ProcessFlight();
 
 	// Performance variables
-	float fwdThrust = 0.f;
+	float fwdAccel = 0.f;
+	float bwdAccel = 0.f;
+	float leftAccel = 0.f;
+	float rightAccel = 0.f;
+	float upAccel = 0.f;
+	float downAccel = 0.f;
+	float rollAccel = 0.f;
 
 	// Thruster Reference
 	CShipThrusterComponent* m_pShipThrusterComponent = nullptr;
+
+	// Physical Entity reference
+	IPhysicalEntity* physEntity;
 };

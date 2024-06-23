@@ -82,24 +82,24 @@ void CVehicleComponent::ProcessEvent(const SEntityEvent& event)
 
 void CVehicleComponent::InitializeInput()
 {
-	// Keyboard Controls
-	m_pInputComponent->RegisterAction("ship", "accelforward", [this](int activationMode, float value) { m_axisValues["accelforward"] = value;});
-	m_pInputComponent->BindAction("ship", "accelforward", eAID_KeyboardMouse, eKI_W);
+	// Translation Controls
+	m_pInputComponent->RegisterAction("ship", "accel_forward", [this](int activationMode, float value) { m_axisValues["accel_forward"] = value;});
+	m_pInputComponent->BindAction("ship", "accel_forward", eAID_KeyboardMouse, eKI_W);
 
-	m_pInputComponent->RegisterAction("ship", "accelbackward", [this](int activationMode, float value) {m_axisValues["accelforward"] = value;});
-	m_pInputComponent->BindAction("ship", "accelbackward", eAID_KeyboardMouse, eKI_S);
+	m_pInputComponent->RegisterAction("ship", "accel_backward", [this](int activationMode, float value) {m_axisValues["accel_backward"] = value;});
+	m_pInputComponent->BindAction("ship", "accel_backward", eAID_KeyboardMouse, eKI_S);
 
-	m_pInputComponent->RegisterAction("ship", "accelright", [this](int activationMode, float value) {m_axisValues["accelright"] = value;});
-	m_pInputComponent->BindAction("ship", "accelright", eAID_KeyboardMouse, eKI_D);
+	m_pInputComponent->RegisterAction("ship", "accel_right", [this](int activationMode, float value) {m_axisValues["accel_right"] = value;});
+	m_pInputComponent->BindAction("ship", "accel_right", eAID_KeyboardMouse, eKI_D);
 
-	m_pInputComponent->RegisterAction("ship", "accelleft", [this](int activationMode, float value) {m_axisValues["accelleft"] = value;});
-	m_pInputComponent->BindAction("ship", "accelleft", eAID_KeyboardMouse, eKI_A);
+	m_pInputComponent->RegisterAction("ship", "accel_left", [this](int activationMode, float value) {m_axisValues["accel_left"] = value;});
+	m_pInputComponent->BindAction("ship", "accel_left", eAID_KeyboardMouse, eKI_A);
 
-	m_pInputComponent->RegisterAction("ship", "accelup", [this](int activationMode, float value) {m_axisValues["accelup"] = value;});
-	m_pInputComponent->BindAction("ship", "accelup", eAID_KeyboardMouse, eKI_Space);
+	m_pInputComponent->RegisterAction("ship", "accel_up", [this](int activationMode, float value) {m_axisValues["accel_up"] = value;});
+	m_pInputComponent->BindAction("ship", "accel_up", eAID_KeyboardMouse, eKI_Space);
 
-	m_pInputComponent->RegisterAction("ship", "acceldown", [this](int activationMode, float value) {m_axisValues["acceldown"] = value;});
-	m_pInputComponent->BindAction("ship", "acceldown", eAID_KeyboardMouse, eKI_LCtrl);
+	m_pInputComponent->RegisterAction("ship", "accel_down", [this](int activationMode, float value) {m_axisValues["accel_down"] = value;});
+	m_pInputComponent->BindAction("ship", "accel_down", eAID_KeyboardMouse, eKI_LCtrl);
 
 	m_pInputComponent->RegisterAction("ship", "boost", [this](int activationMode, float value)
 		{
@@ -116,7 +116,7 @@ void CVehicleComponent::InitializeInput()
 		});
 	m_pInputComponent->BindAction("ship", "boost", eAID_KeyboardMouse, eKI_LShift);
 
-	// Mouse Controls
+	// Rotation Controls
 
 	m_pInputComponent->RegisterAction("ship", "yaw", [this](int activationMode, float value) {m_axisValues["yaw"] = value; });
 	m_pInputComponent->BindAction("ship", "yaw", eAID_KeyboardMouse, eKI_MouseY);
@@ -124,7 +124,14 @@ void CVehicleComponent::InitializeInput()
 	m_pInputComponent->RegisterAction("ship", "pitch", [this](int activationMode, float value) {m_axisValues["pitch"] = value; });
 	m_pInputComponent->BindAction("ship", "pitch", eAID_KeyboardMouse, eKI_MouseX);
 
-	// exiting the vehicle
+
+	m_pInputComponent->RegisterAction("ship", "roll_left", [this](int activationMode, float value) {m_axisValues["roll_left"] = value; });
+	m_pInputComponent->BindAction("ship", "roll_left", eAID_KeyboardMouse, eKI_Q);
+
+	m_pInputComponent->RegisterAction("ship", "roll_right", [this](int activationMode, float value) {m_axisValues["roll_right"] = value; });
+	m_pInputComponent->BindAction("ship", "roll_right", eAID_KeyboardMouse, eKI_E);
+
+	// Exiting the vehicle
 	m_pInputComponent->RegisterAction("ship", "exit", [this](int activationMode, float value)
 		{ 
 			// Checking the cvar value, if we are the ship, then change it back to the human.

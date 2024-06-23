@@ -69,17 +69,16 @@ bool CShipThrusterComponent::Validator()
 	else return false;
 }
 
-void CShipThrusterComponent::ApplyThrust(IPhysicalEntity* pPhysicalEntity, ThrusterParams tParams)
+void CShipThrusterComponent::ApplyThrust(IPhysicalEntity* pPhysicalEntity, const Vec3& thrust)
 {
 	if (Validator())
 	{
 		if (pPhysicalEntity)
 		{
 			// Apply the force at the specified position and rotation
-			impulseAction.impulse = tParams.rotation * tParams.force;
-			impulseAction.point = tParams.translation;
+			impulseAction.impulse = thrust;
 			pPhysicalEntity->Action(&impulseAction);
-			tParams.LogTransform();
+			//tParams.LogTransform();
 		}
 	}
 }

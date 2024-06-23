@@ -44,7 +44,7 @@ public:
 	};
 
 	// Flight Behavior
-	void ApplyThrust(IPhysicalEntity* pPhysicalEntity, ThrusterParams tParams);
+	void ApplyThrust(IPhysicalEntity* pPhysicalEntity, const Vec3& thrust);
 
 protected:
 private:
