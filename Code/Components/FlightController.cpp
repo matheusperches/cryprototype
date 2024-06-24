@@ -36,6 +36,8 @@ void CFlightController::Initialize()
 	// Initialize stuff
 	GetVehicleInputManager();
 	m_pShipThrusterComponent = m_pEntity->GetOrCreateComponent<CShipThrusterComponent>();
+	Physicalize(*m_pEntity); 
+	physEntity = m_pEntity->GetPhysicalEntity();
 }
 
 Cry::Entity::EventFlags CFlightController::GetEventMask() const
@@ -95,16 +97,21 @@ void CFlightController::InitializeAccelParamsVectors()
 	// Initializing the list with the values of our accels
 	// To rework Vec3 with something more dynamic 
 	 LinearAxisAccelParamsList = {
-		{"accel_forward", Vec3(0.f, -1.f, 0.f), fwdAccel},
-		{"accel_backward", Vec3(0.f, 1.f, 0.f), bwdAccel},
-		{"accel_left", Vec3(1.f, 0.f, 0.f), leftAccel},
-		{"accel_right", Vec3(-1.f, 0.f, 0.f), rightAccel},
-		{"accel_up", Vec3(0.f, 0.f, 1.f), upAccel},
+		{"accel_forward", fwdAccel},
+		{"accel_backward", bwdAccel},
+		{"accel_left", leftAccel},
+		{"accel_right", rightAccel},
+		{"accel_up", upAccel},
+		{"accel_down", downAccel},
 	};
 	 AngularAxisAccelParamsList = {
-		{"roll_left", Vec3(0.f, 0.f, 0.f), rollAccel},
-		{"roll_right", Vec3(0.f, 0.f, 0.f), rollAccel},
+		{"roll_left", rollAccel},
+		{"roll_right", rollAccel},
 	 };
+	 /*
+	 {"yaw_left", Vec3(0.f, 0.f, 1.f), yawAccel},
+	 { "yaw_right", Vec3(0.f, 0.f, -1.f), yawAccel},
+	 */
 }
 
 bool CFlightController::IsKeyPressed(const std::string& actionName)
@@ -117,6 +124,15 @@ float CFlightController::AxisGetter(const std::string& axisName)
 	return m_pEntity->GetComponent<CVehicleComponent>()->GetAxisValue(axisName);
 }
 
+Vec3 CFlightController::CalculateAccelDirection(const Vec3& localDirection)
+{
+	Quat worldRotation = GetEntity()->GetWorldRotation();
+
+	Vec3 worldDirection = worldRotation * localDirection;
+
+	return worldDirection;
+}
+
 Vec3 CFlightController::LinearCalcAccelDirAndScale()
 {
 	// Initializing vectors for acceleration direction and desired acceleration
@@ -127,15 +143,34 @@ Vec3 CFlightController::LinearCalcAccelDirAndScale()
 	for (const auto& LinearAxisAccelParams : LinearAxisAccelParamsList)
 	{
 		float inputValue = AxisGetter(LinearAxisAccelParams.axisName);   // Retrieve input value for the current axis
+		// Calculate local thrust direction based on input value
+		Vec3 localDirection;
+		if (LinearAxisAccelParams.axisName == "accel_forward") {
+			localDirection = Vec3(0.f, 1.f, 0.f); // Forward in local space
+		}
+		else if (LinearAxisAccelParams.axisName == "accel_backward") {
+			localDirection = Vec3(0.f, -1.f, 0.f); // Backward in local space
+		}
+		else if (LinearAxisAccelParams.axisName == "accel_left") {
+			localDirection = Vec3(-1.f, 0.f, 0.f); // Left in local space
+		}
+		else if (LinearAxisAccelParams.axisName == "accel_right") {
+			localDirection = Vec3(1.f, 0.f, 0.f); // Right in local space
+		}
+		else if (LinearAxisAccelParams.axisName == "accel_up") {
+			localDirection = Vec3(0.f, 0.f, 1.f); // Up in local space
+		}
+		else if (LinearAxisAccelParams.axisName == "accel_down") {
+			localDirection = Vec3(0.f, 0.f, -1.f); // Up in local space
+		}
 
-		// Calculate acceleration direction based on axis input, combining for multiple axes
-		accelDirection += LinearAxisAccelParams.direction * inputValue;
+		Vec3 worldDirection = CalculateAccelDirection(localDirection);
+
+		// Calculate acceleration direction based on axis input, combining all axes
+		accelDirection += worldDirection * inputValue;
 
 		// Calculate desired acceleration based on thrust amount and input value, combining for multiple axes
-		desiredAccel += LinearAxisAccelParams.direction * LinearAxisAccelParams.AccelAmount * inputValue;
-
-		// Log the accumulated desired acceleration for debugging purposes
-		//CryLog("desiredAccel:(%f, %f, %f)", desiredAccel.x, desiredAccel.y, desiredAccel.z);
+		desiredAccel += worldDirection * LinearAxisAccelParams.AccelAmount * inputValue;
 	}
 
 	// Calculate the dot product of accelDirection and desiredAccel to preserve the direction
@@ -154,23 +189,21 @@ Vec3 CFlightController::AngularCalcAccelDirAndScale()
 {
 	Vec3 angularDirection(0.f, 0.f, 0.f);
 	Vec3 desiredAngularAccel(0.f, 0.f, 0.f);
-
+	/*
 	for (const auto& AngularAxisAccelParams : AngularAxisAccelParamsList)
 	{
 		float inputValue = AxisGetter(AngularAxisAccelParams.axisName);
 
-		angularDirection += AngularAxisAccelParams.direction * inputValue;
-		desiredAngularAccel += AngularAxisAccelParams.direction * AngularAxisAccelParams.AccelAmount * inputValue;
 	}
+
 	float dotProduct = angularDirection.dot(desiredAngularAccel);
 	Vec3 scaledAngularDirection = angularDirection * dotProduct;
-
-	//CryLog("scaledAngularDirection: x= %f, y = %f, z = %f", scaledAngularDirection.x, scaledAngularDirection.y, scaledAngularDirection.z);
-
+	*/
+	Vec3 scaledAngularDirection(0.f, 0.f, 0.f);
 	return scaledAngularDirection;
 }
 
-Vec3 CFlightController::CalculateThrust(Vec3 desiredLinearAccel)
+Vec3 CFlightController::CalculateLinearThrust(Vec3 desiredLinearAccel)
 {
 	if (Validator())
 	{
@@ -181,6 +214,7 @@ Vec3 CFlightController::CalculateThrust(Vec3 desiredLinearAccel)
 			{
 				float mass = dynamics.mass;
 				Vec3 thrust = desiredLinearAccel * mass;
+				//CryLog("Thrust: x=%f, y= %f, z=%f", thrust.x, thrust.y, thrust.z);
 				return thrust;
 			}
 		}
@@ -188,37 +222,20 @@ Vec3 CFlightController::CalculateThrust(Vec3 desiredLinearAccel)
 	return Vec3(0.f, 0.f, 0.f);
 }
 
-Vec3 CFlightController::CalculateTorque(Vec3 desiredAngularAccel)
+Vec3 CFlightController::CalculateAngularThrust(Vec3 desiredAngularAccel)
 {
-	physEntity = m_pEntity->GetPhysicalEntity();
 	if (Validator())
 	{
 		if (physEntity)
 		{
-			pe_status_pos statusPos;
-			if (physEntity->GetStatus(&statusPos))
-			{	
-				phys_geometry* pg = new phys_geometry();
-
-				CryLog("physicalGeom: x=%f, y=%f, z=%f", pg->Ibody.x, pg->Ibody.y, pg->Ibody.z);
-				
-				//CryLog("pGeom: x=%f, y=%f, z=%f", physicalGeom.Ibody.x, physicalGeom.Ibody.y, physicalGeom.Ibody.z);
-				Vec3 inertiaTensor = pg->Ibody;
-				// Calculate the torque as the product of the inertia tensor and desired angular acceleration
-				Vec3 torque(
-					inertiaTensor.x * desiredAngularAccel.x,
-					inertiaTensor.y * desiredAngularAccel.y,
-					inertiaTensor.z * desiredAngularAccel.z
-				);
-
-				CryLog("Torque: %f, %f, %f", torque.x, torque.y, torque.z);
-				return torque;
-
-			}
-			else
+			pe_status_dynamics dynamics;
+			if (physEntity->GetStatus(&dynamics))
 			{
-				// Log error if GetParams fails
-				CryLog("Error: Failed to get part parameters for the physical entity.");
+				float mass = dynamics.mass;
+				Vec3 torque = desiredAngularAccel * mass;
+				//CryLog("torque: x=%f, y=%f, z=%f", torque.x, torque.y, torque.z);
+				//CryLog("desiredAngularAccel: %f", desiredAngularAccel);
+				return torque;
 			}
 		}
 		else
@@ -239,14 +256,40 @@ Vec3 CFlightController::CalculateTorque(Vec3 desiredAngularAccel)
 void CFlightController::ProcessFlight()
 {
 	Vec3 desiredLinearAccelDir = LinearCalcAccelDirAndScale();
-	Vec3 thrust = CalculateThrust(desiredLinearAccelDir);
+	Vec3 linearThrust = CalculateLinearThrust(desiredLinearAccelDir);
 
 	Vec3 desiredAngularAccelDir = AngularCalcAccelDirAndScale();
 
-	Vec3 torque = CalculateTorque(desiredAngularAccelDir);
-	//m_pShipThrusterComponent->ApplyTorque(torque);
+	Vec3 angularThrust = CalculateAngularThrust(desiredAngularAccelDir);
 
-	Vec3 worldPos = m_pEntity->GetWorldPos();
-	m_pShipThrusterComponent->ApplyThrust(physEntity, thrust);
+	m_pShipThrusterComponent->ApplyThrust(physEntity, linearThrust);
+	m_pShipThrusterComponent->ApplyTorque(physEntity, angularThrust);
 
+	//CryLog("desiredAngularAccelDir: x= %f, y=%f, z=%f", desiredAngularAccelDir.x, desiredAngularAccelDir.y, desiredAngularAccelDir.z);
+}
+
+void CFlightController::Physicalize(IEntity& entity)
+{
+	SEntityPhysicalizeParams physicalizeParams;
+
+	physicalizeParams.type = PE_RIGID;
+
+	physicalizeParams.mass = 50.f;
+
+	physicalizeParams.nSlot = -1;
+
+	entity.Physicalize(physicalizeParams);
+
+	if (IPhysicalEntity* pPhysicalEntity = entity.GetPhysicalEntity())
+	{
+		CryLog("Physicalized!");
+
+		/*
+		
+		phys_geometry* pPhys = pPhysicalEntity->
+
+		Vec3 inertiaTensor = statusPos.pGeom->CalcPhysicalProperties(pPhysGeom.Ibody);
+		CryLog("inertiaTensor: x=%f, y= %f, z=%f", inertiaTensor.x, inertiaTensor.y, inertiaTensor.z);
+		*/
+	}
 }

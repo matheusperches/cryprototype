@@ -59,13 +59,11 @@ private:
 	// struct to combine thruster axis and actuation, simplifying code
 	struct LinearAxisAccelParams {
 		std::string axisName;
-		Vec3 direction;
 		float AccelAmount;
 	};
 
 	struct AngularAxisAccelParams {
 		std::string axisName;
-		Vec3 direction;
 		float AccelAmount;
 	};
 	// Defining a list to receive the thrust directions dinamically
@@ -90,11 +88,13 @@ private:
 	Vec3 LinearCalcAccelDirAndScale();
 	Vec3 AngularCalcAccelDirAndScale();
 
-	// Calculates the thrust force in Vec3, containing direction.
-	Vec3 CalculateThrust(Vec3 desiredLinearAccel);  
+	Vec3 CalculateAccelDirection(const Vec3& localDirection);
 
-	// Calculates the torque needed
-	Vec3 CalculateTorque(Vec3 desiredAngularAccel);
+	// Calculates the thrust force in Vec3, containing direction.
+	Vec3 CalculateLinearThrust(Vec3 desiredLinearAccel);  
+
+	// Calculates the angular thrust
+	Vec3 CalculateAngularThrust(Vec3 desiredAngularAccel);
 
 	// Execute the calculations
 	void ProcessFlight();
@@ -115,4 +115,7 @@ private:
 
 	// Physical Entity reference
 	IPhysicalEntity* physEntity = nullptr;
+
+	// Initialize physical entity 
+	void Physicalize(IEntity& entity);
 };
