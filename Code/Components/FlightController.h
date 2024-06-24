@@ -15,7 +15,7 @@ namespace Cry::DefaultComponents
 enum class EFlightMode
 {
 	Coupled,
-	Decoupled,
+	Newtonian,
 };
 
 class CFlightController final : public IEntityComponent
@@ -41,6 +41,9 @@ public:
 		desc.AddMember(&CFlightController::rollAccel, 'roll', "rollaccel", "Roll acceleration", "Point force generator for rolling", ZERO);
 		desc.AddMember(&CFlightController::pitchAccel, 'ptch', "pitch", "Pitch acceleration", "Point force generator for pitching", ZERO);
 		desc.AddMember(&CFlightController::yawAccel, 'yaw', "yaw", "Yaw acceleration", "Point force generator for yawing", ZERO);
+		desc.AddMember(&CFlightController::maxRoll, 'mxrl', "maxRoll", "Max Roll rate", "Max roll rate in degrees / sec", ZERO);
+		desc.AddMember(&CFlightController::maxPitch, 'mxpt', "maxPitch", "Max Pitch rate", "Max pitch rate in degrees / sec", ZERO);
+		desc.AddMember(&CFlightController::maxYaw, 'mxyw', "maxYaw", "Max Yaw rate", "Max yaw rate in degrees / sec", ZERO);
 	}
 	virtual void ProcessEvent(const SEntityEvent& event) override;
 	virtual void Initialize() override;
@@ -68,7 +71,8 @@ private:
 	};
 	// Defining a list to receive the thrust directions dinamically
 	std::vector<LinearAxisAccelParams> LinearAxisAccelParamsList = {};
-	std::vector<AngularAxisAccelParams> AngularAxisAccelParamsList = {};
+	std::vector<AngularAxisAccelParams> RollAxisAccelParamsList = {};
+	std::vector<AngularAxisAccelParams> PitchYawAxisAccelParamsList = {};
 
 	// Axis Vector initializer
 	void InitializeAccelParamsVectors();
@@ -84,19 +88,22 @@ private:
 	// Getting the Axis values from the Vehicle
 	float AxisGetter(const std::string& axisName);
 
-	// Scales the acceleration asked, according to input magnitude, taking into account the inputs pressed
-	Vec3 LinearCalcAccelDirAndScale();
-	Vec3 AngularCalcAccelDirAndScale();
+	// Flight Computations
 
-	Vec3 CalculateAccelDirection(const Vec3& localDirection);
+	// Scales the acceleration asked, according to input magnitude, taking into account the inputs pressed
+	Vec3 ScaleLinearAccel();
+	Vec3 ScaleRollAccel();
+	Vec3 ScalePitchYawAccel();
+
+	// Convert rotation parameters to radians 
+	float DegreesToRadian(float degrees);
+
+	Vec3 WorldToLocal(const Vec3& localDirection);
 
 	// Calculates the thrust force in Vec3, containing direction.
-	Vec3 CalculateLinearThrust(Vec3 desiredLinearAccel);  
+	Vec3 AccelToThrust(Vec3 desiredLinearAccel);  
 
-	// Calculates the angular thrust
-	Vec3 CalculateAngularThrust(Vec3 desiredAngularAccel);
-
-	// Execute the calculations
+	// Apply the calculations
 	void ProcessFlight();
 
 	// Performance variables
@@ -109,13 +116,13 @@ private:
 	float rollAccel = 0.f;
 	float pitchAccel = 0.f;
 	float yawAccel = 0.f;
+	float maxRoll = 0.f;
+	float maxPitch = 0.f;
+	float maxYaw = 0.f;
 
 	// Thruster Reference
 	CShipThrusterComponent* m_pShipThrusterComponent = nullptr;
 
 	// Physical Entity reference
 	IPhysicalEntity* physEntity = nullptr;
-
-	// Initialize physical entity 
-	void Physicalize(IEntity& entity);
 };

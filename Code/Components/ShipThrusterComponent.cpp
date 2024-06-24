@@ -69,7 +69,7 @@ bool CShipThrusterComponent::Validator()
 	else return false;
 }
 
-void CShipThrusterComponent::ApplyThrust(IPhysicalEntity* pPhysicalEntity, const Vec3& thrust)
+void CShipThrusterComponent::ApplyLinearThrust(IPhysicalEntity* pPhysicalEntity, const Vec3& thrust)
 {
 	if (Validator())
 	{
@@ -83,7 +83,7 @@ void CShipThrusterComponent::ApplyThrust(IPhysicalEntity* pPhysicalEntity, const
 	}
 }
 
-void CShipThrusterComponent::ApplyTorque(IPhysicalEntity* pPhysicalEntity, const Vec3& torque)
+void CShipThrusterComponent::ApplyAngularThrust(IPhysicalEntity* pPhysicalEntity, const Vec3& torque)
 {
 	if (Validator())
 	{

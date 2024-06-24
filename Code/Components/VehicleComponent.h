@@ -32,10 +32,6 @@ public:
 	virtual void Initialize() override;
 	virtual Cry::Entity::EventFlags GetEventMask() const override;
 
-	// Input states
-	float GetMoveFwdAxisVal() const { return m_fwdAxisVal; };
-	float GetMoveBwdAxisVal() const { return m_bwdAxisVal; };
-
 	int IsKeyPressed(const std::string& actionName);
 	float GetAxisValue(const std::string& axisName);
 
@@ -53,8 +49,6 @@ private:
 
 	// Variables
 	bool hasGameStarted = false;
-	float m_fwdAxisVal = 0.f;
-	float m_bwdAxisVal = 0.f;
 
 	//Input maps
 	std::map<std::string, float> m_axisValues;

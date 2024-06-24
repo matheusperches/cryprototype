@@ -36,7 +36,6 @@ void CFlightController::Initialize()
 	// Initialize stuff
 	GetVehicleInputManager();
 	m_pShipThrusterComponent = m_pEntity->GetOrCreateComponent<CShipThrusterComponent>();
-	Physicalize(*m_pEntity); 
 	physEntity = m_pEntity->GetPhysicalEntity();
 }
 
@@ -94,9 +93,12 @@ bool CFlightController::Validator()
 
 void CFlightController::InitializeAccelParamsVectors()
 {
+	float radYawAccel = DegreesToRadian(yawAccel);
+	float radPitchAccel = DegreesToRadian(pitchAccel);
+	float radRollAccel = DegreesToRadian(rollAccel);
+
 	// Initializing the list with the values of our accels
-	// To rework Vec3 with something more dynamic 
-	 LinearAxisAccelParamsList = {
+	LinearAxisAccelParamsList = {
 		{"accel_forward", fwdAccel},
 		{"accel_backward", bwdAccel},
 		{"accel_left", leftAccel},
@@ -104,14 +106,14 @@ void CFlightController::InitializeAccelParamsVectors()
 		{"accel_up", upAccel},
 		{"accel_down", downAccel},
 	};
-	 AngularAxisAccelParamsList = {
-		{"roll_left", rollAccel},
-		{"roll_right", rollAccel},
-	 };
-	 /*
-	 {"yaw_left", Vec3(0.f, 0.f, 1.f), yawAccel},
-	 { "yaw_right", Vec3(0.f, 0.f, -1.f), yawAccel},
-	 */
+	RollAxisAccelParamsList = {
+		{"roll_left", radRollAccel},
+		{"roll_right", radRollAccel},
+	};
+	PitchYawAxisAccelParamsList = {
+		{"yaw", radYawAccel},
+		{"pitch", radPitchAccel},
+	};
 }
 
 bool CFlightController::IsKeyPressed(const std::string& actionName)
@@ -124,7 +126,7 @@ float CFlightController::AxisGetter(const std::string& axisName)
 	return m_pEntity->GetComponent<CVehicleComponent>()->GetAxisValue(axisName);
 }
 
-Vec3 CFlightController::CalculateAccelDirection(const Vec3& localDirection)
+Vec3 CFlightController::WorldToLocal(const Vec3& localDirection)
 {
 	Quat worldRotation = GetEntity()->GetWorldRotation();
 
@@ -133,7 +135,7 @@ Vec3 CFlightController::CalculateAccelDirection(const Vec3& localDirection)
 	return worldDirection;
 }
 
-Vec3 CFlightController::LinearCalcAccelDirAndScale()
+Vec3 CFlightController::ScaleLinearAccel()
 {
 	// Initializing vectors for acceleration direction and desired acceleration
 	Vec3 accelDirection(0.f, 0.f, 0.f);   // Vector to accumulate the direction of applied accelerations
@@ -163,14 +165,13 @@ Vec3 CFlightController::LinearCalcAccelDirAndScale()
 		else if (LinearAxisAccelParams.axisName == "accel_down") {
 			localDirection = Vec3(0.f, 0.f, -1.f); // Up in local space
 		}
-
-		Vec3 worldDirection = CalculateAccelDirection(localDirection);
+		localDirection = WorldToLocal(localDirection);
 
 		// Calculate acceleration direction based on axis input, combining all axes
-		accelDirection += worldDirection * inputValue;
+		accelDirection += localDirection * inputValue;
 
 		// Calculate desired acceleration based on thrust amount and input value, combining for multiple axes
-		desiredAccel += worldDirection * LinearAxisAccelParams.AccelAmount * inputValue;
+		desiredAccel += localDirection * LinearAxisAccelParams.AccelAmount * inputValue;
 	}
 
 	// Calculate the dot product of accelDirection and desiredAccel to preserve the direction
@@ -185,25 +186,92 @@ Vec3 CFlightController::LinearCalcAccelDirAndScale()
 	return scaledAccelDirection;   // Return the scaled acceleration direction vector
 }
 
-Vec3 CFlightController::AngularCalcAccelDirAndScale()
+Vec3 CFlightController::ScaleRollAccel()
 {
-	Vec3 angularDirection(0.f, 0.f, 0.f);
-	Vec3 desiredAngularAccel(0.f, 0.f, 0.f);
-	/*
-	for (const auto& AngularAxisAccelParams : AngularAxisAccelParamsList)
-	{
-		float inputValue = AxisGetter(AngularAxisAccelParams.axisName);
+	// Initializing vectors for acceleration direction and desired acceleration
+	Vec3 accelDirection(0.f, 0.f, 0.f);   // Vector to accumulate the direction of applied accelerations
+	Vec3 desiredAccel(0.f, 0.f, 0.f);     // Vector to accumulate desired acceleration magnitudes
 
+	// Iterating over the list of axis and their input values
+	for (const auto& AngularAxisAccelParams : RollAxisAccelParamsList)
+	{
+		float inputValue = AxisGetter(AngularAxisAccelParams.axisName);   // Retrieve input value for the current axis
+		// Calculate local thrust direction based on input value
+		Vec3 localDirection;
+		if (AngularAxisAccelParams.axisName == "roll_left") {
+			localDirection = Vec3(0.f, -1.f, 0.f); // roll left in local space
+		}
+		else if (AngularAxisAccelParams.axisName == "roll_right") {
+			localDirection = Vec3(0.f, 1.f, 0.f); // roll right in local space
+		}
+
+		localDirection = WorldToLocal(localDirection);
+
+		// Calculate acceleration direction based on axis input, combining all axes
+		accelDirection += localDirection * inputValue;
+
+		// Calculate desired acceleration based on thrust amount and input value, combining for multiple axes
+		desiredAccel += localDirection * AngularAxisAccelParams.AccelAmount * inputValue;
 	}
 
-	float dotProduct = angularDirection.dot(desiredAngularAccel);
-	Vec3 scaledAngularDirection = angularDirection * dotProduct;
-	*/
-	Vec3 scaledAngularDirection(0.f, 0.f, 0.f);
-	return scaledAngularDirection;
+	// Calculate the dot product of accelDirection and desiredAccel to preserve the direction
+	float dotProduct = accelDirection.dot(desiredAccel);
+
+	// Scale accelDirection by the dot product to get the final scaled acceleration direction
+	Vec3 scaledAccelDirection = accelDirection * dotProduct;
+
+	// Log the scaled acceleration direction for debugging purposes
+	//CryLog("scaledAccelDirection: x= %f, y = %f, z = %f", scaledAccelDirection.x, scaledAccelDirection.y, scaledAccelDirection.z);
+
+	return scaledAccelDirection;   // Return the scaled acceleration direction vector
 }
 
-Vec3 CFlightController::CalculateLinearThrust(Vec3 desiredLinearAccel)
+Vec3 CFlightController::ScalePitchYawAccel()
+{
+	// Initializing vectors for acceleration direction and desired acceleration
+	Vec3 accelDirection(0.f, 0.f, 0.f);   // Vector to accumulate the direction of applied accelerations
+	Vec3 desiredAccel(0.f, 0.f, 0.f);     // Vector to accumulate desired acceleration magnitudes
+	// Calculate local thrust direction based on input value
+	Vec3 localDirection;
+
+	// Iterating over the list of axis and their input values
+	for (const auto& PitchYawAxisAccelParamsList : PitchYawAxisAccelParamsList)
+	{
+		float inputValue = AxisGetter(PitchYawAxisAccelParamsList.axisName);   // Retrieve input value for the current axis
+		if (PitchYawAxisAccelParamsList.axisName == "yaw") {
+			localDirection = Vec3(0.f, 0.f, -1.f); // yaw left or right
+		}
+		else if (PitchYawAxisAccelParamsList.axisName == "pitch") {
+			localDirection = Vec3(-1.f, 0.f, 0.f); // pitch left or right in local space
+		}
+
+		localDirection = WorldToLocal(localDirection);
+
+		// Calculate acceleration direction based on axis input, combining all axes
+		accelDirection += localDirection * inputValue;
+
+		// Calculate desired acceleration based on thrust amount and input value, combining for multiple axes
+		desiredAccel += localDirection * PitchYawAxisAccelParamsList.AccelAmount * inputValue;
+	}
+
+	// Calculate the dot product of accelDirection and desiredAccel to preserve the direction
+	float dotProduct = accelDirection.dot(desiredAccel);
+
+	// Scale accelDirection by the dot product to get the final scaled acceleration direction
+	Vec3 scaledAccelDirection = accelDirection * dotProduct;
+
+	// Log the scaled acceleration direction for debugging purposes
+	//CryLog("scaledAccelDirection: x= %f, y = %f, z = %f", scaledAccelDirection.x, scaledAccelDirection.y, scaledAccelDirection.z);
+
+	return scaledAccelDirection;   // Return the scaled acceleration direction vector
+}
+
+float CFlightController::DegreesToRadian(float degrees)
+{
+	return degrees * (gf_PI / 180.f);
+}
+
+Vec3 CFlightController::AccelToThrust(Vec3 desiredLinearAccel)
 {
 	if (Validator())
 	{
@@ -222,74 +290,18 @@ Vec3 CFlightController::CalculateLinearThrust(Vec3 desiredLinearAccel)
 	return Vec3(0.f, 0.f, 0.f);
 }
 
-Vec3 CFlightController::CalculateAngularThrust(Vec3 desiredAngularAccel)
-{
-	if (Validator())
-	{
-		if (physEntity)
-		{
-			pe_status_dynamics dynamics;
-			if (physEntity->GetStatus(&dynamics))
-			{
-				float mass = dynamics.mass;
-				Vec3 torque = desiredAngularAccel * mass;
-				//CryLog("torque: x=%f, y=%f, z=%f", torque.x, torque.y, torque.z);
-				//CryLog("desiredAngularAccel: %f", desiredAngularAccel);
-				return torque;
-			}
-		}
-		else
-		{
-			// Log error if physEntity is null
-			CryLog("Error: Physical entity is null.");
-		}
-	}
-	else
-	{
-		// Log error if Validator fails
-		CryLog("Error: Validator check failed.");
-	}
-
-	return Vec3(0.f, 0.f, 0.f);
-}
-
 void CFlightController::ProcessFlight()
 {
-	Vec3 desiredLinearAccelDir = LinearCalcAccelDirAndScale();
-	Vec3 linearThrust = CalculateLinearThrust(desiredLinearAccelDir);
+	Vec3 desiredLinearAccelDir = ScaleLinearAccel();
+	Vec3 linearThrust = AccelToThrust(desiredLinearAccelDir);
 
-	Vec3 desiredAngularAccelDir = AngularCalcAccelDirAndScale();
+	Vec3 desiredRollAccelDir = ScaleRollAccel();
+	Vec3 rollThrust = AccelToThrust(desiredRollAccelDir);
 
-	Vec3 angularThrust = CalculateAngularThrust(desiredAngularAccelDir);
+	Vec3 desiredPitchYawAccelDir = ScalePitchYawAccel();
+	Vec3 pitchYawThrust = AccelToThrust(desiredPitchYawAccelDir);
 
-	m_pShipThrusterComponent->ApplyThrust(physEntity, linearThrust);
-	m_pShipThrusterComponent->ApplyTorque(physEntity, angularThrust);
-
-	//CryLog("desiredAngularAccelDir: x= %f, y=%f, z=%f", desiredAngularAccelDir.x, desiredAngularAccelDir.y, desiredAngularAccelDir.z);
-}
-
-void CFlightController::Physicalize(IEntity& entity)
-{
-	SEntityPhysicalizeParams physicalizeParams;
-
-	physicalizeParams.type = PE_RIGID;
-
-	physicalizeParams.mass = 50.f;
-
-	physicalizeParams.nSlot = -1;
-
-	entity.Physicalize(physicalizeParams);
-
-	if (IPhysicalEntity* pPhysicalEntity = entity.GetPhysicalEntity())
-	{
-		CryLog("Physicalized!");
-
-		/*
-		
-		phys_geometry* pPhys = pPhysicalEntity->
-
-		Vec3 inertiaTensor = statusPos.pGeom->CalcPhysicalProperties(pPhysGeom.Ibody);
-		CryLog("inertiaTensor: x=%f, y= %f, z=%f", inertiaTensor.x, inertiaTensor.y, inertiaTensor.z);
-		*/
-	}
+	m_pShipThrusterComponent->ApplyLinearThrust(physEntity, linearThrust);
+	m_pShipThrusterComponent->ApplyAngularThrust(physEntity, rollThrust);
+	m_pShipThrusterComponent->ApplyAngularThrust(physEntity, pitchYawThrust);
 }

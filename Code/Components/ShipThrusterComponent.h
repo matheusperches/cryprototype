@@ -44,8 +44,8 @@ public:
 	};
 
 	// Flight Behavior
-	void ApplyThrust(IPhysicalEntity* pPhysicalEntity, const Vec3& thrust);
-	void ApplyTorque(IPhysicalEntity* pPhysicalEntity, const Vec3& thrust);
+	void ApplyLinearThrust(IPhysicalEntity* pPhysicalEntity, const Vec3& thrust);
+	void ApplyAngularThrust(IPhysicalEntity* pPhysicalEntity, const Vec3& thrust);
 
 protected:
 private:
