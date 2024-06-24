@@ -34,6 +34,7 @@ void CVehicleComponent::Initialize()
 	m_pRigidBodyComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CRigidBodyComponent>();
 	m_pFlightController = m_pEntity->GetOrCreateComponent<CFlightController>();
 	InitializeInput();
+
 }
 
 Cry::Entity::EventFlags CVehicleComponent::GetEventMask() const
@@ -118,13 +119,14 @@ void CVehicleComponent::InitializeInput()
 
 	// Rotation Controls
 
+	/*
 	m_pInputComponent->RegisterAction("ship", "yaw", [this](int activationMode, float value) {m_axisValues["yaw"] = value; });
 	m_pInputComponent->BindAction("ship", "yaw", eAID_KeyboardMouse, eKI_MouseY);
 
+	
 	m_pInputComponent->RegisterAction("ship", "pitch", [this](int activationMode, float value) {m_axisValues["pitch"] = value; });
 	m_pInputComponent->BindAction("ship", "pitch", eAID_KeyboardMouse, eKI_MouseX);
-
-
+	*/
 	m_pInputComponent->RegisterAction("ship", "roll_left", [this](int activationMode, float value) {m_axisValues["roll_left"] = value; });
 	m_pInputComponent->BindAction("ship", "roll_left", eAID_KeyboardMouse, eKI_Q);
 

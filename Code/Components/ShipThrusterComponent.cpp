@@ -82,3 +82,16 @@ void CShipThrusterComponent::ApplyThrust(IPhysicalEntity* pPhysicalEntity, const
 		}
 	}
 }
+
+void CShipThrusterComponent::ApplyTorque(IPhysicalEntity* pPhysicalEntity, const Vec3& torque)
+{
+	if (Validator())
+	{
+		if (pPhysicalEntity)
+		{
+			pe_action_impulse torqueAction;
+			torqueAction.angImpulse = torque;
+			pPhysicalEntity->Action(&torqueAction);
+		}
+	}
+}
