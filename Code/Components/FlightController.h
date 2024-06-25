@@ -32,18 +32,20 @@ public:
 		desc.SetEditorCategory("Flight");
 		desc.SetLabel("FlightController");
 		desc.SetDescription("Executes flight calculations.");
-		desc.AddMember(&CFlightController::fwdAccel, 'fwdr', "forwarddir", "Forward direction acceleration", "Point force generator on the forward direction", ZERO);
-		desc.AddMember(&CFlightController::bwdAccel, 'bwdr', "backwarddir", "Backward direction acceleration", "Point force generator on the backward direction", ZERO);
-		desc.AddMember(&CFlightController::leftAccel, 'lfdr', "leftdir", "Left direction acceleration", "Point force generator on the left direction", ZERO);
-		desc.AddMember(&CFlightController::rightAccel, 'rtdr', "rightdir", "Right direction acceleration", "Point force generator on the right direction", ZERO);
-		desc.AddMember(&CFlightController::upAccel, 'updr', "updir", "Upward direction acceleration", "Point force generator on the upward direction", ZERO);
-		desc.AddMember(&CFlightController::downAccel, 'dndr', "downdir", "Downward direction acceleration", "Point force generator on the downards direction", ZERO);
-		desc.AddMember(&CFlightController::rollAccel, 'roll', "rollaccel", "Roll acceleration", "Point force generator for rolling", ZERO);
-		desc.AddMember(&CFlightController::pitchAccel, 'ptch', "pitch", "Pitch acceleration", "Point force generator for pitching", ZERO);
-		desc.AddMember(&CFlightController::yawAccel, 'yaw', "yaw", "Yaw acceleration", "Point force generator for yawing", ZERO);
-		desc.AddMember(&CFlightController::maxRoll, 'mxrl', "maxRoll", "Max Roll rate", "Max roll rate in degrees / sec", ZERO);
-		desc.AddMember(&CFlightController::maxPitch, 'mxpt', "maxPitch", "Max Pitch rate", "Max pitch rate in degrees / sec", ZERO);
-		desc.AddMember(&CFlightController::maxYaw, 'mxyw', "maxYaw", "Max Yaw rate", "Max yaw rate in degrees / sec", ZERO);
+		desc.AddMember(&CFlightController::fwdAccel, 'fwdr', "forwarddir", "Forward Direction Acceleration", "Point force generator on the forward direction", ZERO);
+		desc.AddMember(&CFlightController::bwdAccel, 'bwdr', "backwarddir", "Backward Direction Acceleration", "Point force generator on the backward direction", ZERO);
+		desc.AddMember(&CFlightController::leftAccel, 'lfdr', "leftdir", "Left Direction Acceleration", "Point force generator on the left direction", ZERO);
+		desc.AddMember(&CFlightController::rightAccel, 'rtdr', "rightdir", "Right Direction Acceleration", "Point force generator on the right direction", ZERO);
+		desc.AddMember(&CFlightController::upAccel, 'updr', "updir", "Upward Direction Acceleration", "Point force generator on the upward direction", ZERO);
+		desc.AddMember(&CFlightController::downAccel, 'dndr', "downdir", "Downward Direction Acceleration", "Point force generator on the downards direction", ZERO);
+		desc.AddMember(&CFlightController::rollAccel, 'roll', "rollaccel", "Roll Acceleration", "Point force generator for rolling", ZERO);
+		desc.AddMember(&CFlightController::pitchAccel, 'ptch', "pitch", "Pitch Acceleration", "Point force generator for pitching", ZERO);
+		desc.AddMember(&CFlightController::yawAccel, 'yaw', "yaw", "Yaw Acceleration", "Point force generator for yawing", ZERO);
+		desc.AddMember(&CFlightController::maxRoll, 'mxrl', "maxRoll", "Max Roll Rate", "Max roll rate in degrees / sec", ZERO);
+		desc.AddMember(&CFlightController::maxPitch, 'mxpt', "maxPitch", "Max Pitch Rate", "Max pitch rate in degrees / sec", ZERO);
+		desc.AddMember(&CFlightController::maxYaw, 'mxyw', "maxYaw", "Max Yaw Rate", "Max yaw rate in degrees / sec", ZERO);
+		desc.AddMember(&CFlightController::mouseSenseFactor, 'msf', "mouseSensFact", "Mouse Sensitivity Factor", "Adjusts mouse sensitivity", ZERO);
+		desc.AddMember(&CFlightController::jerkRate, 'jrk', "JerkRate", "Jerk (impulse Smoothing)", "Adjusts the force smoothing rate", ZERO);
 	}
 	virtual void ProcessEvent(const SEntityEvent& event) override;
 	virtual void Initialize() override;
@@ -60,19 +62,14 @@ private:
 	EFlightMode m_pFlightControllerState;
 
 	// struct to combine thruster axis and actuation, simplifying code
-	struct LinearAxisAccelParams {
-		std::string axisName;
-		float AccelAmount;
-	};
-
-	struct AngularAxisAccelParams {
+	struct AxisAccelParams {
 		std::string axisName;
 		float AccelAmount;
 	};
 	// Defining a list to receive the thrust directions dinamically
-	std::vector<LinearAxisAccelParams> LinearAxisAccelParamsList = {};
-	std::vector<AngularAxisAccelParams> RollAxisAccelParamsList = {};
-	std::vector<AngularAxisAccelParams> PitchYawAxisAccelParamsList = {};
+	std::vector<AxisAccelParams> LinearAxisAccelParamsList = {};
+	std::vector<AxisAccelParams> RollAxisAccelParamsList = {};
+	std::vector<AxisAccelParams> PitchYawAxisAccelParamsList = {};
 
 	// Axis Vector initializer
 	void InitializeAccelParamsVectors();
@@ -90,6 +87,9 @@ private:
 
 	// Flight Computations
 
+	// Adjusts the acceleration rate change over time 
+	Vec3 UpdateAccelerationWithJerk(const Vec3& currentAccel, const Vec3& targetAccel, float deltaTime);
+
 	// Scales the acceleration asked, according to input magnitude, taking into account the inputs pressed
 	Vec3 ScaleLinearAccel();
 	Vec3 ScaleRollAccel();
@@ -98,10 +98,13 @@ private:
 	// Convert rotation parameters to radians 
 	float DegreesToRadian(float degrees);
 
+	// Convert world coordinates to local coordinates
 	Vec3 WorldToLocal(const Vec3& localDirection);
 
+	float NormalizeInput(float inputValue, bool isMouse = false);
+
 	// Calculates the thrust force in Vec3, containing direction.
-	Vec3 AccelToThrust(Vec3 desiredLinearAccel);  
+	Vec3 AccelToImpulse(Vec3 desiredAccel);  
 
 	// Apply the calculations
 	void ProcessFlight();
@@ -119,6 +122,20 @@ private:
 	float maxRoll = 0.f;
 	float maxPitch = 0.f;
 	float maxYaw = 0.f;
+	float mouseSenseFactor = 0.f;
+	float jerkRate = 0.f;
+
+	Vec3 currentLinearAccel = Vec3(0.f, 0.f, 0.f);
+	Vec3 targetLinearAccel = Vec3(0.f, 0.f, 0.f);
+	Vec3 currentAngularAccel = Vec3(0.f, 0.f, 0.f);
+	Vec3 targetAngularAccel = Vec3(0.f, 0.f, 0.f);
+	
+
+	//Debug color
+	float color[4] = { 1, 0, 0, 1 };
+
+	const float MAX_INPUT_VALUE = 1.f; // Maximum clamped input value
+	const float MIN_INPUT_VALUE = -1.f; // Maximum clamped input value
 
 	// Thruster Reference
 	CShipThrusterComponent* m_pShipThrusterComponent = nullptr;

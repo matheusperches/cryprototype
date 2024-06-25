@@ -32,6 +32,7 @@ public:
 		desc.SetLabel("Thruster");
 		desc.SetComponentFlags({ IEntityComponent::EFlags::HideFromInspector });
 		desc.SetDescription("Contains thruster logic only.");
+		desc.AddMember(&CShipThrusterComponent::jerkRate, 'jerk', "JerkRate", "Jerk (impulse Smoothing)", "Adjusts the force smoothing rate", ZERO);
 	}
 	virtual void ProcessEvent(const SEntityEvent& event) override;
 	virtual void Initialize() override;
@@ -44,8 +45,11 @@ public:
 	};
 
 	// Flight Behavior
-	void ApplyLinearThrust(IPhysicalEntity* pPhysicalEntity, const Vec3& thrust);
-	void ApplyAngularThrust(IPhysicalEntity* pPhysicalEntity, const Vec3& thrust);
+	void ApplyLinearImpulse(IPhysicalEntity* pPhysicalEntity, const Vec3& linearImpulse);
+	void ApplyAngularImpulse(IPhysicalEntity* pPhysicalEntity, const Vec3& linearImpulse);
+
+	// Adjusts the acceleration rate change over time 
+	Vec3 UpdateAccelerationWithJerk(const Vec3& currentAccel, const Vec3& targetAccel, float deltaTime);
 
 protected:
 private:
@@ -55,10 +59,14 @@ private:
 	// Variables
 	bool hasGameStarted = false;
 	pe_action_impulse impulseAction;
+	float jerkRate = 0.f;
 
 	// Validator functions checking if the code can be run properly.
 	bool Validator();
 
 	// Thruster state
 	EShipThrusterState m_currentThrusterState;
+
+	//Debug color
+	float color[4] = { 1, 0, 0, 1 };
 };

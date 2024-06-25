@@ -69,28 +69,42 @@ bool CShipThrusterComponent::Validator()
 	else return false;
 }
 
-void CShipThrusterComponent::ApplyLinearThrust(IPhysicalEntity* pPhysicalEntity, const Vec3& thrust)
+Vec3 CShipThrusterComponent::UpdateAccelerationWithJerk(const Vec3& currentAccel, const Vec3& targetAccel, float deltaTime)
+{
+	Vec3 deltaAccel = targetAccel - currentAccel;
+	Vec3 jerk = deltaAccel * jerkRate * deltaTime;
+	Vec3 newAccel = currentAccel + jerk;
+
+	// Optional: Clamp newAccel to targetAccel to prevent overshooting
+	if ((deltaAccel.dot(jerk) < 0.f))
+	{
+		newAccel = targetAccel;
+	}
+
+	return newAccel;
+}
+
+void CShipThrusterComponent::ApplyLinearImpulse(IPhysicalEntity* pPhysicalEntity, const Vec3& linearImpulse)
 {
 	if (Validator())
 	{
 		if (pPhysicalEntity)
 		{
 			// Apply the force at the specified position and rotation
-			impulseAction.impulse = thrust;
+			impulseAction.impulse = linearImpulse;
 			pPhysicalEntity->Action(&impulseAction);
-			//tParams.LogTransform();
 		}
 	}
 }
 
-void CShipThrusterComponent::ApplyAngularThrust(IPhysicalEntity* pPhysicalEntity, const Vec3& torque)
+void CShipThrusterComponent::ApplyAngularImpulse(IPhysicalEntity* pPhysicalEntity, const Vec3& angularImpulse)
 {
 	if (Validator())
 	{
 		if (pPhysicalEntity)
 		{
 			pe_action_impulse torqueAction;
-			torqueAction.angImpulse = torque;
+			torqueAction.angImpulse = angularImpulse;
 			pPhysicalEntity->Action(&torqueAction);
 		}
 	}
