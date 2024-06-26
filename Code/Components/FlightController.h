@@ -18,6 +18,22 @@ enum class EFlightMode
 	Newtonian,
 };
 
+enum class AccelState
+{
+	Idle,
+	Accelerating,
+	Decelerating
+};
+
+struct AccelerationData
+{
+	float Jerk;
+	float JerkDecelRate;
+	Vec3 currentAccel;
+	Vec3 targetAccel;
+	AccelState state;
+};
+
 class CFlightController final : public IEntityComponent
 {
 public:
@@ -34,10 +50,8 @@ public:
 		desc.SetDescription("Executes flight calculations.");
 		desc.AddMember(&CFlightController::fwdAccel, 'fwdr', "forwarddir", "Forward Direction Acceleration", "Point force generator on the forward direction", ZERO);
 		desc.AddMember(&CFlightController::bwdAccel, 'bwdr', "backwarddir", "Backward Direction Acceleration", "Point force generator on the backward direction", ZERO);
-		desc.AddMember(&CFlightController::leftAccel, 'lfdr', "leftdir", "Left Direction Acceleration", "Point force generator on the left direction", ZERO);
-		desc.AddMember(&CFlightController::rightAccel, 'rtdr', "rightdir", "Right Direction Acceleration", "Point force generator on the right direction", ZERO);
-		desc.AddMember(&CFlightController::upAccel, 'updr', "updir", "Upward Direction Acceleration", "Point force generator on the upward direction", ZERO);
-		desc.AddMember(&CFlightController::downAccel, 'dndr', "downdir", "Downward Direction Acceleration", "Point force generator on the downards direction", ZERO);
+		desc.AddMember(&CFlightController::leftRightAccel, 'lrdr', "leftright", "Left/Right Acceleration", "Point force generator on the left direction", ZERO);
+		desc.AddMember(&CFlightController::upDownAccel, 'uddr', "updown", "Up/Down Direction Acceleration", "Point force generator on the up / down direction", ZERO);
 		desc.AddMember(&CFlightController::rollAccel, 'roll', "rollaccel", "Roll Acceleration", "Point force generator for rolling", ZERO);
 		desc.AddMember(&CFlightController::pitchAccel, 'ptch', "pitch", "Pitch Acceleration", "Point force generator for pitching", ZERO);
 		desc.AddMember(&CFlightController::yawAccel, 'yaw', "yaw", "Yaw Acceleration", "Point force generator for yawing", ZERO);
@@ -45,7 +59,12 @@ public:
 		desc.AddMember(&CFlightController::maxPitch, 'mxpt', "maxPitch", "Max Pitch Rate", "Max pitch rate in degrees / sec", ZERO);
 		desc.AddMember(&CFlightController::maxYaw, 'mxyw', "maxYaw", "Max Yaw Rate", "Max yaw rate in degrees / sec", ZERO);
 		desc.AddMember(&CFlightController::mouseSenseFactor, 'msf', "mouseSensFact", "Mouse Sensitivity Factor", "Adjusts mouse sensitivity", ZERO);
-		desc.AddMember(&CFlightController::jerkRate, 'jrk', "JerkRate", "Jerk (impulse Smoothing)", "Adjusts the force smoothing rate", ZERO);
+		desc.AddMember(&CFlightController::linearJerkRate, 'lnjk', "linearjerk", "Linear Jerk", "Adjusts the force smoothing rate", ZERO);
+		desc.AddMember(&CFlightController::linearJerkDecelRate, 'lndr', "linearjerkdecel", "Linear Jerk decel rate", "Adjusts the decel rate", ZERO);
+		desc.AddMember(&CFlightController::RollJerkRate, 'rljk', "rolljerkrate", "Roll Jerk", "Adjusts the force smoothing rate", ZERO);
+		desc.AddMember(&CFlightController::RollJerkDecelRate, 'rldr', "rolljerkdecel", "Roll Jerk decel rate", "Adjusts the decel rate", ZERO);
+		desc.AddMember(&CFlightController::PitchYawJerkRate, 'pyjk', "pyjerkrate", "Pitch/Yaw Jerk", "Adjusts the force smoothing rate", ZERO);
+		desc.AddMember(&CFlightController::PitchYawJerkDecelRate, 'pydr', "pyjerkdecel", "Pitch/Yaw Jerk decel rate", "Adjusts the decel rate", ZERO);
 	}
 	virtual void ProcessEvent(const SEntityEvent& event) override;
 	virtual void Initialize() override;
@@ -74,6 +93,9 @@ private:
 	// Axis Vector initializer
 	void InitializeAccelParamsVectors();
 
+	// AccelerationData struct jerk initializer
+	void InitializeJerkParams();
+
 	// Receive the input map from VehicleComponent
 	void GetVehicleInputManager();
 
@@ -88,12 +110,14 @@ private:
 	// Flight Computations
 
 	// Adjusts the acceleration rate change over time 
-	Vec3 UpdateAccelerationWithJerk(const Vec3& currentAccel, const Vec3& targetAccel, float deltaTime);
+	Vec3 UpdateAccelerationWithJerk(AccelerationData& accelData, float jerkRate, float jerkDecelRate, float deltaTime);
 
 	// Scales the acceleration asked, according to input magnitude, taking into account the inputs pressed
 	Vec3 ScaleLinearAccel();
 	Vec3 ScaleRollAccel();
 	Vec3 ScalePitchYawAccel();
+
+	void UpdateAccelerationState(AccelerationData& accelData, const Vec3& targetAccel);
 
 	// Convert rotation parameters to radians 
 	float DegreesToRadian(float degrees);
@@ -112,10 +136,8 @@ private:
 	// Performance variables
 	float fwdAccel = 0.f;
 	float bwdAccel = 0.f;
-	float leftAccel = 0.f;
-	float rightAccel = 0.f;
-	float upAccel = 0.f;
-	float downAccel = 0.f;
+	float leftRightAccel = 0.f;
+	float upDownAccel = 0.f;
 	float rollAccel = 0.f;
 	float pitchAccel = 0.f;
 	float yawAccel = 0.f;
@@ -123,12 +145,23 @@ private:
 	float maxPitch = 0.f;
 	float maxYaw = 0.f;
 	float mouseSenseFactor = 0.f;
-	float jerkRate = 0.f;
+	float linearJerkRate = 0.f;
+	float linearJerkDecelRate = 0.f;
+	float RollJerkRate = 0.f;
+	float RollJerkDecelRate = 0.f;
+	float PitchYawJerkRate = 0.f;
+	float PitchYawJerkDecelRate = 0.f;
 
-	Vec3 currentLinearAccel = Vec3(0.f, 0.f, 0.f);
+	// Acceleration data trackers
 	Vec3 targetLinearAccel = Vec3(0.f, 0.f, 0.f);
 	Vec3 currentAngularAccel = Vec3(0.f, 0.f, 0.f);
 	Vec3 targetAngularAccel = Vec3(0.f, 0.f, 0.f);
+
+	// Accel data structs. Jerk values set in Initialize() retrieved from AddMember
+
+	AccelerationData linearAccelData;
+	AccelerationData rollAccelData;
+	AccelerationData pitchYawAccelData;
 	
 
 	//Debug color

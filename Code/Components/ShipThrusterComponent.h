@@ -32,7 +32,6 @@ public:
 		desc.SetLabel("Thruster");
 		desc.SetComponentFlags({ IEntityComponent::EFlags::HideFromInspector });
 		desc.SetDescription("Contains thruster logic only.");
-		desc.AddMember(&CShipThrusterComponent::jerkRate, 'jerk', "JerkRate", "Jerk (impulse Smoothing)", "Adjusts the force smoothing rate", ZERO);
 	}
 	virtual void ProcessEvent(const SEntityEvent& event) override;
 	virtual void Initialize() override;

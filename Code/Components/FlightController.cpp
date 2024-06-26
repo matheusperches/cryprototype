@@ -51,12 +51,16 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 	{
 	case EEntityEvent::GameplayStarted:
 	{
-		hasGameStarted = true;
 		InitializeAccelParamsVectors();
+		InitializeJerkParams();
+
+		CryLog("Linear Jerk: %f", linearAccelData.Jerk);
+		CryLog("Linear JerkDecelRate: %f", linearAccelData.JerkDecelRate);
 	}
 	break;
 	case EEntityEvent::Update:
 	{
+		hasGameStarted = true;
 		if (hasGameStarted)
 		{
 			// Execute Flight controls
@@ -101,10 +105,10 @@ void CFlightController::InitializeAccelParamsVectors()
 	LinearAxisAccelParamsList = {
 		{"accel_forward", fwdAccel},
 		{"accel_backward", bwdAccel},
-		{"accel_left", leftAccel},
-		{"accel_right", rightAccel},
-		{"accel_up", upAccel},
-		{"accel_down", downAccel},
+		{"accel_left", leftRightAccel},
+		{"accel_right", leftRightAccel},
+		{"accel_up", upDownAccel},
+		{"accel_down", upDownAccel},
 	};
 	RollAxisAccelParamsList = {
 		{"roll_left", radRollAccel},
@@ -114,6 +118,16 @@ void CFlightController::InitializeAccelParamsVectors()
 		{"yaw", radYawAccel},
 		{"pitch", radPitchAccel},
 	};
+}
+
+void CFlightController::InitializeJerkParams()
+{
+	linearAccelData.Jerk = linearJerkRate;
+	linearAccelData.JerkDecelRate = linearJerkDecelRate;
+	rollAccelData.Jerk = RollJerkRate;
+	rollAccelData.JerkDecelRate = RollJerkDecelRate;
+	pitchYawAccelData.Jerk = PitchYawJerkRate;
+	pitchYawAccelData.JerkDecelRate = PitchYawJerkDecelRate;
 }
 
 bool CFlightController::IsKeyPressed(const std::string& actionName)
@@ -144,23 +158,44 @@ float CFlightController::NormalizeInput(float inputValue, bool isMouse)
 	return CLAMP(inputValue, MIN_INPUT_VALUE, MAX_INPUT_VALUE);
 }
 
-Vec3 CFlightController::UpdateAccelerationWithJerk(const Vec3& currentAccel, const Vec3& targetAccel, float deltaTime)
+Vec3 CFlightController::UpdateAccelerationWithJerk(AccelerationData& accelData, float jerkRate, float jerkDecelRate, float deltaTime)
 {
-	Vec3 deltaAccel = targetAccel - currentAccel;
-	/*
-	Vec3 jerk = deltaAccel * jerkRate * deltaTime;
-	Vec3 newAccel = currentAccel + jerk;
-	*/
+	Vec3 deltaAccel = accelData.targetAccel - accelData.currentAccel;
+	Vec3 jerk;
 
-	float scale = powf(fabs(deltaAccel.GetLength()), 0.5f);
-	Vec3 jerk = deltaAccel.GetNormalized() * scale * jerkRate * deltaTime;
+	switch (accelData.state)
+	{
+		case AccelState::Idle:
+		{
+			jerk = Vec3(0.f, 0.f, 0.f);
+			gEnv->pAuxGeomRenderer->Draw2dLabel(50, 120, 2, color, false, "idle!");
+			break;
+		}
+		case AccelState::Accelerating:
+		{
+			float scale = powf(fabs(deltaAccel.GetLength()), 0.5f);
+			jerk = deltaAccel.GetNormalized() * scale * jerkRate * deltaTime;
+			gEnv->pAuxGeomRenderer->Draw2dLabel(50, 140, 2, color, false, "accelerating!");
+			break;
+		}
+		case AccelState::Decelerating:
+		{
+			jerk = deltaAccel * jerkDecelRate * deltaTime;
+			gEnv->pAuxGeomRenderer->Draw2dLabel(50, 160, 2, color, false, "decelerating!");
+			break;
+		}
+	}
 
-	Vec3 newAccel = currentAccel + jerk;
+	Vec3 newAccel = accelData.currentAccel + jerk;
+
+	//gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, color, false, "newAccel: x= %f, y= %f, z=%f", newAccel.x, newAccel.y, newAccel.z);
+
 
 	// Optional: Clamp newAccel to targetAccel to prevent overshooting
 	if ((deltaAccel.dot(jerk) < 0.f))
 	{
-		newAccel = targetAccel;
+		newAccel = accelData.targetAccel;
+		accelData.state = AccelState::Idle;
 	}
 
 	return newAccel;
@@ -211,6 +246,9 @@ Vec3 CFlightController::ScaleLinearAccel()
 
 	// Scale accelDirection by the dot product to get the final scaled acceleration direction
 	Vec3 scaledAccelDirection = accelDirection * dotProduct;
+
+	// Populate the accel data
+	linearAccelData.targetAccel = scaledAccelDirection;
 	
 	return scaledAccelDirection;   // Return the scaled acceleration direction vector
 }
@@ -252,6 +290,9 @@ Vec3 CFlightController::ScaleRollAccel()
 	// Log the scaled acceleration direction for debugging purposes
 	//CryLog("scaledAccelDirection: x= %f, y = %f, z = %f", scaledAccelDirection.x, scaledAccelDirection.y, scaledAccelDirection.z);
 
+	// Populate the accel data
+	rollAccelData.targetAccel = scaledAccelDirection;
+
 	return scaledAccelDirection;   // Return the scaled acceleration direction vector
 }
 
@@ -291,10 +332,10 @@ Vec3 CFlightController::ScalePitchYawAccel()
 	// Scale accelDirection by the dot product to get the final scaled acceleration direction
 	Vec3 scaledAccelDirection = accelDirection * dotProduct;
 
-	// Log the scaled acceleration direction for debugging purposes
-	//CryLog("scaledAccelDirection: x= %f, y = %f, z = %f", scaledAccelDirection.x, scaledAccelDirection.y, scaledAccelDirection.z);
+	// Populate the accel data
+	pitchYawAccelData.targetAccel = scaledAccelDirection;
 
-	return scaledAccelDirection;   // Return the scaled acceleration direction vector
+	return AccelToImpulse(scaledAccelDirection);   // Return the scaled acceleration direction vector
 }
 
 float CFlightController::DegreesToRadian(float degrees)
@@ -320,31 +361,38 @@ Vec3 CFlightController::AccelToImpulse(Vec3 desiredAccel)
 	return Vec3(0.f, 0.f, 0.f);
 }
 
+void CFlightController::UpdateAccelerationState(AccelerationData& accelData, const Vec3& targetAccel)
+{
+	accelData.targetAccel = targetAccel;
+	if (targetAccel.IsZero())
+	{
+		accelData.state = AccelState::Decelerating;
+	}
+	else
+	{
+		accelData.state = AccelState::Accelerating;
+	}
+}
+
 void CFlightController::ProcessFlight()
 {
-	Vec3 requestedLinearAccelDir = ScaleLinearAccel();
-	Vec3 linearThrust = AccelToImpulse(requestedLinearAccelDir);
+	Vec3 targetLinearAccel = ScaleLinearAccel();
+	Vec3 targetRollAccelDir = ScaleRollAccel();
+	Vec3 targetPitchYawAccel = ScalePitchYawAccel();
 
-	Vec3 requestedRollAccelDir = ScaleRollAccel();
-	Vec3 rollThrust = AccelToImpulse(requestedRollAccelDir);
+	UpdateAccelerationState(linearAccelData, targetLinearAccel);
+	UpdateAccelerationState(rollAccelData, targetRollAccelDir);
+	UpdateAccelerationState(pitchYawAccelData, targetPitchYawAccel);
 
-	Vec3 requestedPitchYawAccelDir = ScalePitchYawAccel();
-	Vec3 pitchYawThrust = AccelToImpulse(requestedPitchYawAccelDir);
+	linearAccelData.currentAccel = UpdateAccelerationWithJerk(linearAccelData, linearAccelData.Jerk, linearAccelData.JerkDecelRate, gEnv->pTimer->GetFrameTime());
+	m_pShipThrusterComponent->ApplyLinearImpulse(physEntity, AccelToImpulse(linearAccelData.currentAccel));
 
-	currentLinearAccel = UpdateAccelerationWithJerk(currentLinearAccel, linearThrust, gEnv->pTimer->GetFrameTime());
-	currentAngularAccel = UpdateAccelerationWithJerk(currentAngularAccel, pitchYawThrust, gEnv->pTimer->GetFrameTime());
+	rollAccelData.currentAccel = UpdateAccelerationWithJerk(rollAccelData, rollAccelData.Jerk, rollAccelData.JerkDecelRate, gEnv->pTimer->GetFrameTime());
+	m_pShipThrusterComponent->ApplyAngularImpulse(physEntity, AccelToImpulse(rollAccelData.currentAccel));
 
-	m_pShipThrusterComponent->ApplyLinearImpulse(physEntity, currentLinearAccel);
-	m_pShipThrusterComponent->ApplyAngularImpulse(physEntity, rollThrust);
-	m_pShipThrusterComponent->ApplyAngularImpulse(physEntity, pitchYawThrust);
+	pitchYawAccelData.currentAccel = UpdateAccelerationWithJerk(pitchYawAccelData, pitchYawAccelData.Jerk, pitchYawAccelData.JerkDecelRate, gEnv->pTimer->GetFrameTime());
+	m_pShipThrusterComponent->ApplyAngularImpulse(physEntity, AccelToImpulse(pitchYawAccelData.currentAccel));
 
-
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 120, 2, color, false, "currentLinearAccel: x= %f, y = %f, z = %f", currentLinearAccel.x, currentLinearAccel.y, currentLinearAccel.z);
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 140, 2, color, false, "currentAngularAccel: x= %f, y = %f, z = %f", currentAngularAccel.x, currentAngularAccel.y, currentAngularAccel.z);
-
-	/*
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 120, 2, color, false, "linearThrust: x= %f, y = %f, z = %f", linearThrust.x, linearThrust.y, linearThrust.z);
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 140, 2, color, false, "pitchYawThrust: x= %f, y = %f, z = %f", pitchYawThrust.x, pitchYawThrust.y, pitchYawThrust.z);
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 160, 2, color, false, "rollThrust: x= %f, y = %f, z = %f", rollThrust.x, rollThrust.y, rollThrust.z);
-	*/
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 100, 2, color, false, "linearAccelData.currentAccel: x= %f, y = %f, z = %f", linearAccelData.currentAccel.x, linearAccelData.currentAccel.y, linearAccelData.currentAccel.z);
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 80, 2, color, false, "rollAccelData.currentAccel: x= %f, y = %f, z = %f", rollAccelData.currentAccel.x, rollAccelData.currentAccel.y, rollAccelData.currentAccel.z);
 }

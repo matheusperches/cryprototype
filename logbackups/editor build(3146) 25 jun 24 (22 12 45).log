@@ -1,0 +1,1542 @@
+BackupNameAttachment=" Build(3146) 25 Jun 24 (22 12 45)"  -- used by backup system
+
+Log Started at Tue Jun 25 22:12:45 2024
+Built on May 18 2022 02:19:29
+Built for: Windows Version: 0x00000600
+Command Line: "C:/Users/mathe/AppData/Local/Programs/CRYENGINE Launcher/Engines/crytek/cryengine-57-lts/5.7.1/bin/win_x64/Sandbox.exe" -project "C:/Users/mathe/Documents/CRYENGINE Projects/cryprototype/Code/../Game.cryproject"
+Executable: C:\Users\mathe\AppData\Local\Programs\CRYENGINE Launcher\Engines\crytek\cryengine-57-lts\5.7.1\bin\win_x64\Sandbox.exe
+FileVersion: 5.7.1.3146
+ProductVersion: 5.7.1.3146
+Loading Config file %ENGINEROOT%/system.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\system.cfg)
+[Warning] Cannot open Pak file c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\config.pak
+ 
+con_debug=0 [  ]
+con_display_last_messages=0 [  ]
+con_font_size=14 [  ]
+con_line_buffer_size=1000 [  ]
+con_restricted=0 [ RESTRICTEDMODE ]
+con_showonload=0 [  ]
+ 
+con_debug=0 [  ]
+con_display_last_messages=0 [  ]
+con_font_size=14 [  ]
+con_line_buffer_size=1000 [  ]
+con_restricted=0 [ RESTRICTEDMODE ]
+con_showonload=0 [  ]
+ 
+con_debug=0 [  ]
+ 
+con_debug=0 [  ]
+Project cryprototype
+Using Project Folder C:/Users/mathe/Documents/CRYENGINE Projects/cryprototype
+Using Engine Folder C:\Users\mathe\AppData\Local\Programs\CRYENGINE Launcher\Engines\crytek\cryengine-57-lts\5.7.1/
+Using Asset Folder c:/users/mathe/documents/cryengine projects/cryprototype/assets
+
+Total number of logical processors: 16
+Number of available logical processors: 16
+Total number of system cores: 8
+Number of cores available to process: 8
+ 
+Processor 0:
+  CPU: AMD AMD Ryzen 7 5800X3D 8-Core Processor           
+  Family: 15, Model: 1, Stepping: 2, FPU: On-Chip
+  Features: FP16, SSE, SSE2, SSE3, SSE4.2, AVX, AVX2, FMA3
+ 
+Processor 1:
+  CPU: AMD AMD Ryzen 7 5800X3D 8-Core Processor           
+  Family: 15, Model: 1, Stepping: 2, FPU: On-Chip
+  Features: FP16, SSE, SSE2, SSE3, SSE4.2, AVX, AVX2, FMA3
+ 
+Processor 2:
+  CPU: AMD AMD Ryzen 7 5800X3D 8-Core Processor           
+  Family: 15, Model: 1, Stepping: 2, FPU: On-Chip
+  Features: FP16, SSE, SSE2, SSE3, SSE4.2, AVX, AVX2, FMA3
+ 
+Processor 3:
+  CPU: AMD AMD Ryzen 7 5800X3D 8-Core Processor           
+  Family: 15, Model: 1, Stepping: 2, FPU: On-Chip
+  Features: FP16, SSE, SSE2, SSE3, SSE4.2, AVX, AVX2, FMA3
+ 
+Processor 4:
+  CPU: AMD AMD Ryzen 7 5800X3D 8-Core Processor           
+  Family: 15, Model: 1, Stepping: 2, FPU: On-Chip
+  Features: FP16, SSE, SSE2, SSE3, SSE4.2, AVX, AVX2, FMA3
+ 
+Processor 5:
+  CPU: AMD AMD Ryzen 7 5800X3D 8-Core Processor           
+  Family: 15, Model: 1, Stepping: 2, FPU: On-Chip
+  Features: FP16, SSE, SSE2, SSE3, SSE4.2, AVX, AVX2, FMA3
+ 
+Processor 6:
+  CPU: AMD AMD Ryzen 7 5800X3D 8-Core Processor           
+  Family: 15, Model: 1, Stepping: 2, FPU: On-Chip
+  Features: FP16, SSE, SSE2, SSE3, SSE4.2, AVX, AVX2, FMA3
+ 
+Processor 7:
+  CPU: AMD AMD Ryzen 7 5800X3D 8-Core Processor           
+  Family: 15, Model: 1, Stepping: 2, FPU: On-Chip
+  Features: FP16, SSE, SSE2, SSE3, SSE4.2, AVX, AVX2, FMA3
+ 
+<22:12:45> creating CVarGroups from directory 'assets/Config/CVarGroups' ...
+<22:12:45> creating CVarGroups from directory '%ENGINE%/Config/CVarGroups' ...
+<22:12:45> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_full.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_full.cfg)
+<22:12:45> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_gameeffects.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_gameeffects.cfg)
+<22:12:45> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_light.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_light.cfg)
+<22:12:45> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_objectdetail.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_objectdetail.cfg)
+<22:12:45> [Error] [CVARS]: [MISSING] [r_UseZPass] specified in console variable group [sys_spec_objectdetail] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_MeshPoolSize] specified in console variable group [sys_spec_objectdetail] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_MeshInstancePoolSize] specified in console variable group [sys_spec_objectdetail] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [e_StreamCgfPoolSize] specified in console variable group [sys_spec_objectdetail] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [e_GeomCacheBufferSize] specified in console variable group [sys_spec_objectdetail] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_UseZPass] specified in console variable group [sys_spec_objectdetail] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_MeshPoolSize] specified in console variable group [sys_spec_objectdetail] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_MeshInstancePoolSize] specified in console variable group [sys_spec_objectdetail] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [e_StreamCgfPoolSize] specified in console variable group [sys_spec_objectdetail] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [e_GeomCacheBufferSize] specified in console variable group [sys_spec_objectdetail] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [ca_FacialAnimationRadius] specified in console variable group [sys_spec_objectdetail] = [7], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [ca_StreamCHR] specified in console variable group [sys_spec_objectdetail] = [7], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [ca_FacialAnimationRadius] specified in console variable group [sys_spec_objectdetail] = [8], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [ca_StreamCHR] specified in console variable group [sys_spec_objectdetail] = [8], but missing from default group
+<22:12:45> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_particles.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_particles.cfg)
+<22:12:45> [Error] [CVARS]: [MISSING] [e_ParticlesPoolSize] specified in console variable group [sys_spec_particles] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [e_ParticlesVertexPoolSize] specified in console variable group [sys_spec_particles] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [e_ParticlesPoolSize] specified in console variable group [sys_spec_particles] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [e_ParticlesVertexPoolSize] specified in console variable group [sys_spec_particles] = [6], but missing from default group
+<22:12:45> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_physics.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_physics.cfg)
+<22:12:45> [Error] [CVARS]: [MISSING] [p_num_threads] specified in console variable group [sys_spec_physics] = [7], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [p_num_threads] specified in console variable group [sys_spec_physics] = [8], but missing from default group
+<22:12:45> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_postprocessing.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_postprocessing.cfg)
+<22:12:45> [Error] [CVARS]: [MISSING] [r_HDRBloomQuality] specified in console variable group [sys_spec_postprocessing] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_FlareHQShafts] specified in console variable group [sys_spec_postprocessing] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_AntiAliasingMode] specified in console variable group [sys_spec_postprocessing] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_HDRBloomQuality] specified in console variable group [sys_spec_postprocessing] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_FlareHQShafts] specified in console variable group [sys_spec_postprocessing] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_AntiAliasingMode] specified in console variable group [sys_spec_postprocessing] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_HDRBloomQuality] specified in console variable group [sys_spec_postprocessing] = [7], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_FlareHQShafts] specified in console variable group [sys_spec_postprocessing] = [7], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_HDRBloomQuality] specified in console variable group [sys_spec_postprocessing] = [8], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_FlareHQShafts] specified in console variable group [sys_spec_postprocessing] = [8], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_AntiAliasingMode] specified in console variable group [sys_spec_postprocessing] = [8], but missing from default group
+<22:12:45> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_quality.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_quality.cfg)
+<22:12:45> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_shading.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_shading.cfg)
+<22:12:45> [Error] [CVARS]: [MISSING] [r_SSDO] specified in console variable group [sys_spec_shading] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_SSDOColorBleeding] specified in console variable group [sys_spec_shading] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_volumetricfogtexdepth] specified in console variable group [sys_spec_shading] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_volumetricfogtexscale] specified in console variable group [sys_spec_shading] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_DeferredShadingTiled] specified in console variable group [sys_spec_shading] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [e_svoTI_NumStreamingThreads] specified in console variable group [sys_spec_shading] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_SSDO] specified in console variable group [sys_spec_shading] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_volumetricfogtexdepth] specified in console variable group [sys_spec_shading] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_volumetricfogtexscale] specified in console variable group [sys_spec_shading] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_DeferredShadingTiled] specified in console variable group [sys_spec_shading] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [e_svoTI_NumStreamingThreads] specified in console variable group [sys_spec_shading] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_SSDO] specified in console variable group [sys_spec_shading] = [7], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_volumetricfogtexdepth] specified in console variable group [sys_spec_shading] = [7], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_volumetricfogtexscale] specified in console variable group [sys_spec_shading] = [7], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [e_svoTI_NumStreamingThreads] specified in console variable group [sys_spec_shading] = [7], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_SSDO] specified in console variable group [sys_spec_shading] = [8], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_volumetricfogtexdepth] specified in console variable group [sys_spec_shading] = [8], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_volumetricfogtexscale] specified in console variable group [sys_spec_shading] = [8], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [e_svoTI_NumStreamingThreads] specified in console variable group [sys_spec_shading] = [8], but missing from default group
+<22:12:45> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_shadows.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_shadows.cfg)
+<22:12:45> [Error] [CVARS]: [MISSING] [q_ShaderShadow] specified in console variable group [sys_spec_shadows] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_ShadowsScreenSpace] specified in console variable group [sys_spec_shadows] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [e_ShadowsClouds] specified in console variable group [sys_spec_shadows] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_ShadowTexFormat] specified in console variable group [sys_spec_shadows] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [q_ShaderShadow] specified in console variable group [sys_spec_shadows] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_ShadowsScreenSpace] specified in console variable group [sys_spec_shadows] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [e_ShadowsClouds] specified in console variable group [sys_spec_shadows] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_ShadowTexFormat] specified in console variable group [sys_spec_shadows] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [q_ShaderShadow] specified in console variable group [sys_spec_shadows] = [7], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_ShadowsScreenSpace] specified in console variable group [sys_spec_shadows] = [7], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [e_ShadowsClouds] specified in console variable group [sys_spec_shadows] = [7], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_ShadowsStaticMap] specified in console variable group [sys_spec_shadows] = [7], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [q_ShaderShadow] specified in console variable group [sys_spec_shadows] = [8], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_ShadowsScreenSpace] specified in console variable group [sys_spec_shadows] = [8], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [e_ShadowsClouds] specified in console variable group [sys_spec_shadows] = [8], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_ShadowsStaticMap] specified in console variable group [sys_spec_shadows] = [8], but missing from default group
+<22:12:45> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_sound.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_sound.cfg)
+<22:12:45> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_texture.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_texture.cfg)
+<22:12:45> [Error] [CVARS]: [MISSING] [r_texturesstreaming] specified in console variable group [sys_spec_texture] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_texturesstreampooldefragmentation] specified in console variable group [sys_spec_texture] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_buffer_banksize] specified in console variable group [sys_spec_texture] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_buffer_pool_defrag_static] specified in console variable group [sys_spec_texture] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_buffer_pool_defrag_dynamic] specified in console variable group [sys_spec_texture] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_buffer_pool_defrag_max_moves] specified in console variable group [sys_spec_texture] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_TexturesstreamingMinUsableMips] specified in console variable group [sys_spec_texture] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_TexturesStreamingSkipMips] specified in console variable group [sys_spec_texture] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_TexturesStreamPoolSize] specified in console variable group [sys_spec_texture] = [5], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_texturesstreaming] specified in console variable group [sys_spec_texture] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_texturesstreampooldefragmentation] specified in console variable group [sys_spec_texture] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_buffer_banksize] specified in console variable group [sys_spec_texture] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_buffer_pool_defrag_static] specified in console variable group [sys_spec_texture] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_buffer_pool_defrag_dynamic] specified in console variable group [sys_spec_texture] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_buffer_pool_defrag_max_moves] specified in console variable group [sys_spec_texture] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_TexturesstreamingMinUsableMips] specified in console variable group [sys_spec_texture] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_TexturesStreamingSkipMips] specified in console variable group [sys_spec_texture] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_TexturesStreamPoolSize] specified in console variable group [sys_spec_texture] = [6], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_texturesstreaming] specified in console variable group [sys_spec_texture] = [7], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_TexturesstreamingMinUsableMips] specified in console variable group [sys_spec_texture] = [7], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_TexturesStreamingSkipMips] specified in console variable group [sys_spec_texture] = [7], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_TexturesStreamPoolSize] specified in console variable group [sys_spec_texture] = [7], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_texturesstreaming] specified in console variable group [sys_spec_texture] = [8], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_TexturesstreamingMinUsableMips] specified in console variable group [sys_spec_texture] = [8], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_TexturesStreamingSkipMips] specified in console variable group [sys_spec_texture] = [8], but missing from default group
+<22:12:45> [Error] [CVARS]: [MISSING] [r_TexturesStreamPoolSize] specified in console variable group [sys_spec_texture] = [8], but missing from default group
+<22:12:45> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_textureresolution.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_textureresolution.cfg)
+<22:12:45> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_volumetriceffects.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_volumetriceffects.cfg)
+<22:12:45> Loading Config file %ENGINE%/Config/CVarGroups/sys_spec_water.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\cvargroups\sys_spec_water.cfg)
+<22:12:45> <ThreadConfigInfo>: Thread profile loaded: "pc_Common" (%engine%/config/engine_core.thread_config)  
+<22:12:45> [Warning] <ThreadConfigInfo>: (pc: 16 core) Unable to find platform config "pc_8". Next valid config found was pc_8.
+<22:12:45> <ThreadConfigInfo>: Thread profile loaded: "pc_8" (%engine%/config/engine_core.thread_config)  
+<22:12:45> <ThreadConfigInfo>: Thread profile loaded: "pc_Common" (%engine%/config/engine_sandbox.thread_config)  
+<22:12:45> [Warning] <ThreadConfigInfo>: (pc: 16 core) Unable to find platform config "pc_8". Next valid config found was pc_8.
+<22:12:45> <ThreadConfigInfo>: Thread profile loaded: "pc_8" (%engine%/config/engine_sandbox.thread_config)  
+<22:12:45> UDR initialization
+<22:12:45> Loading Module CryUDR.dll...
+<22:12:45> Initializing CryUDR done, MemUsage=328Kb
+<22:12:45> Windows 10 64 bit (build 10.0.22631)
+<22:12:45> User name: "mathe"
+<22:12:45> System language: Portuguese
+<22:12:45> Windows Directory: "C:\Windows"
+<22:12:45> Local time is 22:12:45 06/25/24, system running for 722 minutes
+<22:12:45> 32677MB physical memory installed, 22729MB available, 134217727MB virtual memory installed, 30 percent of memory in use
+<22:12:45> PageFile usage: 64MB, Working Set: 73MB, Peak PageFile usage: 64MB,
+<22:12:45> Current display mode is 2560x1440x32, (Unknown graphics card)
+<22:12:45> IBM enhanced (101/102-key) keyboard and 16+ button mouse installed
+<22:12:45> --------------------------------------------------------------------------------
+<22:12:45> Stream Engine Initialization
+<22:12:45> BuildTime: May 18 2022 02:19:29
+<22:12:45> Physics initialization
+<22:12:45> Loading Module CryPhysics.dll...
+<22:12:45> Initializing CryPhysics done, MemUsage=1924Kb
+<22:12:45> [Warning] Cannot open Pak file assets\localization\english_xml.pak
+<22:12:45> Localized language content(english) not available or modified from the original installation.
+<22:12:45> [Warning] Cannot open Pak file assets\localization\english.pak
+<22:12:45> Localized language content(english) not available or modified from the original installation.
+<22:12:45> [Warning] Cannot open Pak file assets\localization\english.pak
+<22:12:45> Localized language content(english) not available or modified from the original installation.
+<22:12:45> [Error] <Localization> No localization files found!
+<22:12:45> <Audio>: AudioSystem initialization
+<22:12:45> Loading Module CryAudioSystem.dll...
+<22:12:45> <Audio>: CryAudioImplSDLMixer loaded
+<22:12:45> Initializing CryAudioSystem done, MemUsage=3292Kb
+<22:12:45> C# Backend initialization
+<22:12:45> Loading Module CryMonoBridge.dll...
+<22:12:45> Initializing CryMonoBridge done, MemUsage=712Kb
+<22:12:45> Loading plug-in CryDefaultEntities
+<22:12:45> Loading plug-in CrySensorSystem
+<22:12:45> Loading plug-in CryScaleformSchematyc
+<22:12:45> Loading plug-in CryPerceptionSystem
+<22:12:45> Loading plug-in Game
+<22:12:45> [Warning] Unable to load cursor from texture file. Path %ENGINE%/EngineAssets/Textures/Cursor_Green.dds
+<22:12:45> Initialized hardware mouse (game is allowed to confine mouse to window)
+<22:12:45> Renderer initialization
+<22:12:45> Logging video adapters:
+<22:12:45> - NVIDIA GeForce RTX 4070 Ti (vendor = 0x10de, device = 0x2782)
+<22:12:45>   - Adapter index: 0
+<22:12:45>   - Dedicated video memory: 11996 MB
+<22:12:45>   - Feature level: D3D 11_1 (SM 5.x)
+<22:12:45>   - Displays connected: yes
+<22:12:45>   - Suitable rendering device: yes
+<22:12:45> - Microsoft Basic Render Driver (vendor = 0x1414, device = 0x008c)
+<22:12:45>   - Adapter index: 1
+<22:12:45>   - Dedicated video memory: 0 MB
+<22:12:45>   - Feature level: D3D 11_1 (SM 5.x)
+<22:12:45>   - Displays connected: no
+<22:12:45>   - Suitable rendering device: no
+<22:12:45> Loading Module CryRenderD3D11.dll...
+<22:12:45> CRenderer sizeof(Vec2f16)=4 sizeof(Vec3f16)=8
+<22:12:45> Initializing CryRenderD3D11 done, MemUsage=3684Kb
+<22:12:45> Initializing Direct3D and creating game window:
+<22:12:45> Direct3D driver is creating...
+<22:12:45> Crytek Direct3D driver version 3.00 (May 18 2022 <02:19:44>)
+<22:12:45> Creating window called 'cryprototype' (32x32)
+<22:12:45> D3D Adapter: Description: NVIDIA GeForce RTX 4070 Ti
+<22:12:45> D3D Adapter: Driver version (UMD): 32.00.15.5599
+<22:12:45> D3D Adapter: VendorId = 0x10DE
+<22:12:45> D3D Adapter: DeviceId = 0x2782
+<22:12:45> D3D Adapter: SubSysId = 0x40C61458
+<22:12:45> D3D Adapter: Revision = 161
+<22:12:45> NVAPI: API init ok (0)
+<22:12:45> NVAPI: Single GPU system
+<22:12:45> NVDBT supported
+<22:12:45> D3D Detected: NVIDIA video card
+<22:12:45> Active GPUs: 1
+<22:12:45> Using pixel texture formats:
+<22:12:45>   R8G8B8A8S, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   R8G8B8A8, mips, sRGB, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   A8, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   R8, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   R8S, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   R16, mips, RT (blendable) (multi-sampled), sample (comparable), gather (comparable)
+<22:12:45>   R16S, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   R16F, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   R32F, mips, RT (blendable) (multi-sampled), sample (comparable), gather (comparable)
+<22:12:45>   R8G8, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   R8G8S, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   R16G16, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   R16G16S, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   R16G16F, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   R32G32F, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   R11G11B10F, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   R10G10B10A2, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   R16G16B16A16, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   R16G16B16A16S, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   R16G16B16A16F, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   R32G32B32A32F, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   BC1, mips, sRGB, sample, gather
+<22:12:45>   BC2, mips, sRGB, sample, gather
+<22:12:45>   BC3, mips, sRGB, sample, gather
+<22:12:45>   BC4, mips, sample, gather
+<22:12:45>   BC4S, mips, sample, gather
+<22:12:45>   BC5, mips, sample, gather
+<22:12:45>   BC5S, mips, sample, gather
+<22:12:45>   BC6UH, mips, sample, gather
+<22:12:45>   BC6SH, mips, sample, gather
+<22:12:45>   BC7, mips, sRGB, sample, gather
+<22:12:45>   R9G9B9E5, mips, sample, gather
+<22:12:45>   D32FS8 (R32G8T), mips, DS (multi-sampled)
+<22:12:45>   D32F (R32T), mips, DS (multi-sampled)
+<22:12:45>   D24S8 (R24G8T), mips, DS (multi-sampled)
+<22:12:45>   D16 (R16T), mips, DS (multi-sampled)
+<22:12:45>   B5G6R5, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   B5G5R5, mips, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   B4G4R4A4, mips, sample, gather
+<22:12:45>   B8G8R8A8, mips, sRGB, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>   B8G8R8X8, mips, sRGB, RT (blendable) (multi-sampled), sample, gather
+<22:12:45>  Renderer DepthBits: 24
+<22:12:45>  ****** CryRender InfoDump ******
+<22:12:45>  Driver description: NVIDIA GeForce RTX 4070 Ti
+<22:12:45>  API Version: Direct3D 11.0
+<22:12:45>  Feature level: D3D 11_1
+<22:12:45>  Vertex Shaders version 5.1
+<22:12:45>  Pixel Shaders version 5.1
+<22:12:45>  Full stats: 
+<22:12:45>  Rasterizer: Hardware
+<22:12:45>  Current Resolution: 0x0x32 Windowed
+<22:12:45>  Occlusion queries: Supported
+<22:12:45>  Geometry instancing: Supported
+<22:12:45>  NormalMaps compression : Supported
+<22:12:45>  Gamma control: Hardware
+<22:12:45>  Used GeomInstancingThreshold is 8
+<22:12:45>  Shader model usage: 'SM.5.0'
+<22:12:45>  *****************************************
+<22:12:45>  
+<22:12:45> Init Shaders
+<22:12:45>  General shader quality: Medium
+<22:12:45>  Metal shader quality: Medium
+<22:12:45>  Glass shader quality: Medium
+<22:12:45>  Vegetation shader quality: Medium
+<22:12:45>  Ice shader quality: Medium
+<22:12:45>  Terrain shader quality: Medium
+<22:12:45>  Shadow shader quality: Medium
+<22:12:45>  Water shader quality: Medium
+<22:12:45>  FX shader quality: Medium
+<22:12:45>  PostProcess shader quality: Medium
+<22:12:45>  HDR shader quality: Medium
+<22:12:45> Render quality: VeryHigh
+<22:12:45> Init textures management (11996 Mb of video memory is available)...
+<22:12:45>   Enabling of textures streaming...
+<22:12:45>   Using 6536 Mb of textures pool for streaming...
+<22:12:45>   Video textures: Dynamic managed max size: 48 Mb
+<22:12:45>   Finished initializing textures streaming...
+<22:12:46> Initializing CryScaleformHelper done, MemUsage=0Kb
+<22:12:46> Using Scaleform GFx 3.3.94
+<22:12:46>   Using dynamic pool
+<22:12:46> [Warning] <ThreadInfo>: Unable to find config for thread:GFxVideo_Decoder_2
+<22:12:46> Font initialization
+<22:12:46> Loading Module CryFont.dll...
+<22:12:46> Using FreeType 2.5.5
+<22:12:46> Initializing CryFont done, MemUsage=240Kb
+<22:12:46> *** Init system render resources ***
+<22:12:46> Loading Module CryNetwork.dll...
+<22:12:46> [LagProfiles] Could not load "". 6 default profiles activated.
+<22:12:46> [Error] Scheduler policy name should not exceed 4 characters.
+<22:12:46> [net] Socket IO management: External [iocp], Internal [iocp]
+<22:12:46> network hostname: matheuspc
+<22:12:46>   ip:192.168.1.193
+<22:12:46> [Network Version]: PROFILE DEVELOPMENT BUILD
+<22:12:46> Initializing CryNetwork done, MemUsage=2376Kb
+<22:12:46> Loading Module CryMovie.dll...
+<22:12:46> Initializing CryMovie done, MemUsage=604Kb
+<22:12:46> Engine installed on drive: 
+<22:12:46> Time initialization
+<22:12:46> Input initialization
+<22:12:46> Loading Module CryInput.dll...
+<22:12:46> Initializing DirectInput
+
+<22:12:46> Initializing Keyboard
+
+<22:12:46> Input locale changed to 00010416
+<22:12:46> Initializing mouse
+<22:12:46> Initializing CryInput done, MemUsage=1616Kb
+<22:12:46> Initializing Animation System
+<22:12:46> Loading Module CryAnimation.dll...
+<22:12:46> Initializing CryAnimation done, MemUsage=2024Kb
+<22:12:46> Init 3D Engine
+<22:12:46> Loading Module Cry3DEngine.dll...
+<22:12:46> Sky light: Optical lookup tables loaded off disc.
+<22:12:46> Initializing Cry3DEngine done, MemUsage=5704Kb
+<22:12:46> Script System Initialization
+<22:12:46> Loading Module CryScriptSystem.dll...
+<22:12:46> [Warning] [Lua Error] Failed to load script file scripts/common.lua
+<22:12:46> Initializing CryScriptSystem done, MemUsage=776Kb
+<22:12:46> Schematyc initialization
+<22:12:46> Loading Module CrySchematyc.dll...
+<22:12:46> Initializing CrySchematyc done, MemUsage=1756Kb
+<22:12:46> Entity system initialization
+<22:12:46> Loading Module CryEntitySystem.dll...
+<22:12:46> Initializing CryEntitySystem done, MemUsage=2156Kb
+<22:12:46> LiveCreate initialization
+<22:12:46> LiveCreateHost not created, using NULL implementation.
+<22:12:46> Dynamic Response System initialization
+<22:12:46> Loading Module CryDynamicResponseSystem.dll...
+<22:12:46> Initializing CryDynamicResponseSystem done, MemUsage=688Kb
+<22:12:46> Loading Module CryFlowGraph.dll...
+<22:12:46> Successfully registered flownode 'AI:PerceptionState'
+<22:12:46> Successfully registered flownode 'AI:EventListener'
+<22:12:46> Initializing CryFlowGraph done, MemUsage=1024Kb
+<22:12:46> AI initialization
+<22:12:46> Loading Module CryAISystem.dll...
+<22:12:46> Initializing CryAISystem done, MemUsage=1528Kb
+<22:12:46> Initializing AI System
+<22:12:46> AI: [AISYSTEM] Initialization started.
+<22:12:46> [Error] [CVARS]: [DUPLICATE] CXConsole::RegisterString(const char*): variable [ai_DebugDrawNavigationQueryListFilterByCaller] is already registered
+<22:12:46> [Warning] XML reader: Can't open file (Scripts/AI/Navigation.xml)
+<22:12:46> [Warning] AI: Failed to open XML file 'Scripts/AI/Navigation.xml'...
+<22:12:46> [Warning] XML reader: Can't open file (Scripts/AI/Communication/CommunicationSystemConfiguration.xml)
+<22:12:46> [Warning] AI: Failed to open XML file 'Scripts/AI/Communication/CommunicationSystemConfiguration.xml'...
+<22:12:46> [Warning] XML reader: Can't open file (Scripts/AI/lookup.xml)
+<22:12:46> [Warning] [Lua Error] Failed to load script file scripts/ai/aiconfig.lua
+<22:12:46> Registering CentralInterestManager with EntitySystem
+<22:12:46> [Warning] XML reader: Can't open file (Libs/AITargetStimulusConfig.xml)
+<22:12:46> [Warning] AI: CTargetTrackManager::Init() Warning: Failed to load configuration file 'Libs/AITargetStimulusConfig.xml'
+<22:12:46> Modular behavior tree node 'Sequence' has a class size of 88 bytes.
+<22:12:46> Modular behavior tree node 'Selector' has a class size of 88 bytes.
+<22:12:46> Modular behavior tree node 'Priority' has a class size of 88 bytes.
+<22:12:46> Modular behavior tree node 'Parallel' has a class size of 96 bytes.
+<22:12:46> Modular behavior tree node 'Loop' has a class size of 88 bytes.
+<22:12:46> Modular behavior tree node 'LoopUntilSuccess' has a class size of 88 bytes.
+<22:12:46> Modular behavior tree node 'StateMachine' has a class size of 88 bytes.
+<22:12:46> Modular behavior tree node 'SendTransitionEvent' has a class size of 96 bytes.
+<22:12:46> Modular behavior tree node 'IfCondition' has a class size of 120 bytes.
+<22:12:46> Modular behavior tree node 'AssertCondition' has a class size of 104 bytes.
+<22:12:46> Modular behavior tree node 'Timeout' has a class size of 72 bytes.
+<22:12:46> Modular behavior tree node 'IfTime' has a class size of 120 bytes.
+<22:12:46> Modular behavior tree node 'Wait' has a class size of 72 bytes.
+<22:12:46> Modular behavior tree node 'MonitorCondition' has a class size of 104 bytes.
+<22:12:46> Modular behavior tree node 'WaitForEvent' has a class size of 104 bytes.
+<22:12:46> Modular behavior tree node 'WaitUntilTime' has a class size of 104 bytes.
+<22:12:46> Modular behavior tree node 'Fail' has a class size of 64 bytes.
+<22:12:46> Modular behavior tree node 'RandomGate' has a class size of 88 bytes.
+<22:12:46> Modular behavior tree node 'SendEvent' has a class size of 104 bytes.
+<22:12:46> Modular behavior tree node 'SuppressFailure' has a class size of 80 bytes.
+<22:12:46> Modular behavior tree node 'AssertTime' has a class size of 104 bytes.
+<22:12:46> Modular behavior tree node 'Halt' has a class size of 64 bytes.
+<22:12:46> Modular behavior tree node 'Log' has a class size of 72 bytes.
+<22:12:46> Modular behavior tree node 'Breakpoint' has a class size of 64 bytes.
+<22:12:46> Modular behavior tree node 'AimAroundWhileUsingAMachingGun' has a class size of 72 bytes.
+<22:12:46> Modular behavior tree node 'AnimationTagWrapper' has a class size of 96 bytes.
+<22:12:46> Modular behavior tree node 'CheckIfTargetCanBeReached' has a class size of 72 bytes.
+<22:12:46> Modular behavior tree node 'GoalPipe' has a class size of 72 bytes.
+<22:12:46> Modular behavior tree node 'LuaWrapper' has a class size of 112 bytes.
+<22:12:46> Modular behavior tree node 'SmartObjectStatesWrapper' has a class size of 96 bytes.
+<22:12:46> Modular behavior tree node 'ThrowGrenade' has a class size of 104 bytes.
+<22:12:46> Modular behavior tree node 'TurnBody' has a class size of 88 bytes.
+<22:12:46> Modular behavior tree node 'AdjustCoverStance' has a class size of 80 bytes.
+<22:12:46> Modular behavior tree node 'Aim' has a class size of 80 bytes.
+<22:12:46> Modular behavior tree node 'Animate' has a class size of 80 bytes.
+<22:12:46> Modular behavior tree node 'AssertLua' has a class size of 616 bytes.
+<22:12:46> Modular behavior tree node 'Bubble' has a class size of 88 bytes.
+<22:12:46> Modular behavior tree node 'ClearTargets' has a class size of 64 bytes.
+<22:12:46> Modular behavior tree node 'Communicate' has a class size of 112 bytes.
+<22:12:46> Modular behavior tree node 'ExecuteLua' has a class size of 616 bytes.
+<22:12:46> Modular behavior tree node 'GroupScope' has a class size of 96 bytes.
+<22:12:46> Modular behavior tree node 'Look' has a class size of 72 bytes.
+<22:12:46> Modular behavior tree node 'LuaBehavior' has a class size of 72 bytes.
+<22:12:46> Modular behavior tree node 'LuaGate' has a class size of 632 bytes.
+<22:12:46> Modular behavior tree node 'Move' has a class size of 264 bytes.
+<22:12:46> Modular behavior tree node 'PullDownThreatLevel' has a class size of 64 bytes.
+<22:12:46> Modular behavior tree node 'QueryTPS' has a class size of 80 bytes.
+<22:12:46> Modular behavior tree node 'SendTransitionSignal' has a class size of 80 bytes.
+<22:12:46> Modular behavior tree node 'SetAlertness' has a class size of 72 bytes.
+<22:12:46> Modular behavior tree node 'Shoot' has a class size of 104 bytes.
+<22:12:46> Modular behavior tree node 'ShootFromCover' has a class size of 80 bytes.
+<22:12:46> Modular behavior tree node 'Signal' has a class size of 80 bytes.
+<22:12:46> Modular behavior tree node 'Stance' has a class size of 80 bytes.
+<22:12:46> Modular behavior tree node 'StopMovement' has a class size of 72 bytes.
+<22:12:46> Modular behavior tree node 'Basic_MoveToPosition' has a class size of 248 bytes.
+<22:12:46> Modular behavior tree node 'Basic_MoveToCover' has a class size of 248 bytes.
+<22:12:46> AI: [AISYSTEM] Initialization finished.
+<22:12:46> [Warning] XML reader: Can't open file (Scripts/AI/Cover.xml)
+<22:12:46> [Warning] AI: Failed to open XML file 'Scripts/AI/Cover.xml'...
+<22:12:46> Initializing additional systems
+<22:12:46> Loading Module CryAction.dll...
+<22:12:46> [Warning] XML reader: Can't open file (Libs/Levels/leveltypes.xml)
+<22:12:46> [Warning] [Lua Error] Failed to load script file Scripts/Entities/Vehicles/VehicleSystem.lua
+<22:12:46> [Warning] XML reader: Can't open file (Scripts/Network/StatsConfig.xml)
+<22:12:46> Modular behavior tree node 'AnimateFragment' has a class size of 80 bytes.
+<22:12:46> [Warning] [Lua Error] Failed to load script file Scripts/Entities/Vehicles/VehiclePartDetached.lua
+<22:12:46> Ending game context...
+<22:12:46> [Warning] XML reader: Can't open file (Libs/GameForceFeedback/ForceFeedbackEffects.xml)
+<22:12:46> [Warning] [ForceFeedback System] Could not load force feedback system data. Invalid XML file 'Libs/GameForceFeedback/ForceFeedbackEffects.xml'! 
+<22:12:46> Initializing default materials...
+<22:12:46> [Warning] XML reader: Can't open file (materials/material_layers_default.mtl)
+<22:12:46> [Warning] [Lua Error] Failed to load script file scripts/main.lua
+<22:12:46> [Warning] [CScriptSystem::BeginCall] Function OnInit not found(check for syntax errors or if the file wasn't loaded)
+<22:12:46> [Warning] Could not load dialog file assets\Libs\DynamicResponseSystem\DialogLines/dialoglines.dialog
+<22:12:46> [Schematyc]: Loading...
+<22:12:46> [Schematyc]: Loading settings
+<22:12:46> [Warning] XML reader: Can't open file (assets/cryschematycsettings/log_settings.sc_settings)
+<22:12:46> [Schematyc]: Loading scripts
+<22:12:46> [Schematyc]: Compiling scripts
+<22:12:46> [Schematyc]: Loading complete
+<22:12:46> [CONSOLE] Executing console command 'exec autoexec.cfg'
+<22:12:46> Searching console batch file (try game, config, root): "autoexec.cfg" not found!
+<22:12:46> Initializing CryAction done, MemUsage=62200Kb
+<22:12:46> failed to find CVar: r_Unlit
+
+<22:12:46> OnSysSpecChange(0)
+<22:12:46> Loading Config file %ENGINEROOT%/editor.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\editor.cfg)
+<22:12:46> Current Language: Portuguese 
+<22:12:46> Windows 10 10.0 (C:\Windows)
+<22:12:46> Local time is 22:12:46 06/25/24, system running for 722 minutes
+<22:12:46> 32677MB phys. memory installed, 37728MB paging available
+<22:12:46> Current display mode is 2560x1440x32, (Unknown graphics card)
+<22:12:46> IBM enhanced (101/102-key) keyboard and 16+ button mouse installed
+<22:12:46> --------------------------------------------------------------------------------
+<22:12:46> Loading Config file singleplayer.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\singleplayer.cfg)
+<22:12:46> AI: [AISYSTEM] Initializing AI Actions.
+<22:12:46> AI: [AISYSTEM] Initializing Smart Objects.
+<22:12:46> [Warning] XML reader: Can't open file (Libs/SmartObjects.xml)
+<22:12:46> [Warning] XML reader: Can't open file (Libs/SmartObjects/Templates/SOTemplates.xml)
+<22:12:46> Unloading all previous plugins
+<22:12:46> Loading plugins...
+<22:12:46> Successfully loaded plugin '3DConnexionDriver', version '1'
+<22:12:46> Successfully loaded plugin 'CryDesigner', version '1'
+<22:12:46> Successfully loaded plugin 'CryTest Runner Plugin', version '1'
+<22:12:46> Successfully loaded plugin 'Dependency Graph Plugin', version '1'
+<22:12:46> Successfully loaded plugin 'Sample Plugin', version '1'
+<22:12:46> Successfully loaded plugin 'Editor Animation', version '1'
+<22:12:46> Successfully loaded plugin 'Audio Controls Editor', version '1'
+<22:12:46> Successfully loaded plugin 'Behavior Tree Editor', version '1'
+<22:12:46> Successfully loaded plugin 'Console', version '1'
+<22:12:46> Successfully loaded plugin 'CSharp Editor', version '1'
+<22:12:46> Successfully loaded plugin 'Dynamic Response System Editor', version '1'
+<22:12:46> Successfully loaded plugin 'Environment Editor', version '1'
+<22:12:46> Successfully loaded plugin 'EditorGameSDK', version '1'
+<22:12:46> Successfully loaded plugin 'Particle Editor', version '1'
+<22:12:46> [SchematycEditor]: Initializing...
+<22:12:46> [SchematycEditor]: Fixing up script files
+<22:12:46> [SchematycEditor]: Compiling script files
+<22:12:46> [SchematycEditor]: Initialization complete
+<22:12:46> Successfully loaded plugin 'Schematyc Plugin', version '1'
+<22:12:46> Successfully loaded plugin 'EditorSubstance', version '1'
+<22:12:46> Successfully loaded plugin 'TrackView', version '1'
+<22:12:46> Successfully loaded plugin 'UDR Visualizer (Experimental)', version '1'
+<22:12:46> Successfully loaded plugin 'UQS Editor', version '1'
+<22:12:46> Successfully loaded plugin 'UQS History', version '1'
+<22:12:46> Successfully loaded plugin 'Sample Plugin', version '1'
+<22:12:46> Successfully loaded plugin 'FBX Exporter', version '1'
+<22:12:46> Successfully loaded plugin 'Material Editor Plugin', version '1'
+<22:12:47> Successfully loaded plugin 'MeshImporter', version '1'
+<22:12:47> Successfully loaded plugin 'Perforce Plugin', version '1'
+<22:12:47> Successfully loaded plugin 'Prefab Plugin', version '1'
+<22:12:47> Successfully loaded plugin 'Sandbox Python Bridge', version '0'
+<22:12:47> Successfully loaded plugin 'Sample Plugin', version '1'
+<22:12:47> Successfully loaded plugin 'Sample Plugin', version '1'
+<22:12:47> Asset Browser types: Animated Mesh, Animation, C# script, Character, Environment, Geometry Cache, Level, Material, Mesh, Mesh Animation, Particles, Prefab, Schematyc Entity (Deprecated), Schematyc Library (Deprecated), Script, Skeleton, Skinned Mesh, Sound, Substance Archive, Substance Instance, Texture, Xml, Unknown
+<22:12:47> Started game resource files indexing...
+<22:12:47> OnSysSpecChange(2)
+<22:12:47> Loading Config file config/MedSpec.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\medspec.cfg)
+<22:12:47> Loading Config file %ENGINEROOT%/editor.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\editor.cfg)
+<22:12:47> [CONSOLE] Executing console command 'exec editor.cfg'
+<22:12:47> Found console batch file "editor.cfg" at %ENGINEROOT%/editor.cfg
+<22:12:47> ca_UseIMG_CAF=0 [  ]
+<22:12:47> drs_dialogSubtitles=1 [  ]
+<22:12:47> e_StreamCgf=0 [ REQUIRE_APP_RESTART ]
+<22:12:47> general.run_file 'C:/Users/mathe/AppData/Local/Programs/CRYENGINE Launcher/Engines/crytek/cryengine-57-lts/5.7.1/Editor/Python/plugins/crytools/startup.py'
+<22:12:47> checking C:\Users\mathe\AppData\Local\Programs\CRYENGINE Launcher\Engines\crytek\cryengine-57-lts\5.7.1\Tools\sandbox\init.py
+<22:12:47> 
+<22:12:47> Loading crytools from C:\Users\mathe\AppData\Local\Programs\CRYENGINE Launcher\Engines\crytek\cryengine-57-lts\5.7.1\Tools\sandbox
+<22:12:47> 
+<22:12:47> sandbox_tools_path: C:\Users\mathe\AppData\Local\Programs\CRYENGINE Launcher\Engines\crytek\cryengine-57-lts\5.7.1\Tools\sandbox
+<22:12:47> 
+<22:12:47> Added path: C:\Users\mathe\AppData\Local\Programs\CRYENGINE Launcher\Engines\crytek\cryengine-57-lts\5.7.1\Tools\python\lib\common
+<22:12:47> 
+<22:12:47> Added path: C:\Users\mathe\AppData\Local\Programs\CRYENGINE Launcher\Engines\crytek\cryengine-57-lts\5.7.1\Tools\sandbox\lib\common
+<22:12:47> 
+<22:12:47> Added path: C:\Users\mathe\AppData\Local\Programs\CRYENGINE Launcher\Engines\crytek\cryengine-57-lts\5.7.1\Tools\sandbox\tools
+<22:12:47> 
+<22:12:47> Registered override path : C:\Users\mathe\AppData\Local\Programs\CRYENGINE Launcher\Engines\crytek\cryengine-57-lts\5.7.1\Tools\sandbox\lib\override\common
+<22:12:47> 
+<22:12:47> Added path: C:\Users\mathe\AppData\Local\Programs\CRYENGINE Launcher\Engines\crytek\cryengine-57-lts\5.7.1\Tools\sandbox\startup
+<22:12:47> 
+<22:12:47> module loaded: <module 'sandbox_init_script' from 'C:\\Users\\mathe\\AppData\\Local\\Programs\\CRYENGINE Launcher\\Engines\\crytek\\cryengine-57-lts\\5.7.1\\Tools\\sandbox\\init.py'>
+<22:12:47> 
+<22:12:47> Returned: 
+<22:12:47> Flushing pended shaders...
+<22:12:47> Finished flushing pended shaders...
+<22:12:47> Flushing pended shaders...
+<22:12:47> Finished flushing pended shaders...
+<22:12:47> Flushing pended textures...
+<22:12:47> Finished flushing pended textures...
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Fallback@Sync_VS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Fallback@Sync_VS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Fallback@Sync_Comp_PS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Fallback@Sync_Comp_PS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Fallback@Sync_Err_PS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Fallback@Sync_Err_PS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Fallback@Sync_Ter_VS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Fallback@Sync_Ter_VS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/FixedPipelineEmu@FPVS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/FixedPipelineEmu@FPVS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/FixedPipelineEmu@FPPS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/FixedPipelineEmu@FPPS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/FixedPipelineEmu@InputLayoutVS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/FixedPipelineEmu@InputLayoutVS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/FixedPipelineEmu@DummyPS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/FixedPipelineEmu@DummyPS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Stereo@StereoVS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Stereo@StereoVS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Stereo@SideBySidePS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Stereo@SideBySidePS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Stereo@LineByLinePS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Stereo@LineByLinePS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Stereo@CheckerboardPS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Stereo@CheckerboardPS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Stereo@AnaglyphPS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Stereo@AnaglyphPS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Stereo@NV3DVisionPS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Stereo@NV3DVisionPS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Stereo@EmulationPS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Stereo@EmulationPS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Total_Illumination@VoxelRayTraceVS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Total_Illumination@VoxelRayTraceVS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Total_Illumination@SvoDebugDrawPS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Total_Illumination@SvoDebugDrawPS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Total_Illumination@RenderLightingCommonVS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Total_Illumination@RenderLightingCommonVS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Total_Illumination@ConeTracePS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Total_Illumination@ConeTracePS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Total_Illumination@RenderAtmospherePS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Total_Illumination@RenderAtmospherePS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Total_Illumination@TraceSunShadowsPS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Total_Illumination@TraceSunShadowsPS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Total_Illumination@DemosaicPS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Total_Illumination@DemosaicPS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Total_Illumination@UpScalePS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Total_Illumination@UpScalePS
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/Total_Illumination@ComputeClearBricks
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/Total_Illumination@ComputeClearBricks
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/Total_Illumination@ComputeInjectAtmosphere
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/Total_Illumination@ComputeInjectAtmosphere
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/Total_Illumination@ComputeDirectStaticLighting
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/Total_Illumination@ComputeDirectStaticLighting
+<22:12:47> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/Total_Illumination@ComputeDirectDynamicLighting
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/Total_Illumination@ComputeDirectDynamicLighting
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/Total_Illumination@ComputePropagateLighting
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/Total_Illumination@ComputePropagateLighting
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Common@ClearVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Common@ClearPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Debug@TransformVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Debug@TransformVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Debug@Debug_ShowMRTPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Debug@Debug_ShowMRTPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Debug@Debug_ShowRPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Debug@Debug_ShowRPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Debug@TransformCompVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Debug@TransformCompVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Debug@ShowInstructionsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Debug@ShowInstructionsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Debug@GradInstructionsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Debug@GradInstructionsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Debug@Debug_RenderTargetVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Debug@Debug_RenderTargetVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Debug@Debug_RenderTargetPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Debug@Debug_RenderTargetPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DeferredCaustics@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/DeferredCaustics@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredCaustics@DeferredCausticsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredCaustics@DeferredCausticsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DeferredCaustics@DeferredOceanCausticsStencilVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/DeferredCaustics@DeferredOceanCausticsStencilVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredCaustics@DeferredOceanCausticsStencilPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredCaustics@DeferredOceanCausticsStencilPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DeferredCaustics@WaterCausticsGenVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/DeferredCaustics@WaterCausticsGenVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredCaustics@WaterCausticsGenPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredCaustics@WaterCausticsGenPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredCaustics@WaterCausticsInfoDilatePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredCaustics@WaterCausticsInfoDilatePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredCaustics@DeferredWaterVolumeCausticsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredCaustics@DeferredWaterVolumeCausticsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DeferredRain@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredRain@DeferredRainGBufferPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DeferredRain@DeferredRainOccVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredRain@DeferredRainOccPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DeferredSnow@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredSnow@DeferredSnowPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredSnow@DeferredSnowPOM_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredSnow@DeferredSnowPOM_Min_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredSnow@DeferredSnowPOM_Apply_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@DefDecalVolumeVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@DefDecalVolumeVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@DefDecalPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@DefDecalPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@SSRRaytraceVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@SSRRaytraceVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@SSRRaytracePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@SSRRaytracePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/DeferredShading@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/DeferredShading@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@BaseVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@BaseVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@SSRCompositionPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@SSRCompositionPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/DeferredShading@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/DeferredShading@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@SSDO_Sampling_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@SSDO_Sampling_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/DeferredShading@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/DeferredShading@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@SSDO_Filter_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@SSDO_Filter_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@BaseWPOSVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@BaseWPOSVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@HeightMapAOPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@HeightMapAOPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@SSSSS_Blur_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@SSSSS_Blur_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@DebugVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@DebugVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@DebugPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@DebugPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@DebugGBufferPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@DebugGBufferPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@ResolveStencilPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@ResolveStencilPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/DeferredShading@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/DeferredShading@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@ClipVolumeVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@ClipVolumeVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@ClipVolumePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@ClipVolumePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/DeferredShading@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/DeferredShading@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@ClipVolumeBlendValuePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@ClipVolumeBlendValuePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@ClipVolumeVolFogVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@ClipVolumeVolFogVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/DeferredShading@ClipVolumeVolFogGS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/DeferredShading@ClipVolumeVolFogGS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@ResolveStencilVolFogPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@ResolveStencilVolFogPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@ShadowMaskGenPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@ShadowMaskGenPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@ShadowMaskVolumeVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@ShadowMaskVolumeVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@TiledDeferredShadingCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@TiledDeferredShadingCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@VolumeLightListGenVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@VolumeLightListGenVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@VolumeLightListGenPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@VolumeLightListGenPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@BlurHorizontalInscatteringVolumeCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@BlurHorizontalInscatteringVolumeCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@BlurVerticalInscatteringVolumeCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@BlurVerticalInscatteringVolumeCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@BlurHorizontalDensityVolumeCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@BlurHorizontalDensityVolumeCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@BlurVerticalDensityVolumeCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@BlurVerticalDensityVolumeCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@InjectFogDensityCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@InjectFogDensityCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@StoreDownscaledMaxDepthHorizontalCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@StoreDownscaledMaxDepthHorizontalCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@StoreDownscaledMaxDepthVerticalCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@StoreDownscaledMaxDepthVerticalCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@BuildLightListGridCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@BuildLightListGridCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@InjectVolumetricInscatteringCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@InjectVolumetricInscatteringCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@RaymarchVolumetricFogCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@RaymarchVolumetricFogCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@ReprojectVolumetricFogCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/DeferredShading@ReprojectVolumetricFogCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@StoreJitteringDepthToClipVolumeDepthVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@StoreJitteringDepthToClipVolumeDepthVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@StoreJitteringDepthToClipVolumeDepthPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@StoreJitteringDepthToClipVolumeDepthPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@RenderDownscaledShadowMapVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/DeferredShading@RenderDownscaledShadowMapVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@RenderDownscaledShadowMapPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@RenderDownscaledShadowMapPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@DownscaleShadowMap2PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@DownscaleShadowMap2PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@DownscaleShadowMap4PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DeferredShading@DownscaleShadowMap4PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DepthOfField@DofBokehRefVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/DepthOfField@DofBokehRefVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DepthOfField@DofBokehRefPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DepthOfField@DofBokehRefPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DepthOfField@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/DepthOfField@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DepthOfField@RefDofMBNormalizePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DepthOfField@RefDofMBNormalizePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DepthOfField@DownscaleDofVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/DepthOfField@DownscaleDofVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DepthOfField@DownscaleDofPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DepthOfField@DownscaleDofPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DepthOfField@TileMinCoCVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/DepthOfField@TileMinCoCVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DepthOfField@TileMinCoCPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DepthOfField@TileMinCoCPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DepthOfField@DofPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DepthOfField@DofPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DepthOfField@CompositeDofPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/DepthOfField@CompositeDofPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/DXTCompress@DXTCompressVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/DXTCompress@DXTCompressPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/LensOptics@lensGhostVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/LensOptics@lensGhostVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/LensOptics@lensGhostPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/LensOptics@lensGhostPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/LensOptics@GlowVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/LensOptics@GlowVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/LensOptics@GlowPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/LensOptics@GlowPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/LensOptics@ChromaticRingVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/LensOptics@ChromaticRingVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/LensOptics@ChromaticRingPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/LensOptics@ChromaticRingPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/LensOptics@IrisShaftsGlowPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/LensOptics@IrisShaftsGlowPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/LensOptics@StreaksPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/LensOptics@StreaksPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/LensOptics@CameraOrbsVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/LensOptics@CameraOrbsVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/LensOptics@CameraOrbsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/LensOptics@CameraOrbsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/LensOptics@CameraLensPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/LensOptics@CameraLensPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/LensOptics@shaftsOccVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/LensOptics@shaftsOccVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/LensOptics@shaftsOccPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/LensOptics@shaftsOccPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/LensOptics@shaftsVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/LensOptics@shaftsVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/LensOptics@shaftsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/LensOptics@shaftsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/LensOptics@shaftBlendVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/LensOptics@shaftBlendVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/LensOptics@shaftBlendPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/LensOptics@shaftBlendPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/SoftOcclusionQuery@quadVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/SoftOcclusionQuery@quadVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/SoftOcclusionQuery@renderOccPlanePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/SoftOcclusionQuery@renderOccPlanePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/SoftOcclusionQuery@gatherResultPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/SoftOcclusionQuery@gatherResultPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/MotionBlur@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/MotionBlur@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/MotionBlur@MotionBlurPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/MotionBlur@MotionBlurPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/MotionBlur@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/MotionBlur@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/MotionBlur@BaseWPOSVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/MotionBlur@BaseWPOSVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/MotionBlur@PackVelocitiesPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/MotionBlur@PackVelocitiesPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/MotionBlur@VelocityTileGenPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/MotionBlur@VelocityTileGenPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/MotionBlur@VelocityTileNeighborhoodPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/MotionBlur@VelocityTileNeighborhoodPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/OcclusionTest@OcclusionTestVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/OcclusionTest@OcclusionTestPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/OcclusionTest@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@AlienInterferenceVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@AlienInterferenceVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@AlienInterferencePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@AlienInterferencePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@waterDropletsVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@waterDropletsVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@waterDropletsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@waterDropletsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@waterFlowVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@waterFlowVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@waterFlowPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@waterFlowPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@FlashBangPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@FlashBangPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@CustomViewPortBaseVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@CustomViewPortBaseVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@RainDropsGenPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@RainDropsGenPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@RainDropsExtinctionVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@RainDropsExtinctionVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@RainDropsExtinctionPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@RainDropsExtinctionPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@RainDropsFinalVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@RainDropsFinalVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@RainDropsFinalPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@RainDropsFinalPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@BaseVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@BaseVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@BinocularViewGlowPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@BinocularViewGlowPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@BinocularViewFinalPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@BinocularViewFinalPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@BinocularViewFinalNoTintingPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@BinocularViewFinalNoTintingPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@BinocularViewTintingPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@BinocularViewTintingPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@BinocularViewSilhouttesPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@BinocularViewSilhouttesPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@SilhouettesVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@SilhouettesVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@DeferredSilhouettesOptimisedPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@DeferredSilhouettesOptimisedPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@waterVolumesNormalGenPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@waterVolumesNormalGenPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@MergeColorChartsVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@MergeColorChartsVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@MergeColorChartsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@MergeColorChartsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@CombineColorGradingWithColorChartVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@CombineColorGradingWithColorChartVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@CombineColorGradingWithColorChartPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@CombineColorGradingWithColorChartPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@DisplayColorChartsVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@DisplayColorChartsVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@DisplayColorChartsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@DisplayColorChartsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@SceneRainOccAccumulateVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@SceneRainOccAccumulateVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@SceneRainOccAccumulatePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@SceneRainOccAccumulatePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@SceneRainVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@SceneRainVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@SceneRainPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@SceneRainPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@SceneSnowVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@SceneSnowVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@SceneSnowPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@SceneSnowPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@SnowHalfResCompositePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@SnowHalfResCompositePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@KillCameraFilterPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@KillCameraFilterPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@UberGamePostProcessPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@UberGamePostProcessPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@NanoGlass_VS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffectsGame@NanoGlass_VS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@NanoGlass_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@NanoGlass_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@ScreenBloodPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffectsGame@ScreenBloodPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/ShadowBlur@SSDO_Blur_VS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/ShadowBlur@SSDO_Blur_VS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/ShadowBlur@SSDO_Blur_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/ShadowBlur@SSDO_Blur_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/ShadowBlur@HMAO_Blur_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/ShadowBlur@HMAO_Blur_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Sunshafts@OcclCheckVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Sunshafts@OcclCheckVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Sunshafts@OcclCheckPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Sunshafts@OcclCheckPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Sunshafts@BaseVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Sunshafts@BaseVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Sunshafts@SunShaftsMaskGenPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Sunshafts@SunShaftsMaskGenPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/Sunshafts@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/Sunshafts@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Sunshafts@SunShaftsGenVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Sunshafts@SunShaftsGenVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Sunshafts@SunShaftsGenPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Sunshafts@SunShaftsGenPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/Sunshafts@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/Sunshafts@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/Clouds@CloudShadowGenCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/Clouds@RenderCloudMonolithicCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/Clouds@InjectCloudDensityAndShadowCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/Clouds@RenderCloudCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Clouds@BaseWPOSVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Clouds@ReprojectCloudsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/Clouds@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Clouds@CloudsBlendPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/Clouds@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/GpuParticles@PrepareSortCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/GpuParticles@PrepareSortCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/GpuParticles@ReorderParticlesCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/GpuParticles@ReorderParticlesCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/GpuParticles@CalculateBoundsCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/GpuParticles@CalculateBoundsCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/GpuParticles@FillKillListCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/GpuParticles@FillKillListCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/GpuParticles@SwapToEndCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/GpuParticles@SwapToEndCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/GpuParticles@FeatureUpdateCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/GpuParticles@FeatureUpdateCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGCShaders/GpuParticles@FeatureInitializationCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGCShaders/GpuParticles@FeatureInitializationCS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Stars@StarsVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Stars@StarsVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Stars@StarsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Stars@StarsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/Stars@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/Stars@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Stars@SkyPassVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Stars@SkyPassVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Stars@SkyPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Stars@SkyPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/MobileComposition@LightingMobileVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/MobileComposition@LightingMobilePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/MobileComposition@TonemappingMobileVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/MobileComposition@TonemappingMobilePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/ShadowMaskGen@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/ShadowMaskGen@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/ShadowMaskGen@DebugShadowCascadesPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/ShadowMaskGen@DebugShadowCascadesPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/ShadowMaskGen@StencilCullVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/ShadowMaskGen@StencilCullVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/ShadowMaskGen@StencilCullPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/ShadowMaskGen@StencilCullPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/ShadowMaskGen@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/ShadowMaskGen@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/ShadowMaskGen@FrustumVolumeVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/ShadowMaskGen@FrustumVolumeVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/ShadowMaskGen@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/ShadowMaskGen@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/ShadowMaskGen@BaseVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/ShadowMaskGen@BaseVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/ShadowMaskGen@ReprojectShadowMap
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/ShadowMaskGen@ReprojectShadowMap
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/ShadowMaskGen@DeferredShadowPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/ShadowMaskGen@DeferredShadowPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/ShadowMaskGen@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/ShadowMaskGen@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/ShadowMaskGen@ShadowMaskVolumeVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/ShadowMaskGen@ShadowMaskVolumeVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/ShadowMaskGen@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/ShadowMaskGen@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/ShadowMaskGen@CustomShadowsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/ShadowMaskGen@CustomShadowsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/ShadowMaskGen@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/ShadowMaskGen@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/HDRPostProcess@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/HDRPostProcess@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@HDRSampleLumInitialPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@HDRSampleLumInitialPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@HDRSampleLumIterativePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@HDRSampleLumIterativePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@HDRCalculateAdaptedLumPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@HDRCalculateAdaptedLumPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@HDRBloomGaussianPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@HDRBloomGaussianPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/HDRPostProcess@TransformedVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/HDRPostProcess@TransformedVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@HDRFinalScenePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@HDRFinalScenePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@HDRFinalSceneDebugPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@HDRFinalSceneDebugPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@HDRFinalSceneFixedExposurePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@HDRFinalSceneFixedExposurePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/HDRPostProcess@PreTransformedFogVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/HDRPostProcess@PreTransformedFogVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@MultiGSMShadowedFogPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@MultiGSMShadowedFogPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/HDRPostProcess@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/HDRPostProcess@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@FogPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@FogPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/HDRPostProcess@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/HDRPostProcess@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@FogPassWithLightningPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@FogPassWithLightningPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/HDRPostProcess@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/HDRPostProcess@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@FogPassVolShadowsInterleavePassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@FogPassVolShadowsInterleavePassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/HDRPostProcess@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/HDRPostProcess@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@FogPassVolShadowsGatherPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/HDRPostProcess@FogPassVolShadowsGatherPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/HDRPostProcess@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/HDRPostProcess@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Hud3D@Downsample4x4_VS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Hud3D@Downsample4x4_VS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Hud3D@Downsample4x4_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Hud3D@Downsample4x4_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Hud3D@HUD3D_VS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Hud3D@HUD3D_VS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Hud3D@UpdateBloomRT_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Hud3D@UpdateBloomRT_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Hud3D@HUD3D_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Hud3D@HUD3D_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffects@TexToTexVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffects@TexToTexVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@TexToTexPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@TexToTexPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffects@TexToTexRegVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffects@TexToTexRegVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@TexToTexTintedPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@TexToTexTintedPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@CubeTexToTexPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@CubeTexToTexPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@TexToTexSampledPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@TexToTexSampledPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@TexToTexTintedSampledPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@TexToTexTintedSampledPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@TexToTexOneAlphaPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@TexToTexOneAlphaPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@TexToTexSampledFilterPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@TexToTexSampledFilterPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@DownsampleStablePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@DownsampleStablePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@NearestDepthUpsamplePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@NearestDepthUpsamplePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/PostEffects@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/PostEffects@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@UpscaleMultiResPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@UpscaleMultiResPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffects@ClearScreenVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffects@ClearScreenVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@ClearScreenPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@ClearScreenPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@LinearizeDepthPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@LinearizeDepthPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@FlattenDepthPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@FlattenDepthPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffects@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffects@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@DownsampleDepthPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@DownsampleDepthPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@CopyToDeviceDepthPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@CopyToDeviceDepthPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@TranspDepthFixupMergePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@TranspDepthFixupMergePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffects@GaussBlurBilinearVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffects@GaussBlurBilinearVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@GaussBlurBilinearPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@GaussBlurBilinearPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffects@MaskedGaussBlurBilinearVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffects@MaskedGaussBlurBilinearVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@MaskedGaussBlurBilinearPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@MaskedGaussBlurBilinearPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffects@GaussAlphaBlurVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffects@GaussAlphaBlurVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@GaussAlphaBlurPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@GaussAlphaBlurPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffects@BaseVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffects@BaseVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@Blur4TapsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@Blur4TapsPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@BlurDirectionalPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@BlurDirectionalPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@AnisotropicVerticalBlurPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@AnisotropicVerticalBlurPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffects@DilateVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffects@DilateVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@DilatePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@DilatePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@Dilate2PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@Dilate2PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@BlurInterpolationPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@BlurInterpolationPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@CA_SharpeningPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@CA_SharpeningPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffects@UnderwaterGodRaysVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffects@UnderwaterGodRaysVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@UnderwaterGodRaysPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@UnderwaterGodRaysPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@UnderwaterGodRaysFinalPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@UnderwaterGodRaysFinalPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffects@WaterRipplesHitVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffects@WaterRipplesHitVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@WaterRippleHitPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@WaterRippleHitPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@WaterRipplesPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@WaterRipplesPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@PostStereoPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@PostStereoPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffects@StereoNearMaskVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffects@StereoNearMaskVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@StereoNearMaskPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@StereoNearMaskPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffects@SelectionSilhouetteVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffects@SelectionSilhouetteVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@SelectionSilhouettePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@SelectionSilhouettePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostEffects@OverdrawOverdrawVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostEffects@OverdrawOverdrawVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostEffects@OverdrawOverdrawPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostEffects@OverdrawOverdrawPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostAA@PostAA_VS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostAA@PostAA_VS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostAA@PostAA_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostAA@PostAA_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostAA@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostAA@FullscreenTriVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostAA@LumaEdgeDetectionSMAA_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostAA@LumaEdgeDetectionSMAA_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostAA@BlendWeightSMAA_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostAA@BlendWeightSMAA_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostAA@NeighborhoodBlendingSMAA_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostAA@NeighborhoodBlendingSMAA_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostAA@FsQuadVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostAA@FsQuadVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostAA@MsaaDebugPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostAA@MsaaDebugPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostAA@PostAAComposites_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostAA@PostAAComposites_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostAA@DebugPostAA_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostAA@DebugPostAA_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/PostAA@BaseVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/PostAA@BaseVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/PostAA@UpscaleImagePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/PostAA@UpscaleImagePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Scaleform3@VS_XY_noTex
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_SolidColor
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Scaleform3@VS_XY
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_CxformTexture
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_CxformMultiplyTexture
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Scaleform3@VS_Glyph
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_GlyphTexture
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_GlyphMultiplyTexture
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_GlyphAlphaTexture
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Scaleform3@VS_GlyphStereoVideo
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_GlyphTextureYUV
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_GlyphMultiplyTextureYUV
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_GlyphTextureYUVA
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_GlyphMultiplyTextureYUVA
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Scaleform3@VS_XY_C_F_noTex
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_CxformGouraud
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_CxformGouraudMultiply
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Scaleform3@VS_XY_C
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_CxformGouraudNoAddAlpha
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_CxformGouraudMultiplyNoAddAlpha
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Scaleform3@VS_XY_C_F
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_CxformGouraudTexture
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_CxformGouraudMultiplyTexture
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Scaleform3@VS_XY_C_F_T2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_Cxform2Texture
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_CxformMultiply2Texture
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_BlurFilter_Box1
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_BlurFilter_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_BlurFilterMul_Box1
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_BlurFilterMul_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_InnerShadow_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_InnerShadowHighlight_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_InnerShadowMul_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_InnerShadowMulHighlight_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_InnerShadowKnockout_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_InnerShadowHighlightKnockout_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_InnerShadowMulKnockout_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_InnerShadowMulHighlightKnockout_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_Shadow_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_ShadowHighlight_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_ShadowMul_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_ShadowMulHighlight_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_ShadowKnockout_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_ShadowHighlightKnockout_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_ShadowMulKnockout_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_ShadowMulHighlightKnockout_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_Shadowonly_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_ShadowonlyHighlight_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_ShadowonlyMul_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_ShadowonlyMulHighlight_Box2
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_GlyphTextureMat
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Scaleform3@PS_GlyphTextureMatMul
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Illum@IlluminationVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Illum@IlluminationVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Illum@IlluminationPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Illum@IlluminationPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/Illum@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/Illum@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Illum@Common_ZPrePassVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Illum@Common_ZPrePassVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Illum@Common_ZPrePassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Illum@Common_ZPrePassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/Illum@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/Illum@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Illum@Common_ZPassVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Illum@Common_ZPassVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Illum@Common_ZPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Illum@Common_ZPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/Illum@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/Illum@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Illum@Common_MotionBlurPassVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Illum@Common_MotionBlurPassVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Illum@Common_MotionBlurPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Illum@Common_MotionBlurPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Illum@Common_CustomRenderPassVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Illum@Common_CustomRenderPassVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Illum@Common_CustomRenderPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Illum@Common_CustomRenderPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Illum@Common_EffectLayerPassVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Illum@Common_EffectLayerPassVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Illum@Common_EffectLayerPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Illum@Common_EffectLayerPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Illum@Common_SG_VS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Illum@Common_SG_VS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Illum@Common_SG_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Illum@Common_SG_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Illum@Common_DebugPassVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Illum@Common_DebugPassVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Illum@Common_DebugPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Illum@Common_DebugPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Illum@MeshBaker_VS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Illum@MeshBaker_VS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Illum@MeshBakerComplex_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Illum@MeshBakerComplex_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Terrain@TerrainVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Terrain@TerrainVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Terrain@TerrainPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Terrain@TerrainPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Terrain@TerrainLayerPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Terrain@TerrainLayerPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Terrain@TerrainGBufferPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Terrain@TerrainGBufferPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Terrain@Common_ZPrePassVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Terrain@Common_ZPrePassVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Terrain@Common_ZPrePassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Terrain@Common_ZPrePassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/Terrain@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/Terrain@$AutoGS_MultiRes
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Terrain@Common_SG_VS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Terrain@Common_SG_VS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Terrain@Common_SG_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Terrain@Common_SG_PS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Terrain@Common_DebugPassVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Terrain@Common_DebugPassVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Terrain@Common_DebugPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Terrain@Common_DebugPassPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Helper@HelperVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Helper@HelperPS
+<22:12:48> Adding for file change notifications: 'C:\Users\mathe\Documents\CRYENGINE Projects\cryprototype\assets\'
+<22:12:48> Adding for file change notifications: 'C:\Users\mathe\Documents\CRYENGINE Projects\cryprototype\editor\resourcecache\'
+<22:12:48> Adding for file change notifications: 'C:\Users\mathe\Documents\CRYENGINE Projects\cryprototype\Editor\'
+<22:12:48> Flushing pended textures...
+<22:12:48> Finished flushing pended textures...
+<22:12:48> Compressing Animation 1/4: animations/motusanims/strafe/walkcross_fwd_lft_3p.caf
+<22:12:48> Compressing Animation 2/4: animations/motusanims/steprotate/steprotate_lft_180_3p.caf
+<22:12:48> Compressing Animation 3/4: animations/motusanims/walk_fwd_3p.caf
+<22:12:48> CAIManager: navigation world monitor state: Stopped -> Started
+<22:12:48> Task Completed: Clean up compiled animations
+<22:12:48> Task Completed: Compression of 'animations/motusanims/strafe/walkcross_fwd_lft_3p.caf'
+<22:12:48> Task Completed: Compression of 'animations/motusanims/steprotate/steprotate_lft_180_3p.caf'
+<22:12:48> Task Completed: Compression of 'animations/motusanims/walk_fwd_3p.caf'
+<22:12:48> Task Completed: Update Local Animations
+<22:12:48> Compressing Animation 4/4: animations/motusanims/jog_bck_3p.caf
+<22:12:48> Flushing pended textures...
+<22:12:48> Finished flushing pended textures...
+<22:12:48> Changing resolution...
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/AuxGeom@AuxGeomVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/AuxGeom@AuxGeomVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/AuxGeom@AuxGeomPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/AuxGeom@AuxGeomPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/AuxGeom@AuxGeomTextureVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/AuxGeom@AuxGeomTextureVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/AuxGeom@AuxGeomTexturePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/AuxGeom@AuxGeomTexturePS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/AuxGeom@AuxGeomObjVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/AuxGeom@AuxGeomObjVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/AuxGeom@AuxGeomThickLineVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/AuxGeom@AuxGeomThickLineVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/AuxGeom@AuxThickLineGS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/AuxGeom@AuxThickLineGS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/AuxGeom@AuxTextVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/AuxGeom@AuxTextVS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/AuxGeom@AuxTextPS
+<22:12:48> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/AuxGeom@AuxTextPS
+<22:12:48> Changing resolution...
+<22:12:48> Task Completed: Compression of 'animations/motusanims/jog_bck_3p.caf'
+<22:12:48> Task Completed: Reload CHRPARAMS
+<22:12:48> Changing resolution...
+<22:12:50> Opening document assets/Levels/example/example.level
+<22:12:50> SetGlobalState 0->1 'INIT'->'LEVEL_LOAD_PREPARE' 43374.4 seconds
+<22:12:50> CAIManager: navigation world monitor state: Started -> StartedAndPaused
+<22:12:50> *** Start clearing render resources ***
+<22:12:50> Flushing pended shaders...
+<22:12:50> Finished flushing pended shaders...
+<22:12:50> *** Clearing render resources took 0.6 msec ***
+<22:12:50> Ending game context...
+<22:12:50> Destroying CActionGame instance 000002A40CC98070 (level="")
+<22:12:50> Loading from assets/Levels/example/example.level...
+<22:12:50> Loading Config file singleplayer.cfg (c:\users\mathe\appdata\local\programs\cryengine launcher\engines\crytek\cryengine-57-lts\5.7.1\engine\config\singleplayer.cfg)
+<22:12:50> Loading missions...
+<22:12:50> ---- Start: Load Terrain
+<22:12:50> CRGBLayer::AllocateTiles 1x1 tiles 256 => 256x256 texture
+<22:12:50> allocating editor height map (128x128)*4
+<22:12:50> ---- Start: Loading Surface Types
+<22:12:50> ---- End: Loading Surface Types (0 seconds)
+<22:12:50> ---- Start: Loading Terrain Layers Info
+<22:12:50> Loading layer settings...
+<22:12:50> Loading layer texture (%engine%/EngineAssets/Textures/white.dds)...
+<22:12:50>   loaded editor layer 0  name='Default' LayerID=0
+<22:12:50> ---- End: Loading Terrain Layers Info (0 seconds)
+<22:12:50> ---- Start: Load Terrain
+<22:12:50> ---- End: Load Terrain (0 seconds)
+<22:12:50> ---- Start: Process RGB Terrain Layers
+<22:12:50> ---- End: Process RGB Terrain Layers (0 seconds)
+<22:12:50> Loading terrain layers ...
+<22:12:50> Constructing 21 terrain nodes (0.0 MB) <22:12:50>  done in 0.00 sec
+<22:12:50> Loading terrain layers ...
+<22:12:50> ---- End: Load Terrain (0 seconds)
+<22:12:50> ---- Start: Game Engine level load
+<22:12:50> Loading map 'assets/levels/example' into engine...
+<22:12:50> ===== Loading Particle Effects =====
+<22:12:50> ---- End: Game Engine level load (0 seconds)
+<22:12:50> ---- Start: Load MaterialManager
+<22:12:50> ---- End: Load MaterialManager (0 seconds)
+<22:12:50> ---- Start: Load Particles
+<22:12:50> ---- End: Load Particles (0 seconds)
+<22:12:50> ---- Start: Load Flares
+<22:12:50> ---- End: Load Flares (0 seconds)
+<22:12:50> ---- Start: Load GameTokens
+<22:12:50> ---- End: Load GameTokens (0 seconds)
+<22:12:50> Loading View settings...
+<22:12:50> ---- Start: Load Vegetation
+<22:12:50> Loading Vegetation Map...
+<22:12:50> ---- End: Load Vegetation (0 seconds)
+<22:12:50> ---- Start: Updating Surface Types
+<22:12:50> Loading terrain layers ...
+<22:12:50> ---- End: Updating Surface Types (0 seconds)
+<22:12:50> Loading Fog settings...
+<22:12:50> ---- Start: Load Entity Archetypes Database
+<22:12:50> ---- End: Load Entity Archetypes Database (0 seconds)
+<22:12:50> ---- Start: Importing Prefabs
+<22:12:50> ---- End: Importing Prefabs (0 seconds)
+<22:12:50> ---- Start: Activating Mission Mission0
+<22:12:50> Loading AI data assets/levels/example, Mission0
+<22:12:50> Finished Loading AI data in  0.000 secs
+<22:12:50>   58 animation-assets loaded (total assets: 53)
+<22:12:50> ---- End: Activating Mission Mission0 (0 seconds)
+<22:12:50> ---- Start: Load Level Shader Cache
+<22:12:50> ---- End: Load Level Shader Cache (0 seconds)
+<22:12:50> [LevelLoadTime] Level assets/levels/example loaded in 0 seconds
+<22:12:50> SetGlobalState 1->9 'LEVEL_LOAD_PREPARE'->'LEVEL_LOAD_TEXTURES' 0.4 seconds
+<22:12:50> -- Render thread was idle during level loading: 0.052 secs
+<22:12:50> -- Render thread was busy during level loading: 0.021 secs
+<22:12:50> -- Presort shaders by states...
+<22:12:50> --- 20 Resources, 1 Resource groups.
+<22:12:50> Requesting textures precache ...
+<22:12:50> Textures precache done.
+<22:12:50> SetGlobalState 9->10 'LEVEL_LOAD_TEXTURES'->'LEVEL_LOAD_END' 0.0 seconds
+<22:12:50> File access time during level loading: 0.03 seconds
+<22:12:50> Opening terrain\cover.ctc ...
+<22:12:50>   TerrainLayer 0: TexFormat: BC3, SectorTextureSize: 256x256, SectorTextureDataSizeBytes: 65536
+<22:12:50>   TerrainLayer 1: TexFormat: BC3, SectorTextureSize: 256x256, SectorTextureDataSizeBytes: 65536
+<22:12:50>   RGB multiplier: 8, Texture indices: 5
+<22:12:50> CAIManager: navigation world monitor state: StartedAndPaused -> StartedPausedAndResumePending
+<22:12:50> SetGlobalState 10->13 'LEVEL_LOAD_END'->'RUNNING' 0.0 seconds
+<22:12:50> -----------------------------------------------------------
+<22:12:50> Successfully opened document assets/Levels/example/
+<22:12:50> Level loading time: 0.42 seconds
+<22:12:50> -----------------------------------------------------------
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/FogVolume@FogVolumeEllipsoidVS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/FogVolume@FogVolumeEllipsoidVS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/FogVolume@FogVolumeEllipsoidPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/FogVolume@FogVolumeEllipsoidPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/FogVolume@FogVolumeBoxVS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/FogVolume@FogVolumeBoxVS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/FogVolume@FogVolumeBoxPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/FogVolume@FogVolumeBoxPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Illum@IlluminationPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Illum@IlluminationPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/Illum@$AutoGS_MultiRes
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/Illum@$AutoGS_MultiRes
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/Illum@$AutoGS_MultiRes
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/Illum@$AutoGS_MultiRes
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Illum@Common_ZPassPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Illum@Common_ZPassPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/Illum@$AutoGS_MultiRes
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/Illum@$AutoGS_MultiRes
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Illum@MeshBakerComplex_PS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Illum@MeshBakerComplex_PS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/Water@WaterVS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/Water@WaterVS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/Water@WaterPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/Water@WaterPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/Water@$AutoGS_MultiRes
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/Water@$AutoGS_MultiRes
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/WaterOceanBottom@OceanBottomVS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/WaterOceanBottom@OceanBottomVS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/WaterOceanBottom@OceanBottomPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/WaterOceanBottom@OceanBottomPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/WaterOceanBottom@$AutoGS_MultiRes
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/WaterOceanBottom@$AutoGS_MultiRes
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/WaterOceanBottom@OceanBottomZpassVS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/WaterOceanBottom@OceanBottomZpassVS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/WaterOceanBottom@OceanBottomZpassPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/WaterOceanBottom@OceanBottomZpassPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/WaterOceanBottom@$AutoGS_MultiRes
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/WaterOceanBottom@$AutoGS_MultiRes
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/WaterFogVolume@WaterVolumeIntoVS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/WaterFogVolume@WaterVolumeIntoVS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/WaterFogVolume@WaterVolumeIntoPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/WaterFogVolume@WaterVolumeIntoPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/WaterFogVolume@WaterVolumeOutofVS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/WaterFogVolume@WaterVolumeOutofVS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/WaterFogVolume@WaterVolumeOutofPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/WaterFogVolume@WaterVolumeOutofPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGVShaders/WaterFogVolume@OceanIntoVS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGVShaders/WaterFogVolume@OceanIntoVS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/WaterFogVolume@OceanIntoPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/WaterFogVolume@OceanIntoPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/WaterFogVolume@$AutoGS_MultiRes
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/WaterFogVolume@$AutoGS_MultiRes
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/WaterFogVolume@$AutoGS_MultiRes
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/WaterFogVolume@$AutoGS_MultiRes
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGPShaders/WaterFogVolume@OceanOutofPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGPShaders/WaterFogVolume@OceanOutofPS
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/WaterFogVolume@$AutoGS_MultiRes
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/WaterFogVolume@$AutoGS_MultiRes
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %USER%/Shaders/Cache/D3D11/CGGShaders/WaterFogVolume@$AutoGS_MultiRes
+<22:12:50> ---Shader Cache: mfPrecacheAllCombinations() %ENGINE%/Shaders/Cache/D3D11/CGGShaders/WaterFogVolume@$AutoGS_MultiRes
+<22:12:50> -- Precaching textures...
+<22:12:50> Precaching progress: 10.0% (2 of 13)
+<22:12:50> Precaching progress: 20.0% (3 of 13)
+<22:12:50> Precaching progress: 30.0% (4 of 13)
+<22:12:50> Precaching progress: 40.0% (6 of 13)
+<22:12:50> Precaching progress: 50.0% (7 of 13)
+<22:12:50> Precaching progress: 60.0% (8 of 13)
+<22:12:50> Precaching progress: 70.0% (10 of 13)
+<22:12:50> Precaching progress: 80.0% (11 of 13)
+<22:12:50> [Warning] Texture does not exist [File=textures/defaults/grey.dds]
+<22:12:50> [Warning] Texture does not exist [File=textures/defaults/grey.dds]
+<22:12:50> Precaching progress: 90.0% (12 of 13)
+<22:12:50> Precaching progress: 100.0% (13 of 13)
+<22:12:50> Precaching textures done in 0.01 seconds
+<22:12:50> CAIManager: navigation world monitor state: StartedPausedAndResumePending -> Stopped
+<22:12:50> CAIManager: navigation world monitor state: Stopped -> Started
+<22:12:50> Allocating shadow map cache 6324 x 6324: 76.28 MB
+<22:12:50> Allocating shadow map cache 4214 x 4214: 33.87 MB
+<22:12:50> Allocating shadow map cache 6324 x 6324: 76.28 MB
+<22:12:50> Allocating shadow map cache 4214 x 4214: 33.87 MB
+<22:13:11> general.save_level
+<22:13:11> Saving to assets/Levels/example/example.level...
+<22:13:11> Saving level file assets/Levels/example/example.level
+<22:13:11> Storing View settings...
+<22:13:11> Storing Fog settings...
+<22:13:11> Storing missions...<22:13:11> Done
+<22:13:11> 0 shader combination loaded for level assets/Levels/example
+<22:13:11> Saving Vegetation Map...
+<22:13:11> Level successfully saved
+<22:13:11> Returned: true
+<22:13:12> Loading terrain layers ...
+<22:13:12> CDefaultSkeleton Release: objects/characters/samplecharacter/skelproxy.chr
+<22:13:12> *** Start clearing render resources ***
+<22:13:12> *** Clearing render resources took 0.0 msec ***
+<22:13:12> Ending game context...
+<22:13:12> Destroying CActionGame instance 000002A40B7B8F80 (level="")
+<22:13:12> CSystem::Quit invoked from thread 36004 (main is 36004)
+<22:13:12> BaseInput - Shutting down all force feedback
+<22:13:12> ActionGame - Shutting down all force feedback
+<22:13:12> System:Quit
