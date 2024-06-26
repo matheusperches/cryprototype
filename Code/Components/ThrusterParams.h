@@ -1,6 +1,5 @@
 #pragma once
 #include "StdAfx.h"
-#include <CryMath/Cry_Math.h>
 
 // Creating a struct to store thruster rotation and translation parameters
 struct ThrusterParams

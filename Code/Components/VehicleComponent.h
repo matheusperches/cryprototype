@@ -32,8 +32,8 @@ public:
 	virtual void Initialize() override;
 	virtual Cry::Entity::EventFlags GetEventMask() const override;
 
-	int IsKeyPressed(const std::string& actionName);
-	float GetAxisValue(const std::string& axisName);
+	int IsKeyPressed(const string& actionName);
+	float GetAxisValue(const string& axisName);
 
 protected:
 private:
@@ -51,8 +51,8 @@ private:
 	bool hasGameStarted = false;
 
 	//Input maps
-	std::map<std::string, float> m_axisValues;
-	std::map<std::string, int> m_keyStates;
+	VectorMap<string, float> m_axisValues;
+	VectorMap<string, int> m_keyStates;
 
 	// Get CVar value
 	int GetFpsUseShip();

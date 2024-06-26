@@ -1,9 +1,7 @@
 // Copyright 2017-2021 Crytek GmbH / Crytek Group. All rights reserved.
-
 #pragma once
-#include <CryPhysics/IPhysics.h>
 #include <CryPhysics/physinterface.h>
-#include "ThrusterParams.h"
+
 
 namespace Cry::DefaultComponents
 {
@@ -28,10 +26,7 @@ public:
 	static void ReflectType(Schematyc::CTypeDesc<CShipThrusterComponent>& desc)
 	{
 		desc.SetGUID("{F0FD2A0A-DD3F-45D5-BBE7-4BCBBBF296BD}"_cry_guid);
-		desc.SetEditorCategory("Flight");
-		desc.SetLabel("Thruster");
 		desc.SetComponentFlags({ IEntityComponent::EFlags::HideFromInspector });
-		desc.SetDescription("Contains thruster logic only.");
 	}
 	virtual void ProcessEvent(const SEntityEvent& event) override;
 	virtual void Initialize() override;
@@ -55,6 +50,7 @@ private:
 	// Default Components
 	Cry::DefaultComponents::CRigidBodyComponent* m_pRigidBodyComponent;
 
+
 	// Variables
 	bool hasGameStarted = false;
 	pe_action_impulse impulseAction;
@@ -67,5 +63,5 @@ private:
 	EShipThrusterState m_currentThrusterState;
 
 	//Debug color
-	float color[4] = { 1, 0, 0, 1 };
+	float m_debugColor[4] = { 1, 0, 0, 1 };
 };

@@ -1,4 +1,5 @@
 // Copyright 2017-2019 Crytek GmbH / Crytek Group. All rights reserved.
+#pragma once
 #include "StdAfx.h"
 #include "ShipThrusterComponent.h"
 #include <CryRenderer/IRenderAuxGeom.h>

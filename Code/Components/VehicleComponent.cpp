@@ -146,12 +146,12 @@ void CVehicleComponent::InitializeInput()
 	m_pInputComponent->BindAction("ship", "exit", eAID_KeyboardMouse, EKeyId::eKI_Y);
 }
 
-int CVehicleComponent::IsKeyPressed(const std::string& actionName)
+int CVehicleComponent::IsKeyPressed(const string& actionName)
 {
 	return m_keyStates[actionName];
 }
 
-float CVehicleComponent::GetAxisValue(const std::string& axisName)
+float CVehicleComponent::GetAxisValue(const string& axisName)
 {
 	return m_axisValues[axisName];
 }

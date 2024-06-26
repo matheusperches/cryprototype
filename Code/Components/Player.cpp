@@ -112,25 +112,6 @@ void CPlayerComponent::ProcessEvent(const SEntityEvent& event)
 		{
 			gEnv->pConsole->GetCVar("fps_use_ship")->Set(0);
 		}
-		else if (gEnv->pConsole->GetCVar("fps_use_ship")->GetIVal() == 1)
-		{
-		}
-	}
-	break;
-	case Cry::Entity::EEvent::EditorPropertyChanged:
-	{
-		/*
-		if (shouldStartOnVehicle == false)
-		{
-			gEnv->pConsole->GetCVar("fps_use_ship")->Set(0);
-			CryLog("Value changed to 0");
-		}
-		else
-		{
-			gEnv->pConsole->GetCVar("fps_use_ship")->Set(1);
-			CryLog("Value changed to 1");
-		}
-		*/
 	}
 	break;
 	}
@@ -138,7 +119,7 @@ void CPlayerComponent::ProcessEvent(const SEntityEvent& event)
 
 Cry::Entity::EventFlags CPlayerComponent::GetEventMask() const
 {
-	return Cry::Entity::EEvent::GameplayStarted | Cry::Entity::EEvent::Update | Cry::Entity::EEvent::Reset | Cry::Entity::EEvent::EditorPropertyChanged;
+	return Cry::Entity::EEvent::GameplayStarted | Cry::Entity::EEvent::Update | Cry::Entity::EEvent::Reset;
 }
 
 void CPlayerComponent::InitializeHumanInput()
