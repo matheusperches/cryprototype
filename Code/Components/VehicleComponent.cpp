@@ -26,7 +26,6 @@ static void RegisterVehicleComponent(Schematyc::IEnvRegistrar& registrar)
 
 CRY_STATIC_AUTO_REGISTER_FUNCTION(&RegisterVehicleComponent)
 
-
 void CVehicleComponent::Initialize()
 {
 	m_pCameraComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CCameraComponent>();
@@ -49,9 +48,6 @@ void CVehicleComponent::ProcessEvent(const SEntityEvent& event)
 	case EEntityEvent::GameplayStarted:
 	{
 		hasGameStarted = true;
-		// ------------------------- //
-		// Can be commented to start with the human. Needs to check if other entities are setting camera to active during GameplayStarted first.
-		// ------------------------- //
 		if (GetFpsUseShip() == 1)
 		{
 			m_pCameraComponent->Activate();
@@ -60,20 +56,11 @@ void CVehicleComponent::ProcessEvent(const SEntityEvent& event)
 	break;
 	case EEntityEvent::Update:
 	{
-		if (hasGameStarted)
-		{
-			float color[4] = {1, 0, 0, 1};
-			//gEnv->pAuxGeomRenderer->Draw2dLabel(50, 75, 2, color, false, "Is CustomComponent Camera component active: %d", m_pCameraComponent->IsActive());
-			//gEnv->pAuxGeomRenderer->Draw2dLabel(50, 150, 2, color, false, "CC fps_use_ship: %d", gEnv->pConsole->GetCVar("fps_use_ship")->GetIVal());
 
-			// Execute Flight controls
-
-		}
 	}
 	break;
 	case Cry::Entity::EEvent::Reset:
 	{
-		//Reset everything at startup
 		hasGameStarted = false;
 	}
 	break;

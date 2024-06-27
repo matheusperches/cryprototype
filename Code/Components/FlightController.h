@@ -137,6 +137,9 @@ private:
 	// Tracking the total impulse generated
 	float m_totalImpulse = 0.f;
 
+	// Tracking FrameTime
+	float m_frameTime = 0.f;
+
 	// Retrieving the dynamics of our entity
 	pe_status_dynamics dynamics;
 
@@ -174,7 +177,7 @@ private:
 	bool Validator();
 
 	// Compares the current vs target accel, and calculates the jerk
-	Vec3 UpdateAccelerationWithJerk(JerkAccelerationData& accelData, float jerkRate, float jerkDecelRate, float deltaTime);
+	Vec3 UpdateAccelerationWithJerk(JerkAccelerationData& accelData, float deltaTime);
 
 	// Scales the acceleration asked, according to input magnitude, taking into account the inputs pressed
 	Vec3 ScaleLinearAccel();
@@ -196,9 +199,9 @@ private:
 
 	// Converts the accel target (after jerk) which contains both direction and magnitude, into thrust values.
 	Vec3 AccelToImpulse(Vec3 desiredAccel);  
-	float GetImpulse();
+	float GetImpulse() const;
 	void ResetImpulseCounter();
 
-	// Sequence all the function calls to produce our movement		
+	// Put the flight calculations in order, segmented by axis group, to produce motion.
 	void ProcessFlight();
 };

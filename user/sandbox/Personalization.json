@@ -821,7 +821,9 @@
     },
     "Level Editor": {
         "Recent Files": [
-            "assets/Levels/example/example.level"
+            "assets/Levels/test_level/test_level.level",
+            "assets/Levels/example/example.level",
+            "assets/levels/test_level/test_level.level"
         ]
     },
     "Material Editor": {

@@ -73,6 +73,7 @@ void CPlayerComponent::ProcessEvent(const SEntityEvent& event)
 			{
 				PlayerMovement();
 				CameraMovement();
+				m_frameTime = gEnv->pTimer->GetFrameTime();
 			}
 			/*
 			if (gEnv)
@@ -192,11 +193,11 @@ void CPlayerComponent::Interact(int activationMode, float value)
 {
 	if (gEnv->pConsole->GetCVar("fps_use_ship")->GetIVal() == 0)
 	{
-		if (activationMode == (int)eAAM_OnHold)
+		if (activationMode == (int)eAAM_OnPress)
 		{
 			// Creating an offset due to the camera position being set in the editor. Otherwise, the raycast would be stuck into the ground.
 			Vec3 offsetWorldPos = Vec3(m_pCameraComponent->GetEntity()->GetWorldPos().x, m_pCameraComponent->GetEntity()->GetWorldPos().y, m_pCameraComponent->GetEntity()->GetWorldPos().z + m_cameraDefaultPos.z);
-			IEntity* pHitEntity = RayCast(offsetWorldPos, m_lookOrientation, *m_pEntity);
+			IEntity* pHitEntity = RayCastTest(offsetWorldPos, m_lookOrientation, *m_pEntity);
 			if (pHitEntity && pHitEntity->GetComponent<CVehicleComponent>())
 			{
 				gEnv->pConsole->GetCVar("fps_use_ship")->Set(1);
@@ -218,45 +219,38 @@ void CPlayerComponent::PlayerMovement()
 void CPlayerComponent::CameraMovement()
 {
 	// Creates angles for look orientation
-	Ang3 rotationAngle = CCamera::CreateAnglesYPR(Matrix33(m_lookOrientation));
-	// Captures the delta rotation from mouse input 
-	rotationAngle.x += m_mouseDeltaRotation.x * m_rotationSpeed;
-	// Clamps the rotation angles so it does not clip over
-	rotationAngle.y = CLAMP(rotationAngle.y + m_mouseDeltaRotation.y * m_rotationSpeed, m_rotationLimitsMinPitch, m_rotationLimitsMaxPitch);
-	// Reset to zero to avoid double adding up mouse movement into the rotation
-	rotationAngle.z = 0;
+	Ang3 rotationAngle = CCamera::CreateAnglesYPR(Matrix33(m_lookOrientation)); // Captures the delta rotation from mouse input 
+	rotationAngle.x += m_mouseDeltaRotation.x * m_rotationSpeed * m_frameTime; // Scale by frame time
+	rotationAngle.y = CLAMP(rotationAngle.y + m_mouseDeltaRotation.y * m_rotationSpeed * m_frameTime, m_cameraPitchMin, m_cameraPitchMax); // Scale by frame time and clamp the rotation angles so it does not clip over
+	rotationAngle.z = 0.f;
 	m_lookOrientation = Quat(CCamera::CreateOrientationYPR(rotationAngle));
 
-	// Creates angles for the camera
-
+	// Creating angles for Yaw rotation
 	Ang3 yawAngle = CCamera::CreateAnglesYPR(Matrix33(m_lookOrientation));
-	// Reset to zero to avoid double adding up mouse movement into the rotation
-	yawAngle.y = 0;
-	// 
+	yawAngle.y = 0.f;
 	const Quat finalYaw = Quat(CCamera::CreateOrientationYPR(yawAngle));
 	m_pEntity->SetRotation(finalYaw);
 
+	// Creating angles for pitch rotation
 	Ang3 pitchAngle = CCamera::CreateAnglesYPR(Matrix33(m_lookOrientation));
-	// Zeroing out Y to avoid any movement to get added into the mix. 
-	pitchAngle.x = 0;
+	pitchAngle.x = 0; // Zeroing out X to avoid any movement to get added into the mix. 
 	Matrix34 finalCamMatrix;
 	finalCamMatrix.SetTranslation(m_pCameraComponent->GetTransformMatrix().GetTranslation());
 	Matrix33 camRotation = CCamera::CreateOrientationYPR(pitchAngle);
 	finalCamMatrix.SetRotation33(camRotation);
 	m_pCameraComponent->SetTransformMatrix(finalCamMatrix);
-
 }
 
 IEntity* CPlayerComponent::RayCast(Vec3 origin, Quat dir, IEntity& pSkipEntity)
 {
 	ray_hit hit;
-	Vec3 finalDir = dir * Vec3(0.0f, m_InteractionDistance, 0.0f);
+	Vec3 finalDir = dir * Vec3(0.0f, m_playerInteractionRange, 0.0f);
+
 	int objTypes = ent_all;
 	const unsigned int flags = rwi_stop_at_pierceable | rwi_colltype_any;
+
 	static IPhysicalEntity* pSkipEntities[10];
 	pSkipEntities[0] = pSkipEntity.GetPhysics();
-
-	//CryLog("CameraComponent: x=%f, y=%f, z=%f", m_pCameraComponent->GetEntity()->GetWorldPos().x, m_pCameraComponent->GetEntity()->GetWorldPos().y, m_pCameraComponent->GetEntity()->GetWorldPos().z);
 
 	gEnv->pPhysicalWorld->RayWorldIntersection(origin, finalDir, objTypes, flags, &hit, 1, pSkipEntities, 2);
 
@@ -271,10 +265,58 @@ IEntity* CPlayerComponent::RayCast(Vec3 origin, Quat dir, IEntity& pSkipEntity)
 	IEntity* pEntity = gEnv->pEntitySystem->GetEntityFromPhysics(pHitEntity);
 	if (pEntity)
 	{
-		IEntityClass* pClass = pEntity->GetClass();
-		pClassName = pClass->GetName();
 		return pEntity;
 	}
 	else
 		return nullptr;
+}
+
+IEntity* CPlayerComponent::RayCastTest(Vec3 origin, Quat dir, IEntity& pSkipEntity) const
+{
+	ray_hit hit;
+
+	// Convert quaternion to direction vector
+	Vec3 direction = dir.GetColumn1().GetNormalized(); // Assuming forward direction along y-axis
+	Vec3 finalDir = direction * m_playerInteractionRange;
+
+	int objTypes = ent_all;
+	const unsigned int flags = rwi_stop_at_pierceable | rwi_colltype_any;
+
+	// Initialize the skip entities array and assign the skip entity
+	IPhysicalEntity* pSkipEntities[1] = { pSkipEntity.GetPhysics() };
+
+	// Perform the ray world intersection
+	int hits = gEnv->pPhysicalWorld->RayWorldIntersection(origin, finalDir, objTypes, flags, &hit, 1, pSkipEntities, 1);
+
+
+	if (hits == 0 || !hit.pCollider) // Stop executing right here if there are no hits
+	{
+		return nullptr;
+	}
+
+	// Debug visualization (ensure this is disabled in production builds)
+	IPersistantDebug* pPD = gEnv->pGameFramework->GetIPersistantDebug();
+	pPD->Begin("Raycast", false);
+	pPD->AddSphere(hit.pt, 0.25f, ColorF(Vec3(1, 1, 0), 0.5f), 1.0f);
+
+
+	IEntity* pEntity = gEnv->pEntitySystem->GetEntityFromPhysics(hit.pCollider);
+	return pEntity;
+
+	/*
+	if (hit.pCollider)
+	{
+		pPD->Begin("Raycast", false);
+		pPD->AddSphere(hit.pt, 0.25f, ColorF(Vec3(1, 1, 0), 0.5f), 1.0f);
+		IPhysicalEntity* pHitEntity = hit.pCollider;
+		IEntity* pEntity = gEnv->pEntitySystem->GetEntityFromPhysics(pHitEntity);
+		if (pEntity)
+		{
+			return pEntity;
+		}
+		else 
+			return nullptr; // Return the hit entity if found
+	}
+	return nullptr; // Return nullptr if no entity was hit
+	*/
 }

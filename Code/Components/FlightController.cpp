@@ -28,7 +28,6 @@ static void RegisterFlightController(Schematyc::IEnvRegistrar& registrar)
 
 CRY_STATIC_AUTO_REGISTER_FUNCTION(&RegisterFlightController)
 
-
 void CFlightController::Initialize()
 {
 	// Initialize stuff
@@ -36,6 +35,9 @@ void CFlightController::Initialize()
 	m_pShipThrusterComponent = m_pEntity->GetOrCreateComponent<CShipThrusterComponent>();
 	m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
 	m_physEntity = m_pEntity->GetPhysicalEntity();
+	pe_simulation_params simParams;
+	simParams.gravity = Vec3(ZERO);
+	m_physEntity->SetParams(&simParams);
 }
 
 Cry::Entity::EventFlags CFlightController::GetEventMask() const
@@ -50,18 +52,20 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 	{
 	case EEntityEvent::GameplayStarted:
 	{
+		ResetJerkParams();
 		InitializeAccelParamsVectors();
-		InitializeJerkParams();
+		InitializeJerkParams(); 
 	}
 	break;
 	case EEntityEvent::Update:
 	{
+		m_frameTime = gEnv->pTimer->GetFrameTime();
 		ProcessFlight();
 	}
 	break;
 	case Cry::Entity::EEvent::Reset:
 	{
-		ResetJerkParams();
+
 	}
 	break;
 	}
@@ -81,13 +85,33 @@ bool CFlightController::Validator()
 	else return false;
 }
 
+void CFlightController::InitializeJerkParams()
+{
+	m_linearAccelData.jerk = m_linearJerkRate;
+	m_linearAccelData.jerkDecelRate = m_linearJerkDecelRate;
+	m_rollAccelData.jerk = m_RollJerkRate;
+	m_rollAccelData.jerkDecelRate = m_RollJerkDecelRate;
+	m_pitchYawAccelData.jerk = m_PitchYawJerkRate;
+	m_pitchYawAccelData.jerkDecelRate = m_PitchYawJerkDecelRate;
+}
+
+void CFlightController::ResetJerkParams()
+{
+	m_linearAccelData.currentJerkAccel = Vec3(ZERO);
+	m_rollAccelData.currentJerkAccel = Vec3(ZERO);
+	m_pitchYawAccelData.currentJerkAccel = Vec3(ZERO);
+	m_linearAccelData.targetJerkAccel = Vec3(ZERO);
+	m_rollAccelData.targetJerkAccel = Vec3(ZERO);
+	m_pitchYawAccelData.targetJerkAccel = Vec3(ZERO);
+}
+
 void CFlightController::InitializeAccelParamsVectors()
 {
 	float radYawAccel = DegreesToRadian(m_yawAccel);
 	float radPitchAccel = DegreesToRadian(m_pitchAccel);
 	float radRollAccel = DegreesToRadian(m_rollAccel);
 
-	// Initializing the maps with the values of our accels
+	// Initializing the maps with the names of our axis and their respective accelerations
 
 	m_linearAxisParamsMap[AxisType::Linear] = {
 		{"accel_forward", m_fwdAccel},
@@ -107,21 +131,9 @@ void CFlightController::InitializeAccelParamsVectors()
 	};
 }
 
-void CFlightController::InitializeJerkParams()
+float CFlightController::DegreesToRadian(float degrees)
 {
-	m_linearAccelData.jerk = m_linearJerkRate;
-	m_linearAccelData.jerkDecelRate = m_linearJerkDecelRate;
-	m_rollAccelData.jerk = m_RollJerkRate;
-	m_rollAccelData.jerkDecelRate = m_RollJerkDecelRate;
-	m_pitchYawAccelData.jerk = m_PitchYawJerkRate;
-	m_pitchYawAccelData.jerkDecelRate = m_PitchYawJerkDecelRate;
-}
-
-void CFlightController::ResetJerkParams()
-{
-	m_linearAccelData.currentJerkAccel = Vec3(ZERO);
-	m_rollAccelData.currentJerkAccel = Vec3(ZERO);
-	m_pitchYawAccelData.currentJerkAccel = Vec3(ZERO);
+	return degrees * (gf_PI / 180.f);
 }
 
 bool CFlightController::IsKeyPressed(const string& actionName)
@@ -150,50 +162,6 @@ float CFlightController::NormalizeInput(float inputValue, bool isMouse) const
 		inputValue *= m_mouseSenseFactor;
 
 	return CLAMP(inputValue, m_MIN_INPUT_VALUE, m_MAX_INPUT_VALUE);
-}
-
-Vec3 CFlightController::UpdateAccelerationWithJerk(JerkAccelerationData& accelData, float jerkRate, float jerkDecelRate, float deltaTime)
-{
-	// Calculate the difference between current and target acceleration
-	Vec3 deltaAccel = accelData.targetJerkAccel - accelData.currentJerkAccel;
-	Vec3 jerk;
-
-	switch (accelData.state)
-	{
-		case AccelState::Idle:
-		{
-			jerk = Vec3(ZERO);
-			break;
-		}
-		case AccelState::Accelerating:
-		{
-			// Root jerk: Calculates the scaling factor based on the square root of the magnitude of deltaAccel
-			float scale = powf(fabs(deltaAccel.GetLength()), 0.5f);
-			// Calculate jerk: normalized deltaAccel scaled by scale, jerkRate, and deltaTime
-			jerk = deltaAccel.GetNormalized() * scale * jerkRate * deltaTime;
-			break;
-		}
-		case AccelState::Decelerating:
-		{
-			jerk = deltaAccel * jerkDecelRate * deltaTime;
-			break;
-		}
-	}
-	// Calculate new acceleration by adding jerk to current acceleration
-	Vec3 newAccel = accelData.currentJerkAccel + jerk;
-
-	//gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, color, false, "newAccel: x= %f, y= %f, z=%f", newAccel.x, newAccel.y, newAccel.z);
-
-
-	// Clamp newAccel to targetAccel to prevent overshooting
-	if ((deltaAccel.dot(jerk) < ZERO))
-	{
-		newAccel = accelData.targetJerkAccel;
-		accelData.state = AccelState::Idle;
-	}
-
-	// Return the updated acceleration
-	return newAccel;
 }
 
 Vec3 CFlightController::ScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelParams>>& axisAccelParamsList)
@@ -268,17 +236,13 @@ Vec3 CFlightController::ScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelP
 			accelDirection += localDirection * normalizeInputValue; // Accumulate axis direction with magnitude in local space, scaling by the normalized input
 			requestedAccel += localDirection * accelParams.AccelAmount * normalizeInputValue; // Accumulate desired acceleration based on thrust amount and input value, combining for multiple axes
 		}
-
-		// Normalize accelDirection to get the direction vector
-		if (accelDirection.GetLength() > 0.f)
+		if (accelDirection.GetLength() > 0.f) // Normalize accelDirection to get the direction vector
 		{
 			accelDirection.Normalize();
 		}
-
-		// Scale the direction vector by the magnitude of requestedAccel
-		 scaledAccelDirection = accelDirection * requestedAccel.GetLength();
-		//CryLog("scaledAccelDirection: x= %f, y= %f, z=%f ", scaledAccelDirection.x, scaledAccelDirection.y, scaledAccelDirection.z);
-
+		
+		scaledAccelDirection = accelDirection * requestedAccel.GetLength(); // Scale the direction vector by the magnitude of requestedAccel
+		
 		if (axisType == AxisType::Linear)
 		{
 			UpdateAccelerationState(m_linearAccelData, scaledAccelDirection);
@@ -293,27 +257,73 @@ Vec3 CFlightController::ScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelP
 		}
 
 	}
-
 	return scaledAccelDirection;   // Return the scaled acceleration direction vector
 }
 
-float CFlightController::DegreesToRadian(float degrees)
+Vec3 CFlightController::UpdateAccelerationWithJerk(JerkAccelerationData& accelData, float deltaTime)
 {
-	return degrees * (gf_PI / 180.f);
+	// Calculate the difference between current and target acceleration
+	Vec3 deltaAccel = accelData.targetJerkAccel - accelData.currentJerkAccel;
+	Vec3 jerk;
+
+	switch (accelData.state)
+	{
+		case AccelState::Idle:
+		{
+			jerk = Vec3(ZERO);
+			break;
+		}
+		case AccelState::Accelerating:
+		{
+			float scale = powf(fabs(deltaAccel.GetLength()), 0.5f); // Root jerk: Calculates the scaling factor based on the square root of the magnitude of deltaAccel
+			jerk = deltaAccel.GetNormalized() * scale * accelData.jerk * deltaTime; // Calculate jerk: normalized deltaAccel scaled by scale, jerkRate, and deltaTime
+			break;
+		}
+		case AccelState::Decelerating:
+		{
+			jerk = deltaAccel * accelData.jerkDecelRate * deltaTime;
+			break;
+		}
+	}
+	Vec3 newAccel = accelData.currentJerkAccel + jerk; // Calculate new acceleration by adding jerk to current acceleration
+
+	if ((deltaAccel.dot(jerk) < ZERO)) 	// Clamp newAccel to targetAccel to prevent overshooting
+	{
+		newAccel = accelData.targetJerkAccel;
+		accelData.state = AccelState::Idle;
+	}
+	return newAccel; // Return the updated acceleration
+}
+
+
+/* This function is instrumental for the correct execution of UpdateAccelerationWithJerk()
+*  This function is called by each axis group independently (Pitch / Yaw; Roll; Linear)
+*  Obtains the target acceleration from the JerkAccelerationData struct and updates the struct with the current state.
+*  targetAccel is upated according to the player input (-1; 1). Any value different than zero means the player wants to move.
+*  Simply sets the acceleration state if the target Accel is zero. 
+*/
+void CFlightController::UpdateAccelerationState(JerkAccelerationData& accelData, const Vec3& targetAccel)
+{
+	accelData.targetJerkAccel = targetAccel;
+	if (targetAccel.IsZero())
+	{
+		accelData.state = AccelState::Decelerating;
+	}
+	else
+	{
+		accelData.state = AccelState::Accelerating;
+	}
 }
 
 Vec3 CFlightController::AccelToImpulse(Vec3 desiredAccel)
 {
-	//m_totalImpulse = 0.f;
 	if (Validator())
 	{
 		if (m_physEntity)
 		{
 			if (m_physEntity->GetStatus(&dynamics))
 			{
-				Vec3 impulse = desiredAccel * dynamics.mass * gEnv->pTimer->GetFrameTime();
-				CryLog("desiredAccel: x= %f, y = %f, z = %f", desiredAccel.x, desiredAccel.y, desiredAccel.z);
-				CryLog("impulse: x= %f, y = %f, z = %f", impulse.x, impulse.y, impulse.z);
+				Vec3 impulse = desiredAccel * dynamics.mass * m_frameTime; // Calculates our final impulse based on the entity's mass.
 				m_totalImpulse += impulse.GetLength();
 				return impulse;
 			}
@@ -328,22 +338,9 @@ void CFlightController::ResetImpulseCounter()
 }
 
 
-float CFlightController::GetImpulse()
+float CFlightController::GetImpulse() const
 {
 	return m_totalImpulse;
-}
-
-void CFlightController::UpdateAccelerationState(JerkAccelerationData& accelData, const Vec3& targetAccel)
-{
-	accelData.targetJerkAccel = targetAccel;
-	if (targetAccel.IsZero())
-	{
-		accelData.state = AccelState::Decelerating;
-	}
-	else
-	{
-		accelData.state = AccelState::Accelerating;
-	}
 }
 
 Vec3 CFlightController::GetVelocity()
@@ -367,40 +364,40 @@ Vec3 CFlightController::GetVelocity()
 float CFlightController::GetAcceleration()
 {
 	m_shipVelocity.currentVelocity = GetVelocity().GetLength();
-	float acceleration = (m_shipVelocity.currentVelocity - m_shipVelocity.previousVelocity) / gEnv->pTimer->GetFrameTime();
+	float acceleration = (m_shipVelocity.currentVelocity - m_shipVelocity.previousVelocity) / m_frameTime;
 	m_shipVelocity.previousVelocity = m_shipVelocity.currentVelocity;
 
 	return acceleration;
 }
 
+/* Puts the flight calculations in order, segmented by axis group, to produce motion.
+*  Starts by resetting the impulse counter, a variable used to track how much total impulse we are generating. 
+*  Step 1. Call ScaleAccel to create a desired acceleration, with a local space direction, scaled by the magnitude of the input.
+*  Step 2. Infuse jerk into the result of step 1
+*  Step 3. Convert the result of step 2 into a force and apply that force. 
+*  Repeat step 1 to 3 for other axis.
+*/
 void CFlightController::ProcessFlight()
 {
 	ResetImpulseCounter();
+	m_linearAccelData.targetJerkAccel = ScaleAccel(m_linearAxisParamsMap); // Scale and set the target acceleration for linear movement
 
-	// Scale and set the target jerk acceleration for linear movement
-	m_linearAccelData.targetJerkAccel = ScaleAccel(m_linearAxisParamsMap);
+	m_linearAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_linearAccelData, m_frameTime); 	// Infuse the acceleration value with the current jerk coeficient
 
-	// Update the current jerk acceleration based on the target jerk acceleration, jerk rate, and frame time
-	m_linearAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_linearAccelData, m_linearAccelData.jerk, m_linearAccelData.jerkDecelRate, gEnv->pTimer->GetFrameTime());
 
-	// Convert the current jerk acceleration to an impulse and apply it to the ship for linear movement
-	m_pShipThrusterComponent->ApplyLinearImpulse(m_physEntity, AccelToImpulse(m_linearAccelData.currentJerkAccel));
-
+	m_pShipThrusterComponent->ApplyLinearImpulse(m_physEntity, AccelToImpulse(m_linearAccelData.currentJerkAccel));	// Convert the acceleration to an impulse and apply it to the ship for linear movement
 
 	m_rollAccelData.targetJerkAccel = ScaleAccel(m_rollAxisParamsMap);
-	m_rollAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_rollAccelData, m_rollAccelData.jerk, m_rollAccelData.jerkDecelRate, gEnv->pTimer->GetFrameTime());
+	m_rollAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_rollAccelData, m_frameTime);
 	m_pShipThrusterComponent->ApplyAngularImpulse(m_physEntity, AccelToImpulse(m_rollAccelData.currentJerkAccel));
 
 	m_pitchYawAccelData.targetJerkAccel = ScaleAccel(m_pitchYawAxisParamsMap);
-	m_pitchYawAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_pitchYawAccelData, m_pitchYawAccelData.jerk, m_pitchYawAccelData.jerkDecelRate, gEnv->pTimer->GetFrameTime());
+	m_pitchYawAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_pitchYawAccelData, m_frameTime);
 	m_pShipThrusterComponent->ApplyAngularImpulse(m_physEntity, AccelToImpulse(m_pitchYawAccelData.currentJerkAccel));
 
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 60, 2, m_debugColor, false, "Velocity: %f", GetVelocity().GetLength());
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 90, 2, m_debugColor, false, "acceleration: %f", GetAcceleration());
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 120, 2, m_debugColor, false, "total impulse: %f", GetImpulse());
+	// On-screen Debug 
 
-	/*
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 80, 2, m_debugColor, false, "rollAccelData.currentAccel: x= %f, y = %f, z = %f", m_rollAccelData.currentJerkAccel.x, m_rollAccelData.currentJerkAccel.y, m_rollAccelData.currentJerkAccel.z);
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 100, 2, m_debugColor, false, "linearAccelData.currentAccel: x= %f, y = %f, z = %f", m_linearAccelData.currentJerkAccel.x, m_linearAccelData.currentJerkAccel.y, m_linearAccelData.currentJerkAccel.z);
-	*/
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 60, 2, m_debugColor, false, "Velocity: %.2f", GetVelocity().GetLength());
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 90, 2, m_debugColor, false, "acceleration: %.2f", GetAcceleration());
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 120, 2, m_debugColor, false, "total impulse: %.3f", GetImpulse());
 }
