@@ -8,9 +8,6 @@
 #include <CryEntitySystem/IEntitySystem.h>
 #include <CrySystem/ConsoleRegistration.h>
 
-// Forward declaration
-#include <DefaultComponents/Input/InputComponent.h>
-
 // Registers the component to be used in the engine
 static void RegisterCPlayerManager(Schematyc::IEnvRegistrar& registrar)
 {
@@ -57,11 +54,9 @@ void CPlayerManager::ProcessEvent(const SEntityEvent& event)
 	}
 }
 
-
-
 void CPlayerManager::CharacterSwitcher()
 {
-	fps_use_ship = gEnv->pConsole->GetCVar("fps_use_ship");
+	m_fpsUseShip = gEnv->pConsole->GetCVar("fps_use_ship");
 	if (gEnv->pEntitySystem)
 	{
 		IEntity* shipEntity = gEnv->pEntitySystem->FindEntityByName("ship");
@@ -71,7 +66,7 @@ void CPlayerManager::CharacterSwitcher()
 		{
 			if (playerEntity || shipEntity)
 			{
-				if (fps_use_ship->GetIVal() == 0)
+				if (m_fpsUseShip->GetIVal() == 0)
 				{
 					if (!playerEntity->GetParent())
 					{
@@ -88,7 +83,7 @@ void CPlayerManager::CharacterSwitcher()
 						playerEntity->DetachThis();
 					}
 				}
-				else if (fps_use_ship->GetIVal() == 1)
+				else if (m_fpsUseShip->GetIVal() == 1)
 				{
 					if (!playerEntity->GetParent())
 					{

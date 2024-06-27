@@ -47,6 +47,6 @@ private:
 	CPlayerManager& operator=(const CPlayerManager&) = delete;
 
 	// Cvar reference to be initialized later
-	ICVar* fps_use_ship;
+	ICVar* m_fpsUseShip;
 
 };

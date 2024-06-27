@@ -1,7 +1,5 @@
 // Copyright 2017-2021 Crytek GmbH / Crytek Group. All rights reserved.
-
 #pragma once
-
 
 namespace Cry::DefaultComponents
 {
@@ -44,8 +42,7 @@ private:
 
 	// Flight Inputs
 	void InitializeInput();
-	bool fps_use_ship();
-
+	bool IsFpsUseShip();
 
 	// Variables
 	bool hasGameStarted = false;

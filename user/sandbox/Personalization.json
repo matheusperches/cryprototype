@@ -811,6 +811,11 @@
             "/Animations/Mannequin/ADB"
         ]
     },
+    "Environment Editor": {
+        "Recent Files": [
+            "Libs/environmentpresets/example.env.cryasset"
+        ]
+    },
     "FavoritesHelper": {
         "Asset Browser": null
     },

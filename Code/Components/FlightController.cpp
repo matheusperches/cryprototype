@@ -2,18 +2,16 @@
 #pragma once
 #include "StdAfx.h"
 #include "FlightController.h"
+
 #include <CryRenderer/IRenderAuxGeom.h>
 #include <CrySchematyc/Env/Elements/EnvComponent.h>
 #include <CryCore/StaticInstanceList.h>
 #include <CrySchematyc/Env/IEnvRegistrar.h>
 #include <CryEntitySystem/IEntitySystem.h>
-#include <CryPhysics/primitives.h>
 #include <CryPhysics/physinterface.h>
-#include <CryCore/Containers/CryArray.h>
 
 // Forward declaration
 #include <DefaultComponents/Input/InputComponent.h>
-#include <DefaultComponents/Physics/RigidBodyComponent.h>
 #include <Components/VehicleComponent.h>
 
 // Registers the component to be used in the engine
@@ -36,6 +34,7 @@ void CFlightController::Initialize()
 	// Initialize stuff
 	GetVehicleInputManager();
 	m_pShipThrusterComponent = m_pEntity->GetOrCreateComponent<CShipThrusterComponent>();
+	m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
 	m_physEntity = m_pEntity->GetPhysicalEntity();
 }
 
@@ -51,28 +50,17 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 	{
 	case EEntityEvent::GameplayStarted:
 	{
-		hasGameStarted = true;
 		InitializeAccelParamsVectors();
 		InitializeJerkParams();
 	}
 	break;
 	case EEntityEvent::Update:
 	{
-		if (hasGameStarted)
-		{
-			// Execute Flight controls
-			// Check if self is valid
-			if (m_pEntity)
-			{
-				ProcessFlight();
-			}
-		}
+		ProcessFlight();
 	}
 	break;
 	case Cry::Entity::EEvent::Reset:
 	{
-		//Reset everything at startup
-		hasGameStarted = false;
 		ResetJerkParams();
 	}
 	break;
@@ -116,6 +104,15 @@ void CFlightController::InitializeAccelParamsVectors()
 		{"yaw", radYawAccel},
 		{"pitch", radPitchAccel},
 	};
+
+	m_linearAxisParamsMap[AxisType::Linear] = {
+		{"accel_forward", m_fwdAccel},
+		{"accel_backward", m_bwdAccel},
+		{"accel_left", m_leftRightAccel},
+		{"accel_right", m_leftRightAccel},
+		{"accel_up", m_upDownAccel},
+		{"accel_down", m_upDownAccel}
+	};
 }
 
 void CFlightController::InitializeJerkParams()
@@ -154,7 +151,7 @@ Vec3 CFlightController::ImpulseWorldToLocal(const Vec3& localDirection)
 	return worldDirection;
 }
 
-float CFlightController::NormalizeInput(float inputValue, bool isMouse)
+float CFlightController::NormalizeInput(float inputValue, bool isMouse) const
 {
 	// Scale the input value by the sensitivity factor
 	if (isMouse)
@@ -242,20 +239,36 @@ Vec3 CFlightController::ScaleLinearAccel()
 
 		// Calculate acceleration direction based on axis input, combining all axes
 		accelDirection += localDirection * NormalizedinputValue;
-
+		//CryLog("accelDirection: x= %f, y= %f, z=%f ", accelDirection.x, accelDirection.y, accelDirection.z);
 		// Calculate desired acceleration based on thrust amount and input value, combining for multiple axes
 		requestedAccel += localDirection * LinearAxisAccelParams.AccelAmount * NormalizedinputValue;
 	}
 
-	// Calculate the dot product of accelDirection and desiredAccel to preserve the direction
-	float dotProduct = accelDirection.dot(requestedAccel);
+	// Normalize accelDirection to get the direction vector
+	if (accelDirection.GetLength() > 0.f)
+	{
+		accelDirection.Normalize();
+	}
 
-	// Scale accelDirection by the dot product to get the final scaled acceleration direction
-	Vec3 scaledAccelDirection = accelDirection * dotProduct;
+	// Scale the direction vector by the magnitude of requestedAccel
+	Vec3 scaledAccelDirection = accelDirection * requestedAccel.GetLength();
+	//CryLog("scaledAccelDirection: x= %f, y= %f, z=%f ", scaledAccelDirection.x, scaledAccelDirection.y, scaledAccelDirection.z);
 
 	// Populate the accel data
 	m_linearAccelData.targetJerkAccel = scaledAccelDirection;
-	
+
+	/*
+	// Calculate the dot product of accelDirection and desiredAccel to preserve the direction
+	float dotProduct = accelDirection.dot(requestedAccel);
+	CryLog("dotProduct: %f", dotProduct);
+
+	// Scale accelDirection by the dot product to get the final scaled acceleration direction
+	Vec3 scaledAccelDirection = accelDirection * dotProduct;
+	CryLog("scaledAccelDirection dot product: x= %f, y= %f, z=%f ", scaledAccelDirection.x, scaledAccelDirection.y, scaledAccelDirection.z);
+
+	// Populate the accel data
+	m_linearAccelData.targetJerkAccel = scaledAccelDirection;
+	*/
 	return scaledAccelDirection;   // Return the scaled acceleration direction vector
 }
 
@@ -287,17 +300,11 @@ Vec3 CFlightController::ScaleRollAccel()
 		requestedAccel += localDirection * RollAxisAccelParams.AccelAmount * NormalizedinputValue;
 	}
 
-	// Calculate the dot product of accelDirection and desiredAccel to preserve the direction
-	float dotProduct = accelDirection.dot(requestedAccel);
-
-	// Scale accelDirection by the dot product to get the final scaled acceleration direction
-	Vec3 scaledAccelDirection = accelDirection * dotProduct;
-
-	// Log the scaled acceleration direction for debugging purposes
-	//CryLog("scaledAccelDirection: x= %f, y = %f, z = %f", scaledAccelDirection.x, scaledAccelDirection.y, scaledAccelDirection.z);
+	// Scale the direction vector by the magnitude of requestedAccel
+	Vec3 scaledAccelDirection = accelDirection * requestedAccel.GetLength();
 
 	// Populate the accel data
-	m_rollAccelData.targetJerkAccel = scaledAccelDirection;
+	m_linearAccelData.targetJerkAccel = scaledAccelDirection;
 
 	return scaledAccelDirection;   // Return the scaled acceleration direction vector
 }
@@ -332,17 +339,86 @@ Vec3 CFlightController::ScalePitchYawAccel()
 		requestedAccel += localDirection * PitchYawAxisAccelParamsList.AccelAmount * NormalizedinputValue;
 	}
 
-	// Calculate the dot product of accelDirection and desiredAccel to preserve the direction
-	float dotProduct = accelDirection.dot(requestedAccel);
-
-	// Scale accelDirection by the dot product to get the final scaled acceleration direction
-	Vec3 scaledAccelDirection = accelDirection * dotProduct;
+	// Scale the direction vector by the magnitude of requestedAccel
+	Vec3 scaledAccelDirection = accelDirection * requestedAccel.GetLength();
 
 	// Populate the accel data
-	m_pitchYawAccelData.targetJerkAccel = scaledAccelDirection;
+	m_linearAccelData.targetJerkAccel = scaledAccelDirection;
 
-	return AccelToImpulse(scaledAccelDirection);   // Return the scaled acceleration direction vector
+	return scaledAccelDirection;   // Return the scaled acceleration direction vector
 }
+/*
+*  Still working on it
+Vec3 CFlightController::ScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelParams>>& axisAccelParamsList)
+{
+	// Initializing vectors for acceleration direction and desired acceleration
+	Vec3 accelDirection(ZERO);   // Vector to accumulate the direction of applied accelerations
+	Vec3 requestedAccel(ZERO);     // Vector to accumulate desired acceleration magnitudes
+
+	// Iterating over the list of axis and their input values
+	for (const auto& AxisAccelParams : axisAccelParamsList)
+	{
+		float NormalizedinputValue = NormalizeInput(AxisGetter(AxisAccelParams.axisName));   // Retrieve input value for the current axis and normalize to a range of -1 to 1
+
+		// Calculate local thrust direction based on input value
+		Vec3 localDirection;
+		if (AxisAccelParams.axisName == "accel_forward") {
+			localDirection = Vec3(0.f, 1.f, 0.f); // Forward in local space
+		}
+		else if (AxisAccelParams.axisName == "accel_backward") {
+			localDirection = Vec3(0.f, -1.f, 0.f); // Backward in local space
+		}
+		else if (AxisAccelParams.axisName == "accel_left") {
+			localDirection = Vec3(-1.f, 0.f, 0.f); // Left in local space
+		}
+		else if (AxisAccelParams.axisName == "accel_right") {
+			localDirection = Vec3(1.f, 0.f, 0.f); // Right in local space
+		}
+		else if (AxisAccelParams.axisName == "accel_up") {
+			localDirection = Vec3(0.f, 0.f, 1.f); // Up in local space
+		}
+		else if (AxisAccelParams.axisName == "accel_down") {
+			localDirection = Vec3(0.f, 0.f, -1.f); // Down in local space
+		}
+		else if (AxisAccelParams.axisName == "yaw") {
+			localDirection = Vec3(0.f, 0.f, -1.f); // yaw left or right
+		}
+		else if (AxisAccelParams.axisName == "pitch") {
+			localDirection = Vec3(-1.f, 0.f, 0.f); // pitch left or right in local space
+		}
+		else if (AxisAccelParams.axisName == "roll_left") {
+			localDirection = Vec3(0.f, -1.f, 0.f); // roll left in local space
+		}
+		else if (AxisAccelParams.axisName == "roll_right") {
+			localDirection = Vec3(0.f, 1.f, 0.f); // roll right in local space
+		}
+		localDirection = ImpulseWorldToLocal(localDirection);
+
+		// Calculate acceleration direction based on axis input, combining all axes
+		accelDirection += localDirection * NormalizedinputValue;
+		//CryLog("accelDirection: x= %f, y= %f, z=%f ", accelDirection.x, accelDirection.y, accelDirection.z);
+		// Calculate desired acceleration based on thrust amount and input value, combining for multiple axes
+		requestedAccel += localDirection * AxisAccelParams.AccelAmount * NormalizedinputValue;
+	}
+
+	// Normalize accelDirection to get the direction vector
+	if (accelDirection.GetLength() > 0.f)
+	{
+		accelDirection.Normalize();
+	}
+
+	// Scale the direction vector by the magnitude of requestedAccel
+	Vec3 scaledAccelDirection = accelDirection * requestedAccel.GetLength();
+	//CryLog("scaledAccelDirection: x= %f, y= %f, z=%f ", scaledAccelDirection.x, scaledAccelDirection.y, scaledAccelDirection.z);
+
+	// Update the ship state
+	if ()
+
+	m_linearAccelData.targetJerkAccel = scaledAccelDirection;
+
+	return scaledAccelDirection;   // Return the scaled acceleration direction vector
+}
+*/
 
 float CFlightController::DegreesToRadian(float degrees)
 {
@@ -351,20 +427,33 @@ float CFlightController::DegreesToRadian(float degrees)
 
 Vec3 CFlightController::AccelToImpulse(Vec3 desiredAccel)
 {
+	//m_totalImpulse = 0.f;
 	if (Validator())
 	{
 		if (m_physEntity)
 		{
 			if (m_physEntity->GetStatus(&dynamics))
 			{
-				float mass = dynamics.mass;
-				Vec3 impulse = desiredAccel * mass;
-				//CryLog("impulse: x= %f, y = %f, z = %f", impulse.x, impulse.y, impulse.z);
+				Vec3 impulse = desiredAccel * dynamics.mass * gEnv->pTimer->GetFrameTime();
+				CryLog("desiredAccel: x= %f, y = %f, z = %f", desiredAccel.x, desiredAccel.y, desiredAccel.z);
+				CryLog("impulse: x= %f, y = %f, z = %f", impulse.x, impulse.y, impulse.z);
+				m_totalImpulse += impulse.GetLength();
 				return impulse;
 			}
 		}
 	}
 	return Vec3(ZERO);
+}
+
+void CFlightController::ResetImpulseCounter()
+{
+	m_totalImpulse = 0.f;
+}
+
+
+float CFlightController::GetImpulse()
+{
+	return m_totalImpulse;
 }
 
 void CFlightController::UpdateAccelerationState(JerkAccelerationData& accelData, const Vec3& targetAccel)
@@ -409,9 +498,14 @@ float CFlightController::GetAcceleration()
 
 void CFlightController::ProcessFlight()
 {
-	Vec3 targetLinearAccel = ScaleLinearAccel();
-	Vec3 targetRollAccelDir = ScaleRollAccel();
-	Vec3 targetPitchYawAccel = ScalePitchYawAccel();
+	ResetImpulseCounter();
+
+	// Only used to update the acceleration state. 
+	// currentJerkAccel member of AccelData gets updated inside the functions below. 
+	// I should probably invert these later so its not so confusing. 
+	targetLinearAccel = ScaleLinearAccel();
+	targetRollAccelDir = ScaleRollAccel();
+	targetPitchYawAccel = ScalePitchYawAccel();
 
 	UpdateAccelerationState(m_linearAccelData, targetLinearAccel);
 	UpdateAccelerationState(m_rollAccelData, targetRollAccelDir);
@@ -428,6 +522,7 @@ void CFlightController::ProcessFlight()
 
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 60, 2, m_debugColor, false, "Velocity: %f", GetVelocity().GetLength());
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 90, 2, m_debugColor, false, "acceleration: %f", GetAcceleration());
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 120, 2, m_debugColor, false, "total impulse: %f", GetImpulse());
 
 	/*
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 80, 2, m_debugColor, false, "rollAccelData.currentAccel: x= %f, y = %f, z = %f", m_rollAccelData.currentJerkAccel.x, m_rollAccelData.currentJerkAccel.y, m_rollAccelData.currentJerkAccel.z);

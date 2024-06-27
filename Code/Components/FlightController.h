@@ -17,6 +17,12 @@ public:
 	CFlightController() = default;
 	virtual ~CFlightController() = default;
 
+	virtual void Initialize() override;
+
+	virtual Cry::Entity::EventFlags GetEventMask() const override;
+
+	virtual void ProcessEvent(const SEntityEvent& event) override;
+
 	// Reflect type to set a unique identifier for this component
 	// and provide additional information to expose it in the sandbox
 	static void ReflectType(Schematyc::CTypeDesc<CFlightController>& desc)
@@ -43,10 +49,6 @@ public:
 		desc.AddMember(&CFlightController::m_PitchYawJerkRate, 'pyjk', "pyjerkrate", "Pitch/Yaw Jerk", "Adjusts the force smoothing rate", ZERO);
 		desc.AddMember(&CFlightController::m_PitchYawJerkDecelRate, 'pydr', "pyjerkdecel", "Pitch/Yaw Jerk decel rate", "Adjusts the decel rate", ZERO);
 	}
-	virtual void ProcessEvent(const SEntityEvent& event) override;
-	virtual void Initialize() override;
-	virtual Cry::Entity::EventFlags GetEventMask() const override;
-
 
 	enum class EFlightMode
 	{
@@ -60,22 +62,26 @@ public:
 		Accelerating,
 		Decelerating
 	};
+	enum class AxisType
+	{
+		Roll,
+		PitchYaw,
+		Linear
+	};
 
 protected:
 private:
 	// Default Components
-	Cry::DefaultComponents::CInputComponent* m_pInputComponent;
-	Cry::DefaultComponents::CRigidBodyComponent* m_pRigidBodyComponent;
+	Cry::DefaultComponents::CInputComponent* m_pInputComponent = nullptr;
 
 	// Custom Components
-	CShipThrusterComponent* m_pShipThrusterComponent;
+	CShipThrusterComponent* m_pShipThrusterComponent = nullptr;
 
 	const float m_MAX_INPUT_VALUE = 1.f; // Maximum clamped input value
 	const float m_MIN_INPUT_VALUE = -1.f; // Maximum clamped input value
 	
 	// Game State
-	bool hasGameStarted = false;
-	EFlightMode m_pFlightMode;
+	EFlightMode m_pFlightMode = EFlightMode::Newtonian;
 
 	// Physical Entity reference
 	IPhysicalEntity* m_physEntity = nullptr;
@@ -128,8 +134,16 @@ private:
 	float m_PitchYawJerkRate = 0.f;
 	float m_PitchYawJerkDecelRate = 0.f;
 
+	// Tracking the total impulse generated
+	float m_totalImpulse = 0.f;
+
 	// Retrieving the dynamics of our entity
 	pe_status_dynamics dynamics;
+
+	// Watching the target accelerations (before jerk is applied) to track the ship state
+	Vec3 targetLinearAccel = ZERO;
+	Vec3 targetRollAccelDir = ZERO;
+	Vec3 targetPitchYawAccel = ZERO;
 
 
 	// struct to combine thruster axis and actuation
@@ -137,6 +151,9 @@ private:
 		string axisName;
 		float AccelAmount;
 	};
+
+	// Vector maps to organize our axis types, names and input data together 
+	VectorMap<AxisType, DynArray<AxisAccelParams>> m_linearAxisParamsMap;
 
 	// List arrays to receive the thrust directions dinamically
 	DynArray<AxisAccelParams> m_LinearAxisAccelParamsList = {};
@@ -166,6 +183,7 @@ private:
 	Vec3 ScaleLinearAccel();
 	Vec3 ScaleRollAccel();
 	Vec3 ScalePitchYawAccel();
+	Vec3 ScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelParams>>& axisAccelParamsMap);
 
 	// Updates the enum class "AccelState" according to our ship state.
 	void UpdateAccelerationState(JerkAccelerationData& accelData, const Vec3& targetAccel);
@@ -177,10 +195,12 @@ private:
 
 	// Convert world coordinates to local coordinates
 	Vec3 ImpulseWorldToLocal(const Vec3& localDirection);
-	float NormalizeInput(float inputValue, bool isMouse = false);
+	float NormalizeInput(float inputValue, bool isMouse = false) const;
 
 	// Converts the accel target (after jerk) which contains both direction and magnitude, into thrust values.
 	Vec3 AccelToImpulse(Vec3 desiredAccel);  
+	float GetImpulse();
+	void ResetImpulseCounter();
 
 	// Sequence all the function calls to produce our movement		
 	void ProcessFlight();

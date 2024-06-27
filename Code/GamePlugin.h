@@ -35,5 +35,5 @@ public:
 protected:
 	// 
 private:
-	ICVar* fps_use_ship;
+	ICVar* m_fpsUseShip;
 };

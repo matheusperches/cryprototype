@@ -34,7 +34,6 @@ void CVehicleComponent::Initialize()
 	m_pRigidBodyComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CRigidBodyComponent>();
 	m_pFlightController = m_pEntity->GetOrCreateComponent<CFlightController>();
 	InitializeInput();
-
 }
 
 Cry::Entity::EventFlags CVehicleComponent::GetEventMask() const
@@ -156,7 +155,7 @@ float CVehicleComponent::GetAxisValue(const string& axisName)
 	return m_axisValues[axisName];
 }
 
-bool CVehicleComponent::fps_use_ship()
+bool CVehicleComponent::IsFpsUseShip()
 {
 	return gEnv->pConsole->GetCVar("fps_use_ship")->GetIVal() == 1 ? true : false;
 }
