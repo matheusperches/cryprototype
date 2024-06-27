@@ -154,11 +154,8 @@ private:
 
 	// Vector maps to organize our axis types, names and input data together 
 	VectorMap<AxisType, DynArray<AxisAccelParams>> m_linearAxisParamsMap;
-
-	// List arrays to receive the thrust directions dinamically
-	DynArray<AxisAccelParams> m_LinearAxisAccelParamsList = {};
-	DynArray<AxisAccelParams> m_RollAxisAccelParamsList = {};
-	DynArray<AxisAccelParams> m_PitchYawAxisAccelParamsList = {};
+	VectorMap<AxisType, DynArray<AxisAccelParams>> m_rollAxisParamsMap;
+	VectorMap<AxisType, DynArray<AxisAccelParams>> m_pitchYawAxisParamsMap;
 
 	// Axis Vector initializer
 	void InitializeAccelParamsVectors();

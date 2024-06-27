@@ -87,23 +87,7 @@ void CFlightController::InitializeAccelParamsVectors()
 	float radPitchAccel = DegreesToRadian(m_pitchAccel);
 	float radRollAccel = DegreesToRadian(m_rollAccel);
 
-	// Initializing the list with the values of our accels
-	m_LinearAxisAccelParamsList = {
-		{"accel_forward", m_fwdAccel},
-		{"accel_backward", m_bwdAccel},
-		{"accel_left", m_leftRightAccel},
-		{"accel_right", m_leftRightAccel},
-		{"accel_up", m_upDownAccel},
-		{"accel_down", m_upDownAccel},
-	};
-	m_RollAxisAccelParamsList = {
-		{"roll_left", radRollAccel},
-		{"roll_right", radRollAccel},
-	};
-	m_PitchYawAxisAccelParamsList = {
-		{"yaw", radYawAccel},
-		{"pitch", radPitchAccel},
-	};
+	// Initializing the maps with the values of our accels
 
 	m_linearAxisParamsMap[AxisType::Linear] = {
 		{"accel_forward", m_fwdAccel},
@@ -112,6 +96,14 @@ void CFlightController::InitializeAccelParamsVectors()
 		{"accel_right", m_leftRightAccel},
 		{"accel_up", m_upDownAccel},
 		{"accel_down", m_upDownAccel}
+	};
+	m_rollAxisParamsMap[AxisType::Roll] = {
+		{"roll_left", radRollAccel},
+		{"roll_right", radRollAccel}
+	};
+	m_pitchYawAxisParamsMap[AxisType::PitchYaw] = {
+		{"yaw", radYawAccel},
+		{"pitch", radPitchAccel}
 	};
 }
 
@@ -204,221 +196,106 @@ Vec3 CFlightController::UpdateAccelerationWithJerk(JerkAccelerationData& accelDa
 	return newAccel;
 }
 
-Vec3 CFlightController::ScaleLinearAccel()
-{
-	// Initializing vectors for acceleration direction and desired acceleration
-	Vec3 accelDirection(ZERO);   // Vector to accumulate the direction of applied accelerations
-	Vec3 requestedAccel(ZERO);     // Vector to accumulate desired acceleration magnitudes
-
-	// Iterating over the list of axis and their input values
-	for (const auto& LinearAxisAccelParams : m_LinearAxisAccelParamsList)
-	{
-		float NormalizedinputValue = NormalizeInput(AxisGetter(LinearAxisAccelParams.axisName));   // Retrieve input value for the current axis and normalize to a range of -1 to 1
-
-		// Calculate local thrust direction based on input value
-		Vec3 localDirection;
-		if (LinearAxisAccelParams.axisName == "accel_forward") {
-			localDirection = Vec3(0.f, 1.f, 0.f); // Forward in local space
-		}
-		else if (LinearAxisAccelParams.axisName == "accel_backward") {
-			localDirection = Vec3(0.f, -1.f, 0.f); // Backward in local space
-		}
-		else if (LinearAxisAccelParams.axisName == "accel_left") {
-			localDirection = Vec3(-1.f, 0.f, 0.f); // Left in local space
-		}
-		else if (LinearAxisAccelParams.axisName == "accel_right") {
-			localDirection = Vec3(1.f, 0.f, 0.f); // Right in local space
-		}
-		else if (LinearAxisAccelParams.axisName == "accel_up") {
-			localDirection = Vec3(0.f, 0.f, 1.f); // Up in local space
-		}
-		else if (LinearAxisAccelParams.axisName == "accel_down") {
-			localDirection = Vec3(0.f, 0.f, -1.f); // Down in local space
-		}
-		localDirection = ImpulseWorldToLocal(localDirection);
-
-		// Calculate acceleration direction based on axis input, combining all axes
-		accelDirection += localDirection * NormalizedinputValue;
-		//CryLog("accelDirection: x= %f, y= %f, z=%f ", accelDirection.x, accelDirection.y, accelDirection.z);
-		// Calculate desired acceleration based on thrust amount and input value, combining for multiple axes
-		requestedAccel += localDirection * LinearAxisAccelParams.AccelAmount * NormalizedinputValue;
-	}
-
-	// Normalize accelDirection to get the direction vector
-	if (accelDirection.GetLength() > 0.f)
-	{
-		accelDirection.Normalize();
-	}
-
-	// Scale the direction vector by the magnitude of requestedAccel
-	Vec3 scaledAccelDirection = accelDirection * requestedAccel.GetLength();
-	//CryLog("scaledAccelDirection: x= %f, y= %f, z=%f ", scaledAccelDirection.x, scaledAccelDirection.y, scaledAccelDirection.z);
-
-	// Populate the accel data
-	m_linearAccelData.targetJerkAccel = scaledAccelDirection;
-
-	/*
-	// Calculate the dot product of accelDirection and desiredAccel to preserve the direction
-	float dotProduct = accelDirection.dot(requestedAccel);
-	CryLog("dotProduct: %f", dotProduct);
-
-	// Scale accelDirection by the dot product to get the final scaled acceleration direction
-	Vec3 scaledAccelDirection = accelDirection * dotProduct;
-	CryLog("scaledAccelDirection dot product: x= %f, y= %f, z=%f ", scaledAccelDirection.x, scaledAccelDirection.y, scaledAccelDirection.z);
-
-	// Populate the accel data
-	m_linearAccelData.targetJerkAccel = scaledAccelDirection;
-	*/
-	return scaledAccelDirection;   // Return the scaled acceleration direction vector
-}
-
-Vec3 CFlightController::ScaleRollAccel()
-{
-	// Initializing vectors for acceleration direction and desired acceleration
-	Vec3 accelDirection(ZERO);   // Vector to accumulate the direction of applied accelerations
-	Vec3 requestedAccel(ZERO);     // Vector to accumulate desired acceleration magnitudes
-
-	// Iterating over the list of axis and their input values
-	for (const auto& RollAxisAccelParams : m_RollAxisAccelParamsList)
-	{
-		float NormalizedinputValue = NormalizeInput(AxisGetter(RollAxisAccelParams.axisName));   // Retrieve input value for the current axis and normalize to a range of -1 to 1
-		// Calculate local thrust direction based on input value
-		Vec3 localDirection;
-		if (RollAxisAccelParams.axisName == "roll_left") {
-			localDirection = Vec3(0.f, -1.f, 0.f); // roll left in local space
-		}
-		else if (RollAxisAccelParams.axisName == "roll_right") {
-			localDirection = Vec3(0.f, 1.f, 0.f); // roll right in local space
-		}
-
-		localDirection = ImpulseWorldToLocal(localDirection);
-
-		// Calculate acceleration direction based on axis input, combining all axes
-		accelDirection += localDirection * NormalizedinputValue;
-
-		// Calculate desired acceleration based on thrust amount and input value, combining for multiple axes
-		requestedAccel += localDirection * RollAxisAccelParams.AccelAmount * NormalizedinputValue;
-	}
-
-	// Scale the direction vector by the magnitude of requestedAccel
-	Vec3 scaledAccelDirection = accelDirection * requestedAccel.GetLength();
-
-	// Populate the accel data
-	m_linearAccelData.targetJerkAccel = scaledAccelDirection;
-
-	return scaledAccelDirection;   // Return the scaled acceleration direction vector
-}
-
-Vec3 CFlightController::ScalePitchYawAccel()
-{
-	// Initializing vectors for acceleration direction and desired acceleration
-	Vec3 accelDirection(ZERO);   // Vector to accumulate the direction of applied accelerations
-	Vec3 requestedAccel(ZERO);     // Vector to accumulate desired acceleration magnitudes
-	// Calculate local thrust direction based on input value
-	Vec3 localDirection;
-
-	// Iterating over the list of axis and their input values
-	for (const auto& PitchYawAxisAccelParamsList : m_PitchYawAxisAccelParamsList)
-	{
-		float NormalizedinputValue = NormalizeInput(AxisGetter(PitchYawAxisAccelParamsList.axisName), true);   // Retrieve input value for the current axis and normalize to a range of -1 to 1
-
-		if (PitchYawAxisAccelParamsList.axisName == "yaw") {
-			localDirection = Vec3(0.f, 0.f, -1.f); // yaw left or right
-		}
-		else if (PitchYawAxisAccelParamsList.axisName == "pitch") {
-			localDirection = Vec3(-1.f, 0.f, 0.f); // pitch left or right in local space
-		}
-
-		// Adjust our direction to be local space, given the direction we want to go
-		localDirection = ImpulseWorldToLocal(localDirection);
-
-		// Calculate acceleration direction based on axis input, combining all axes
-		accelDirection += localDirection * NormalizedinputValue;
-
-		// Calculate desired acceleration based on thrust amount and input value, combining for multiple axes
-		requestedAccel += localDirection * PitchYawAxisAccelParamsList.AccelAmount * NormalizedinputValue;
-	}
-
-	// Scale the direction vector by the magnitude of requestedAccel
-	Vec3 scaledAccelDirection = accelDirection * requestedAccel.GetLength();
-
-	// Populate the accel data
-	m_linearAccelData.targetJerkAccel = scaledAccelDirection;
-
-	return scaledAccelDirection;   // Return the scaled acceleration direction vector
-}
-/*
-*  Still working on it
 Vec3 CFlightController::ScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelParams>>& axisAccelParamsList)
 {
 	// Initializing vectors for acceleration direction and desired acceleration
-	Vec3 accelDirection(ZERO);   // Vector to accumulate the direction of applied accelerations
-	Vec3 requestedAccel(ZERO);     // Vector to accumulate desired acceleration magnitudes
-
-	// Iterating over the list of axis and their input values
-	for (const auto& AxisAccelParams : axisAccelParamsList)
+	Vec3 accelDirection(ZERO);	// Vector to accumulate the direction of applied accelerations
+	Vec3 requestedAccel(ZERO);  // Vector to accumulate desired acceleration magnitudes
+	Vec3 localDirection(ZERO); 		// Calculate local thrust direction based on input value
+	float normalizeInputValue = 0.f; // Normalize input values
+	Vec3 scaledAccelDirection(ZERO); // Scaled vector, our final local direction + magnitude 
+	
+	for (const auto& axisAccelParamsPair : axisAccelParamsList)	// Iterating over the list of axis and their input values
 	{
-		float NormalizedinputValue = NormalizeInput(AxisGetter(AxisAccelParams.axisName));   // Retrieve input value for the current axis and normalize to a range of -1 to 1
+		AxisType axisType = axisAccelParamsPair.first;
+		const DynArray<AxisAccelParams>& axisParamsArray = axisAccelParamsPair.second;
 
-		// Calculate local thrust direction based on input value
-		Vec3 localDirection;
-		if (AxisAccelParams.axisName == "accel_forward") {
-			localDirection = Vec3(0.f, 1.f, 0.f); // Forward in local space
+		for (const auto& accelParams : axisParamsArray)	// Iterate over the DynArray<AxisAccelParams> for the current AxisType
+		{
+			if (axisType == AxisType::Linear)
+			{
+				normalizeInputValue = NormalizeInput(AxisGetter(accelParams.axisName)); // Retrieve input value for the current axis and normalize to a range of -1 to 1
+				if (accelParams.axisName == "accel_forward") 
+				{
+					localDirection = Vec3(0.f, 1.f, 0.f); // Forward in local space
+				}
+				else if (accelParams.axisName == "accel_backward") 
+				{
+					localDirection = Vec3(0.f, -1.f, 0.f); // Backward in local space
+				}
+				else if (accelParams.axisName == "accel_left") 
+				{
+					localDirection = Vec3(-1.f, 0.f, 0.f); // Left in local space
+				}
+				else if (accelParams.axisName == "accel_right") 
+				{
+					localDirection = Vec3(1.f, 0.f, 0.f); // Right in local space
+				}
+				else if (accelParams.axisName == "accel_up") 
+				{
+					localDirection = Vec3(0.f, 0.f, 1.f); // Up in local space
+				}
+				else if (accelParams.axisName == "accel_down") 
+				{
+					localDirection = Vec3(0.f, 0.f, -1.f); // Down in local space
+				}
+			}
+			else if (axisType == AxisType::PitchYaw)
+			{
+				normalizeInputValue = NormalizeInput(AxisGetter(accelParams.axisName), true);
+				if (accelParams.axisName == "yaw") 
+				{
+					localDirection = Vec3(0.f, 0.f, -1.f);
+				}
+				else if (accelParams.axisName == "pitch") 
+				{
+					localDirection = Vec3(-1.f, 0.f, 0.f);
+				}
+			}
+			else if (axisType == AxisType::Roll)
+			{
+				normalizeInputValue = NormalizeInput(AxisGetter(accelParams.axisName));
+				if (accelParams.axisName == "roll_left") 
+				{
+					localDirection = Vec3(0.f, -1.f, 0.f);
+				}
+				else if (accelParams.axisName == "roll_right") 
+				{
+					localDirection = Vec3(0.f, 1.f, 0.f);
+				}
+			}
+			localDirection = ImpulseWorldToLocal(localDirection); // Convert to local space
+			accelDirection += localDirection * normalizeInputValue; // Accumulate axis direction with magnitude in local space, scaling by the normalized input
+			requestedAccel += localDirection * accelParams.AccelAmount * normalizeInputValue; // Accumulate desired acceleration based on thrust amount and input value, combining for multiple axes
 		}
-		else if (AxisAccelParams.axisName == "accel_backward") {
-			localDirection = Vec3(0.f, -1.f, 0.f); // Backward in local space
-		}
-		else if (AxisAccelParams.axisName == "accel_left") {
-			localDirection = Vec3(-1.f, 0.f, 0.f); // Left in local space
-		}
-		else if (AxisAccelParams.axisName == "accel_right") {
-			localDirection = Vec3(1.f, 0.f, 0.f); // Right in local space
-		}
-		else if (AxisAccelParams.axisName == "accel_up") {
-			localDirection = Vec3(0.f, 0.f, 1.f); // Up in local space
-		}
-		else if (AxisAccelParams.axisName == "accel_down") {
-			localDirection = Vec3(0.f, 0.f, -1.f); // Down in local space
-		}
-		else if (AxisAccelParams.axisName == "yaw") {
-			localDirection = Vec3(0.f, 0.f, -1.f); // yaw left or right
-		}
-		else if (AxisAccelParams.axisName == "pitch") {
-			localDirection = Vec3(-1.f, 0.f, 0.f); // pitch left or right in local space
-		}
-		else if (AxisAccelParams.axisName == "roll_left") {
-			localDirection = Vec3(0.f, -1.f, 0.f); // roll left in local space
-		}
-		else if (AxisAccelParams.axisName == "roll_right") {
-			localDirection = Vec3(0.f, 1.f, 0.f); // roll right in local space
-		}
-		localDirection = ImpulseWorldToLocal(localDirection);
 
-		// Calculate acceleration direction based on axis input, combining all axes
-		accelDirection += localDirection * NormalizedinputValue;
-		//CryLog("accelDirection: x= %f, y= %f, z=%f ", accelDirection.x, accelDirection.y, accelDirection.z);
-		// Calculate desired acceleration based on thrust amount and input value, combining for multiple axes
-		requestedAccel += localDirection * AxisAccelParams.AccelAmount * NormalizedinputValue;
+		// Normalize accelDirection to get the direction vector
+		if (accelDirection.GetLength() > 0.f)
+		{
+			accelDirection.Normalize();
+		}
+
+		// Scale the direction vector by the magnitude of requestedAccel
+		 scaledAccelDirection = accelDirection * requestedAccel.GetLength();
+		//CryLog("scaledAccelDirection: x= %f, y= %f, z=%f ", scaledAccelDirection.x, scaledAccelDirection.y, scaledAccelDirection.z);
+
+		if (axisType == AxisType::Linear)
+		{
+			UpdateAccelerationState(m_linearAccelData, scaledAccelDirection);
+		}
+		else if (axisType == AxisType::Roll)
+		{
+			UpdateAccelerationState(m_rollAccelData, scaledAccelDirection);
+		}
+		else if (axisType == AxisType::PitchYaw)
+		{
+			UpdateAccelerationState(m_pitchYawAccelData, scaledAccelDirection);
+		}
+
 	}
-
-	// Normalize accelDirection to get the direction vector
-	if (accelDirection.GetLength() > 0.f)
-	{
-		accelDirection.Normalize();
-	}
-
-	// Scale the direction vector by the magnitude of requestedAccel
-	Vec3 scaledAccelDirection = accelDirection * requestedAccel.GetLength();
-	//CryLog("scaledAccelDirection: x= %f, y= %f, z=%f ", scaledAccelDirection.x, scaledAccelDirection.y, scaledAccelDirection.z);
-
-	// Update the ship state
-	if ()
-
-	m_linearAccelData.targetJerkAccel = scaledAccelDirection;
 
 	return scaledAccelDirection;   // Return the scaled acceleration direction vector
 }
-*/
 
 float CFlightController::DegreesToRadian(float degrees)
 {
@@ -500,23 +377,21 @@ void CFlightController::ProcessFlight()
 {
 	ResetImpulseCounter();
 
-	// Only used to update the acceleration state. 
-	// currentJerkAccel member of AccelData gets updated inside the functions below. 
-	// I should probably invert these later so its not so confusing. 
-	targetLinearAccel = ScaleLinearAccel();
-	targetRollAccelDir = ScaleRollAccel();
-	targetPitchYawAccel = ScalePitchYawAccel();
+	// Scale and set the target jerk acceleration for linear movement
+	m_linearAccelData.targetJerkAccel = ScaleAccel(m_linearAxisParamsMap);
 
-	UpdateAccelerationState(m_linearAccelData, targetLinearAccel);
-	UpdateAccelerationState(m_rollAccelData, targetRollAccelDir);
-	UpdateAccelerationState(m_pitchYawAccelData, targetPitchYawAccel);
-
+	// Update the current jerk acceleration based on the target jerk acceleration, jerk rate, and frame time
 	m_linearAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_linearAccelData, m_linearAccelData.jerk, m_linearAccelData.jerkDecelRate, gEnv->pTimer->GetFrameTime());
+
+	// Convert the current jerk acceleration to an impulse and apply it to the ship for linear movement
 	m_pShipThrusterComponent->ApplyLinearImpulse(m_physEntity, AccelToImpulse(m_linearAccelData.currentJerkAccel));
 
+
+	m_rollAccelData.targetJerkAccel = ScaleAccel(m_rollAxisParamsMap);
 	m_rollAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_rollAccelData, m_rollAccelData.jerk, m_rollAccelData.jerkDecelRate, gEnv->pTimer->GetFrameTime());
 	m_pShipThrusterComponent->ApplyAngularImpulse(m_physEntity, AccelToImpulse(m_rollAccelData.currentJerkAccel));
 
+	m_pitchYawAccelData.targetJerkAccel = ScaleAccel(m_pitchYawAxisParamsMap);
 	m_pitchYawAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_pitchYawAccelData, m_pitchYawAccelData.jerk, m_pitchYawAccelData.jerkDecelRate, gEnv->pTimer->GetFrameTime());
 	m_pShipThrusterComponent->ApplyAngularImpulse(m_physEntity, AccelToImpulse(m_pitchYawAccelData.currentJerkAccel));
 
