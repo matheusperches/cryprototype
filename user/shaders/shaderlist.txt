@@ -7,3 +7,4 @@
 <2>Total_Illumination@UpScalePS()(%_RT_SAMPLE0|%_RT_SAMPLE4)(0)(0)(0)(0)(PS)
 <2>Referenceimage@ReferenceImageVS()(%_RT_NO_TESSELLATION)(0)(0)(0)(0)(VS)
 <2>Referenceimage@ReferenceImagePS()(%_RT_NO_TESSELLATION)(0)(0)(0)(0)(PS)
+<2>Illum@IlluminationPS(%NORMAL_MAP|%SPECULAR_MAP|%SUBSURFACE_SCATTERING)(%_RT_SECONDARY_VIEW|%_RT_NO_TESSELLATION)(0)(0)(0)(0)(PS)

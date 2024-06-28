@@ -1,7 +1,7 @@
 // Copyright 2017-2021 Crytek GmbH / Crytek Group. All rights reserved.
 #pragma once
-#include "ShipThrusterComponent.h"
-#include "ThrusterParams.h"
+
+class CShipThrusterComponent;
 
 
 namespace Cry::DefaultComponents
@@ -86,6 +86,9 @@ private:
 	// Physical Entity reference
 	IPhysicalEntity* m_physEntity = nullptr;
 
+	// Get CVar value
+	bool GetIsPiloting();
+
 	//Debug color
 	float m_debugColor[4] = { 1, 0, 0, 1 };
 
@@ -140,9 +143,6 @@ private:
 	// Tracking FrameTime
 	float m_frameTime = 0.f;
 
-	// Retrieving the dynamics of our entity
-	pe_status_dynamics dynamics;
-
 	// Watching the target accelerations (before jerk is applied) to track the ship state
 	Vec3 targetLinearAccel = ZERO;
 	Vec3 targetRollAccelDir = ZERO;
@@ -180,9 +180,6 @@ private:
 	Vec3 UpdateAccelerationWithJerk(JerkAccelerationData& accelData, float deltaTime);
 
 	// Scales the acceleration asked, according to input magnitude, taking into account the inputs pressed
-	Vec3 ScaleLinearAccel();
-	Vec3 ScaleRollAccel();
-	Vec3 ScalePitchYawAccel();
 	Vec3 ScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelParams>>& axisAccelParamsMap);
 
 	// Updates the enum class "AccelState" according to our ship state.

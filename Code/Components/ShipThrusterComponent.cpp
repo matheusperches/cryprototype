@@ -61,9 +61,14 @@ void CShipThrusterComponent::ProcessEvent(const SEntityEvent& event)
 	}
 }
 
+bool CShipThrusterComponent::GetIsPiloting()
+{
+	return gEnv->pConsole->GetCVar("is_piloting")->GetIVal() == 1 ? true : false;
+}
+
 bool CShipThrusterComponent::Validator()
 {
-	if (gEnv->pConsole->GetCVar("fps_use_ship")->GetIVal() == 1 && m_pEntity->GetChildCount() > 0 && m_pEntity->GetComponent<CVehicleComponent>())
+	if (GetIsPiloting() && m_pEntity->GetChildCount() > 0 && m_pEntity->GetComponent<CVehicleComponent>())
 	{
 		return true;
 	}

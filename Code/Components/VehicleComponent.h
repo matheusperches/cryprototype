@@ -1,11 +1,18 @@
 // Copyright 2017-2021 Crytek GmbH / Crytek Group. All rights reserved.
 #pragma once
 
+class CFlightController;
+
 namespace Cry::DefaultComponents
 {
 	class CCameraComponent;
 	class CInputComponent;
 	class CRigidBodyComponent;
+}
+
+namespace CustomComponents
+{
+	class CFlightController;
 }
 
 ////////////////////////////////////////////////////////
@@ -17,6 +24,12 @@ public:
 	CVehicleComponent() = default;
 	virtual ~CVehicleComponent() = default;
 
+	virtual void Initialize() override;
+
+	virtual Cry::Entity::EventFlags GetEventMask() const override;
+
+	virtual void ProcessEvent(const SEntityEvent& event) override;
+
 	// Reflect type to set a unique identifier for this component
 	// and provide additional information to expose it in the sandbox
 	static void ReflectType(Schematyc::CTypeDesc<CVehicleComponent>& desc)
@@ -26,12 +39,12 @@ public:
 		desc.SetLabel("VehicleComponent");
 		desc.SetDescription("Turns the entity into a vehicle that can be entered. No Flight Logic.");
 	}
-	virtual void ProcessEvent(const SEntityEvent& event) override;
-	virtual void Initialize() override;
-	virtual Cry::Entity::EventFlags GetEventMask() const override;
 
 	int IsKeyPressed(const string& actionName);
 	float GetAxisValue(const string& axisName);
+
+	// Checking if we should listen to inputs
+	bool isActiveEntity = false;
 
 protected:
 private:
@@ -40,20 +53,19 @@ private:
 	Cry::DefaultComponents::CInputComponent* m_pInputComponent;
 	Cry::DefaultComponents::CRigidBodyComponent* m_pRigidBodyComponent;
 
+	// Ref flight controller
+	CFlightController* m_pFlightController;
+
 	// Flight Inputs
 	void InitializeInput();
-	bool IsFpsUseShip();
 
 	// Variables
-	bool hasGameStarted = false;
+	bool m_hasGameStarted = false;
 
 	//Input maps
 	VectorMap<string, float> m_axisValues;
 	VectorMap<string, int> m_keyStates;
 
 	// Get CVar value
-	int GetFpsUseShip();
-
-	// Ref flight controller
-	CFlightController* m_pFlightController;
+	bool GetIsPiloting();
 };

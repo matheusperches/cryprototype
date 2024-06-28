@@ -31,10 +31,11 @@ bool CGamePlugin::Initialize(SSystemGlobalEnvironment& env, const SSystemInitPar
 {
 	// Register for engine system events, in our case we need ESYSTEM_EVENT_GAME_POST_INIT to load the map
 	gEnv->pSystem->GetISystemEventDispatcher()->RegisterListener(this, "CGamePlugin");
-	int value = 0;
+	bool value = false;
 	//Create SpawnAndUseShip cvar
-	m_fpsUseShip = REGISTER_INT("fps_use_ship", value , VF_CHEAT, "Switch between ship and player through commands");
-	m_fpsUseShip->Set(value);
+	m_isPiloting = REGISTER_INT("is_piloting", value , VF_CHEAT, "is the player piloting");
+	m_isPiloting->Set(value);
+
 	return true;
 }
 
@@ -52,7 +53,7 @@ void CGamePlugin::OnSystemEvent(ESystemEvent event, UINT_PTR wparam, UINT_PTR lp
 				gEnv->pConsole->ExecuteString("map example s", false, true);
 			}
 			// Uses a specifc component to handle player switching
-			m_fpsUseShip->AddOnChange([this]() {CPlayerManager::GetInstance().CharacterSwitcher(); });
+			m_isPiloting->AddOnChange([this]() {CPlayerManager::GetInstance().EnterLeaveByCvar(); });
 		}
 		break;
 
@@ -82,6 +83,7 @@ void CGamePlugin::OnSystemEvent(ESystemEvent event, UINT_PTR wparam, UINT_PTR lp
 		
 		case ESYSTEM_EVENT_LEVEL_UNLOAD:
 		{
+
 		}
 		break;
 	}

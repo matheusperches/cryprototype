@@ -50,6 +50,9 @@ public:
 		desc.AddMember(&CPlayerComponent::shouldStartOnVehicle, 'ssv', "shouldstartonvehicle", "Player Should Start On Vehicle", "Determines if the game starts directly on the ship or not.", false);
 	}
 
+	// Checking if we should listen to inputs
+	bool isActiveEntity = false;
+
 protected: 
 
 private: 
@@ -88,7 +91,9 @@ private:
 	void CameraMovement();
 	void Interact(int activationMode, float value);
 
+	// Get CVar value
+	bool GetIsPiloting();
+
 	// Raycasting for interactions
-	IEntity* RayCast(Vec3 origin, Quat dir, IEntity& pSkipEntity);
-	IEntity* RayCastTest(Vec3 origin, Quat dir, IEntity& pSkipEntity) const;
+	IEntity* RayCast(Vec3 origin, Quat dir, IEntity& pSkipEntity) const;
 };

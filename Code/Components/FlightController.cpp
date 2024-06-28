@@ -13,6 +13,8 @@
 // Forward declaration
 #include <DefaultComponents/Input/InputComponent.h>
 #include <Components/VehicleComponent.h>
+#include "ShipThrusterComponent.h"
+#include "ThrusterParams.h"
 
 // Registers the component to be used in the engine
 static void RegisterFlightController(Schematyc::IEnvRegistrar& registrar)
@@ -35,9 +37,6 @@ void CFlightController::Initialize()
 	m_pShipThrusterComponent = m_pEntity->GetOrCreateComponent<CShipThrusterComponent>();
 	m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
 	m_physEntity = m_pEntity->GetPhysicalEntity();
-	pe_simulation_params simParams;
-	simParams.gravity = Vec3(ZERO);
-	m_physEntity->SetParams(&simParams);
 }
 
 Cry::Entity::EventFlags CFlightController::GetEventMask() const
@@ -59,8 +58,11 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 	break;
 	case EEntityEvent::Update:
 	{
-		m_frameTime = gEnv->pTimer->GetFrameTime();
-		ProcessFlight();
+		if(Validator())
+		{
+			m_frameTime = gEnv->pTimer->GetFrameTime();
+			ProcessFlight();
+		}
 	}
 	break;
 	case Cry::Entity::EEvent::Reset:
@@ -71,6 +73,11 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 	}
 }
 
+bool CFlightController::GetIsPiloting()
+{
+	return gEnv->pConsole->GetCVar("is_piloting")->GetIVal() == 1 ? true : false;
+}
+
 void CFlightController::GetVehicleInputManager()
 {
 	m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
@@ -78,7 +85,7 @@ void CFlightController::GetVehicleInputManager()
 
 bool CFlightController::Validator()
 {
-	if (gEnv->pConsole->GetCVar("fps_use_ship")->GetIVal() == 1 && m_pEntity->GetChildCount() > 0 && m_pEntity->GetComponent<CVehicleComponent>())
+	if (GetIsPiloting() && m_pEntity->GetChildCount() > 0)
 	{
 		return true;
 	}
@@ -321,6 +328,8 @@ Vec3 CFlightController::AccelToImpulse(Vec3 desiredAccel)
 	{
 		if (m_physEntity)
 		{
+			// Retrieving the dynamics of our entity
+			pe_status_dynamics dynamics;
 			if (m_physEntity->GetStatus(&dynamics))
 			{
 				Vec3 impulse = desiredAccel * dynamics.mass * m_frameTime; // Calculates our final impulse based on the entity's mass.
@@ -347,6 +356,7 @@ Vec3 CFlightController::GetVelocity()
 {
 	if (m_physEntity)
 	{
+		pe_status_dynamics dynamics; // Retrieving the dynamics of our entity
 		if (m_physEntity->GetStatus(&dynamics))
 		{
 			Vec3 velocity = dynamics.v; // In world space 

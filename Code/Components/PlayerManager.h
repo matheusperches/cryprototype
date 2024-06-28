@@ -39,14 +39,11 @@ public:
 
 
 	// Functions 
-	void CharacterSwitcher();
+	void CharacterSwitcher(IEntity* requestingEntity, IEntity* targetEntity);
+	void EnterLeaveByCvar();
 
 protected:
 private:
 	CPlayerManager(const CPlayerManager&) = delete;
 	CPlayerManager& operator=(const CPlayerManager&) = delete;
-
-	// Cvar reference to be initialized later
-	ICVar* m_fpsUseShip;
-
 };

@@ -1,6 +1,8 @@
 // Copyright 2017-2019 Crytek GmbH / Crytek Group. All rights reserved.
 #include "StdAfx.h"
 #include "VehicleComponent.h"
+#include "GamePlugin.h"
+
 #include <CryRenderer/IRenderAuxGeom.h>
 #include <CrySchematyc/Env/Elements/EnvComponent.h>
 #include <CryCore/StaticInstanceList.h>
@@ -11,6 +13,7 @@
 #include <DefaultComponents/Cameras/CameraComponent.h>
 #include <DefaultComponents/Input/InputComponent.h>
 #include <DefaultComponents/Physics/RigidBodyComponent.h>
+#include <Components/FlightController.h>
 
 // Registers the component to be used in the engine
 static void RegisterVehicleComponent(Schematyc::IEnvRegistrar& registrar)
@@ -29,6 +32,7 @@ CRY_STATIC_AUTO_REGISTER_FUNCTION(&RegisterVehicleComponent)
 void CVehicleComponent::Initialize()
 {
 	m_pCameraComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CCameraComponent>();
+	m_pCameraComponent->EnableAutomaticActivation(false);
 	m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
 	m_pRigidBodyComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CRigidBodyComponent>();
 	m_pFlightController = m_pEntity->GetOrCreateComponent<CFlightController>();
@@ -38,7 +42,7 @@ void CVehicleComponent::Initialize()
 Cry::Entity::EventFlags CVehicleComponent::GetEventMask() const
 {
 	//Listening to the update event
-	return EEntityEvent::Update | EEntityEvent::GameplayStarted;
+	return EEntityEvent::Update | EEntityEvent::GameplayStarted | EEntityEvent::Reset;
 }
 
 void CVehicleComponent::ProcessEvent(const SEntityEvent& event)
@@ -47,8 +51,13 @@ void CVehicleComponent::ProcessEvent(const SEntityEvent& event)
 	{
 	case EEntityEvent::GameplayStarted:
 	{
-		hasGameStarted = true;
-		if (GetFpsUseShip() == 1)
+		m_hasGameStarted = true;
+
+		// ------------------------- //
+		// Executing actions if we are the active entity (changed by PlayerManager.cpp)
+		// ------------------------- //
+
+		if (GetIsPiloting())
 		{
 			m_pCameraComponent->Activate();
 		}
@@ -61,7 +70,7 @@ void CVehicleComponent::ProcessEvent(const SEntityEvent& event)
 	break;
 	case Cry::Entity::EEvent::Reset:
 	{
-		hasGameStarted = false;
+		m_hasGameStarted = false;
 	}
 	break;
 	}
@@ -121,11 +130,11 @@ void CVehicleComponent::InitializeInput()
 	m_pInputComponent->RegisterAction("ship", "exit", [this](int activationMode, float value)
 		{ 
 			// Checking the cvar value, if we are the ship, then change it back to the human.
-			if (GetFpsUseShip() == 1)
+			if (GetIsPiloting())
 			{
-				if (activationMode == (int)eAAM_OnPress)
+				if (activationMode & (int)eAAM_OnPress)
 				{
-					gEnv->pConsole->GetCVar("fps_use_ship")->Set(0);
+					CPlayerManager::GetInstance().CharacterSwitcher(m_pEntity, m_pEntity->GetChild(0));
 				}
 			}
 		});
@@ -142,12 +151,7 @@ float CVehicleComponent::GetAxisValue(const string& axisName)
 	return m_axisValues[axisName];
 }
 
-bool CVehicleComponent::IsFpsUseShip()
+bool CVehicleComponent::GetIsPiloting()
 {
-	return gEnv->pConsole->GetCVar("fps_use_ship")->GetIVal() == 1 ? true : false;
-}
-
-int CVehicleComponent::GetFpsUseShip()
-{
-	return gEnv->pConsole->GetCVar("fps_use_ship")->GetIVal();
+	return gEnv->pConsole->GetCVar("is_piloting")->GetIVal() == 1 ? true : false;
 }

@@ -145,7 +145,7 @@
                     "Objects/Characters/SampleCharacter"
                 ]
             },
-            "mainViewSplitter": "AAAA/wAAAAEAAAAC/////wAAAQAB/////wEAAAABAA==",
+            "mainViewSplitter": "AAAA/wAAAAEAAAACAAAAOgAAAQAB/////wEAAAABAA==",
             "recursiveView": false,
             "showFolders": true,
             "thumbnailView": {
@@ -615,7 +615,7 @@
             "foldersSplitter": "AAAA/wAAAAEAAAACAAABAAAAAwAB/////wEAAAABAA==",
             "foldersView": {
                 "selected": [
-                    "%engine%/engineassets/objects"
+                    "Objects/Characters/SampleCharacter"
                 ]
             },
             "mainViewSplitter": "AAAA/wAAAAEAAAACAAAAOgAAAQAB/////wEAAAABAA==",

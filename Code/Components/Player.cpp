@@ -39,7 +39,13 @@ void CPlayerComponent::Initialize()
 	m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
 	m_pCharacterController = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CCharacterControllerComponent>();
 	m_pAdvancedAnimationComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CAdvancedAnimationComponent>();
+	m_pCameraComponent->EnableAutomaticActivation(false);
 	InitializeHumanInput();
+}
+
+Cry::Entity::EventFlags CPlayerComponent::GetEventMask() const
+{
+	return Cry::Entity::EEvent::GameplayStarted | Cry::Entity::EEvent::Update | Cry::Entity::EEvent::Reset;
 }
 
 void CPlayerComponent::ProcessEvent(const SEntityEvent& event)
@@ -52,9 +58,10 @@ void CPlayerComponent::ProcessEvent(const SEntityEvent& event)
 		// ------------------------- //
 		// Can be uncommented to start with the human. Needs to check if other entities are setting camera to active during GameplayStarted first.
 		// ------------------------- //
-		if (gEnv->pConsole->GetCVar("fps_use_ship")->GetIVal() == 0)
+		if (!GetIsPiloting())
 		{
 			m_pCameraComponent->Activate();
+
 		}
 	}
 	break;
@@ -66,10 +73,10 @@ void CPlayerComponent::ProcessEvent(const SEntityEvent& event)
 		if (hasGameStarted)
 		{
 			// ------------------------- //
-			// Executing human actions if our camera is active.
+			// Executing actions if we are the active entity (changed by PlayerManager.cpp)
 			// ------------------------- //
 
-			if (gEnv->pConsole->GetCVar("fps_use_ship")->GetIVal() == 0)
+			if (!GetIsPiloting())
 			{
 				PlayerMovement();
 				CameraMovement();
@@ -97,6 +104,15 @@ void CPlayerComponent::ProcessEvent(const SEntityEvent& event)
 		camDefaultMatrix.SetRotation33(Matrix33(m_pEntity->GetWorldRotation()));
 		m_pCameraComponent->SetTransformMatrix(camDefaultMatrix);
 
+		// Reset things back to default when leaving game mode while being in the ship
+		if (m_pEntity->GetParent())
+		{
+			m_pEntity->DetachThis();
+			m_pEntity->Hide(false);
+		}
+		gEnv->pConsole->GetCVar("is_piloting")->Set(false);
+
+		/*
 		// This IF checks if the flag is set to true during game start or exit. If it is, and the cvar value is already set to 1, the 2nd if will be executed to setup the ship correctly regardless.
 		// There are code safeties inside CharacterSwitcher() to not do anything if we are not in GameMode, so the entities look correct in the editor.
 		if (shouldStartOnVehicle == true)
@@ -105,7 +121,7 @@ void CPlayerComponent::ProcessEvent(const SEntityEvent& event)
 			gEnv->pConsole->GetCVar("fps_use_ship")->Set(1);
 			else
 			{
-				//Forcing a call in case the value was already set, because we are reliant on the Cvar OnChange event trigger to move between actors.
+				//(DEPRECATED) Forcing a call in case the value was already set, because we are reliant on the Cvar OnChange event trigger to move between actors.
 				CPlayerManager::GetInstance().CharacterSwitcher();
 			}
 		}
@@ -113,14 +129,10 @@ void CPlayerComponent::ProcessEvent(const SEntityEvent& event)
 		{
 			gEnv->pConsole->GetCVar("fps_use_ship")->Set(0);
 		}
+		*/
 	}
 	break;
 	}
-}
-
-Cry::Entity::EventFlags CPlayerComponent::GetEventMask() const
-{
-	return Cry::Entity::EEvent::GameplayStarted | Cry::Entity::EEvent::Update | Cry::Entity::EEvent::Reset;
 }
 
 void CPlayerComponent::InitializeHumanInput()
@@ -142,11 +154,11 @@ void CPlayerComponent::InitializeHumanInput()
 		{
 			// Changing player movement based on Shift key state
 
-			if (activationMode == (int)eAAM_OnPress)
+			if (activationMode & (int)eAAM_OnPress)
 			{
 				m_currentPlayerState = EPlayerState::Sprinting;
 			}
-			else if (activationMode == eAAM_OnRelease)
+			else if (activationMode & eAAM_OnRelease)
 			{
 				m_currentPlayerState = EPlayerState::Walking;
 			}
@@ -157,13 +169,13 @@ void CPlayerComponent::InitializeHumanInput()
 		{
 
 			// Checking if the human camera is active, and then if we are grounded; jumping if so.
-			if (gEnv->pConsole->GetCVar("fps_use_ship")->GetIVal() == 0)
+			if (!GetIsPiloting())
 			{
 				if (m_pCharacterController->IsOnGround())
 				{
 					m_pCharacterController->AddVelocity(Vec3(0.0f, 0.0f, m_jumpHeight));
 				}
-				else if (activationMode == eAAM_OnRelease)
+				else if (activationMode & eAAM_OnRelease)
 				{
 					m_currentPlayerState = EPlayerState::Walking;
 				}
@@ -175,6 +187,7 @@ void CPlayerComponent::InitializeHumanInput()
 
 	m_pInputComponent->RegisterAction("human", "interact", [this](int activationMode, float value)
 		{
+			if (!GetIsPiloting())
 			Interact(activationMode, value);
 		});
 	m_pInputComponent->BindAction("human", "interact", eAID_KeyboardMouse, EKeyId::eKI_F);
@@ -191,17 +204,14 @@ void CPlayerComponent::InitializeHumanInput()
 
 void CPlayerComponent::Interact(int activationMode, float value)
 {
-	if (gEnv->pConsole->GetCVar("fps_use_ship")->GetIVal() == 0)
+	if (activationMode & (int)eAAM_OnPress)
 	{
-		if (activationMode == (int)eAAM_OnPress)
+		// Creating an offset due to the camera position being set in the editor. Otherwise, the raycast would be stuck into the ground.
+		Vec3 offsetWorldPos = Vec3(m_pCameraComponent->GetEntity()->GetWorldPos().x, m_pCameraComponent->GetEntity()->GetWorldPos().y, m_pCameraComponent->GetEntity()->GetWorldPos().z + m_cameraDefaultPos.z);
+		IEntity* pHitEntity = RayCast(offsetWorldPos, m_lookOrientation, *m_pEntity);
+		if (pHitEntity && pHitEntity->GetComponent<CVehicleComponent>())
 		{
-			// Creating an offset due to the camera position being set in the editor. Otherwise, the raycast would be stuck into the ground.
-			Vec3 offsetWorldPos = Vec3(m_pCameraComponent->GetEntity()->GetWorldPos().x, m_pCameraComponent->GetEntity()->GetWorldPos().y, m_pCameraComponent->GetEntity()->GetWorldPos().z + m_cameraDefaultPos.z);
-			IEntity* pHitEntity = RayCastTest(offsetWorldPos, m_lookOrientation, *m_pEntity);
-			if (pHitEntity && pHitEntity->GetComponent<CVehicleComponent>())
-			{
-				gEnv->pConsole->GetCVar("fps_use_ship")->Set(1);
-			}
+			CPlayerManager::GetInstance().CharacterSwitcher(m_pEntity, pHitEntity);
 		}
 	}
 }
@@ -241,38 +251,9 @@ void CPlayerComponent::CameraMovement()
 	m_pCameraComponent->SetTransformMatrix(finalCamMatrix);
 }
 
-IEntity* CPlayerComponent::RayCast(Vec3 origin, Quat dir, IEntity& pSkipEntity)
+IEntity* CPlayerComponent::RayCast(Vec3 origin, Quat dir, IEntity& pSkipSelf) const
 {
-	ray_hit hit;
-	Vec3 finalDir = dir * Vec3(0.0f, m_playerInteractionRange, 0.0f);
-
-	int objTypes = ent_all;
-	const unsigned int flags = rwi_stop_at_pierceable | rwi_colltype_any;
-
-	static IPhysicalEntity* pSkipEntities[10];
-	pSkipEntities[0] = pSkipEntity.GetPhysics();
-
-	gEnv->pPhysicalWorld->RayWorldIntersection(origin, finalDir, objTypes, flags, &hit, 1, pSkipEntities, 2);
-
-	IPersistantDebug* pPD = gEnv->pGameFramework->GetIPersistantDebug();
-
-	if (hit.pCollider)
-	{
-		pPD->Begin("Raycast", false);
-		pPD->AddSphere(hit.pt, 0.25f, ColorF(Vec3(1, 1, 0), 0.5f), 1.0f);
-	}
-	IPhysicalEntity* pHitEntity = hit.pCollider;
-	IEntity* pEntity = gEnv->pEntitySystem->GetEntityFromPhysics(pHitEntity);
-	if (pEntity)
-	{
-		return pEntity;
-	}
-	else
-		return nullptr;
-}
-
-IEntity* CPlayerComponent::RayCastTest(Vec3 origin, Quat dir, IEntity& pSkipEntity) const
-{
+	float m_debugColor[4] = { 1, 0, 0, 1 };
 	ray_hit hit;
 
 	// Convert quaternion to direction vector
@@ -283,11 +264,10 @@ IEntity* CPlayerComponent::RayCastTest(Vec3 origin, Quat dir, IEntity& pSkipEnti
 	const unsigned int flags = rwi_stop_at_pierceable | rwi_colltype_any;
 
 	// Initialize the skip entities array and assign the skip entity
-	IPhysicalEntity* pSkipEntities[1] = { pSkipEntity.GetPhysics() };
+	IPhysicalEntity* pSkipEntities[1] = { pSkipSelf.GetPhysics() };
 
 	// Perform the ray world intersection
 	int hits = gEnv->pPhysicalWorld->RayWorldIntersection(origin, finalDir, objTypes, flags, &hit, 1, pSkipEntities, 1);
-
 
 	if (hits == 0 || !hit.pCollider) // Stop executing right here if there are no hits
 	{
@@ -301,22 +281,11 @@ IEntity* CPlayerComponent::RayCastTest(Vec3 origin, Quat dir, IEntity& pSkipEnti
 
 
 	IEntity* pEntity = gEnv->pEntitySystem->GetEntityFromPhysics(hit.pCollider);
-	return pEntity;
 
-	/*
-	if (hit.pCollider)
-	{
-		pPD->Begin("Raycast", false);
-		pPD->AddSphere(hit.pt, 0.25f, ColorF(Vec3(1, 1, 0), 0.5f), 1.0f);
-		IPhysicalEntity* pHitEntity = hit.pCollider;
-		IEntity* pEntity = gEnv->pEntitySystem->GetEntityFromPhysics(pHitEntity);
-		if (pEntity)
-		{
-			return pEntity;
-		}
-		else 
-			return nullptr; // Return the hit entity if found
-	}
-	return nullptr; // Return nullptr if no entity was hit
-	*/
+	return pEntity;
+}
+
+bool CPlayerComponent::GetIsPiloting()
+{
+	return gEnv->pConsole->GetCVar("is_piloting")->GetIVal() == 1 ? true : false;
 }

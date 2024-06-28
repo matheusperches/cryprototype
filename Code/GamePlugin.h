@@ -35,5 +35,6 @@ public:
 protected:
 	// 
 private:
-	ICVar* m_fpsUseShip;
+
+	ICVar* m_isPiloting;
 };
