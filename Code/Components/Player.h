@@ -36,8 +36,7 @@ class CPlayerComponent final : public IEntityComponent
 	enum class EInputFlagType
 	{
 		Hold = 0,
-		Toggle, 
-		Click
+		Toggle
 	};
 
 	enum class EInputFlag : uint8
@@ -104,6 +103,27 @@ class CPlayerComponent final : public IEntityComponent
 		T m_accumulator;
 	};
 
+	struct NoParams
+	{
+		void SerializeWith(TSerialize ser)
+		{
+
+		}
+	};
+
+	struct TestParams
+	{
+		string name; 
+		int channelID; 
+		EntityId entityID;
+		void SerializeWith(TSerialize ser)
+		{
+			ser.Value("name", name, 'stab');
+			ser.Value("channelID", channelID);
+			ser.Value("entityID", entityID);
+		}
+	};
+
 public:
 	CPlayerComponent() = default;
 	virtual ~CPlayerComponent() = default;
@@ -118,6 +138,10 @@ public:
 	virtual bool NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags) override;
 
 	virtual NetworkAspectType GetNetSerializeAspectMask() const override { return InputAspect; }
+
+	bool ServerRequestFire(NoParams&& p, INetChannel*);
+	bool ClientFire(NoParams&& p, INetChannel*);
+	bool TestValues(TestParams&& p, INetChannel*);
 
 	// Reflect type to set a unique identifier for this component
 	static void ReflectType(Schematyc::CTypeDesc<CPlayerComponent>& desc)

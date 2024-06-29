@@ -71,6 +71,11 @@ void CPlayerComponent::Initialize()
 
 	// Register the RemoteReviveOnClient function as a Remote Method Invocation (RMI) that can be executed by the server on clients
 	SRmi<RMI_WRAP(&CPlayerComponent::RemoteReviveOnClient)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
+	// Register the Server Fire function as well 
+	SRmi<RMI_WRAP(&CPlayerComponent::ServerRequestFire)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
+	SRmi<RMI_WRAP(&CPlayerComponent::ClientFire)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
+	SRmi<RMI_WRAP(&CPlayerComponent::TestValues)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
+
 }
 
 void CPlayerComponent::InitializeLocalPlayer()
@@ -113,6 +118,7 @@ void CPlayerComponent::ProcessEvent(const SEntityEvent& event)
 
 		if (IsLocalClient())
 		{
+			if (m_pCameraComponent)
 			UpdateCamera(frameTime);
 		}
 	}
@@ -124,42 +130,6 @@ void CPlayerComponent::ProcessEvent(const SEntityEvent& event)
 	}
 	break;
 	}
-}
-
-bool CPlayerComponent::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags)
-{
-	if (aspect == InputAspect)
-	{
-		ser.BeginGroup("PlayerInput");
-
-		const CEnumFlags<EInputFlag> prevInputFlags = m_inputFlags;
-
-		ser.Value("m_inputFlags", m_inputFlags.UnderlyingValue(), 'ui8');
-
-		if (ser.IsReading())
-		{
-			const CEnumFlags<EInputFlag> changedKeys = prevInputFlags ^ m_inputFlags;
-
-			const CEnumFlags<EInputFlag> pressedKeys = changedKeys & prevInputFlags;
-			if (!pressedKeys.IsEmpty())
-			{
-				HandleInputFlagChange(pressedKeys, eAAM_OnPress);
-			}
-
-			const CEnumFlags<EInputFlag> releasedKeys = changedKeys & prevInputFlags;
-			if (!releasedKeys.IsEmpty())
-			{
-				HandleInputFlagChange(pressedKeys, eAAM_OnRelease);
-			}
-		}
-
-		// Serialize the player look orientation
-		ser.Value("m_lookOrientation", m_lookOrientation, 'ori3');
-
-		ser.EndGroup();
-	}
-
-	return true;
 }
 
 
@@ -181,7 +151,7 @@ void CPlayerComponent::InitializePilotInput()
 	m_pInputComponent->RegisterAction("pilot", "sprint", [this](int activationMode, float value) {HandleInputFlagChange(EInputFlag::Sprint, (EActionActivationMode)activationMode); });
 	m_pInputComponent->BindAction("pilot", "sprint", eAID_KeyboardMouse, eKI_LShift);
 
-	m_pInputComponent->RegisterAction("pilot", "jump", [this](int activationMode, float value) {HandleInputFlagChange(EInputFlag::Jump, (EActionActivationMode)activationMode);});
+	m_pInputComponent->RegisterAction("pilot", "jump", [this](int activationMode, float value) {HandleInputFlagChange(EInputFlag::Jump, (EActionActivationMode)activationMode); });
 
 	m_pInputComponent->BindAction("pilot", "jump", eAID_KeyboardMouse, eKI_Space);
 
@@ -193,10 +163,16 @@ void CPlayerComponent::InitializePilotInput()
 
 	// Mouse Controls
 
-	m_pInputComponent->RegisterAction("pilot", "updown", [this](int activationMode, float value) {m_mouseDeltaRotation.y = -value; });
+	m_pInputComponent->RegisterAction("pilot", "updown", [this](int activationMode, float value) {
+		m_mouseDeltaRotation.y = -value; 
+		NetMarkAspectsDirty(InputAspect);
+		});
 	m_pInputComponent->BindAction("pilot", "updown", eAID_KeyboardMouse, eKI_MouseY);
 
-	m_pInputComponent->RegisterAction("pilot", "leftright", [this](int activationMode, float value) {m_mouseDeltaRotation.x = -value; });
+	m_pInputComponent->RegisterAction("pilot", "leftright", [this](int activationMode, float value) {
+		m_mouseDeltaRotation.x = -value;
+		NetMarkAspectsDirty(InputAspect);
+		});
 	m_pInputComponent->BindAction("pilot", "leftright", eAID_KeyboardMouse, eKI_MouseX);
 
 	// Register the shoot action
@@ -205,31 +181,8 @@ void CPlayerComponent::InitializePilotInput()
 			// Only fire on press, not release
 			if (activationMode == eAAM_OnPress)
 			{
-				if (ICharacterInstance* pCharacter = m_pAdvancedAnimationComponent->GetCharacter())
-				{
-					IAttachment* pBarrelOutAttachment = pCharacter->GetIAttachmentManager()->GetInterfaceByName("barrel_out");
-
-					if (pBarrelOutAttachment != nullptr)
-					{
-						QuatTS bulletOrigin = pBarrelOutAttachment->GetAttWorldAbsolute();
-
-						SEntitySpawnParams spawnParams;
-						spawnParams.pClass = gEnv->pEntitySystem->GetClassRegistry()->GetDefaultClass();
-
-						spawnParams.vPosition = bulletOrigin.t;
-						spawnParams.qRotation = bulletOrigin.q;
-
-						const float bulletScale = 0.05f;
-						spawnParams.vScale = Vec3(bulletScale);
-
-						// Spawn the entity
-						if (IEntity* pEntity = gEnv->pEntitySystem->SpawnEntity(spawnParams))
-						{
-							// See Bullet.cpp, bullet is propelled in  the rotation and position the entity was spawned with
-							pEntity->CreateComponentClass<CBulletComponent>();
-						}
-					}
-				}
+				SRmi<RMI_WRAP(&CPlayerComponent::ServerRequestFire)>::InvokeOnServer(this, NoParams{});
+				SRmi<RMI_WRAP(&CPlayerComponent::TestValues)>::InvokeOnServer(this, TestParams{GetEntity()->GetName(), GetEntity()->GetNetEntity()->GetChannelId(), GetEntity()->GetId()});
 			}
 		});
 
@@ -532,10 +485,8 @@ void CPlayerComponent::HandleInputFlagChange(const CEnumFlags<EInputFlag> flags,
 	break;
 	case EInputFlagType::Toggle:
 	{
-		CryLog("Toggle");
 		if (activationMode & eAAM_OnRelease)
 		{
-			// Toggle the bit(s)
 			m_inputFlags ^= flags;
 		}
 	}
@@ -546,4 +497,85 @@ void CPlayerComponent::HandleInputFlagChange(const CEnumFlags<EInputFlag> flags,
 	{
 		NetMarkAspectsDirty(InputAspect);
 	}
+}
+
+bool CPlayerComponent::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags)
+{
+	if (aspect == InputAspect)
+	{
+		ser.BeginGroup("PlayerInput");
+
+		const CEnumFlags<EInputFlag> prevInputFlags = m_inputFlags;
+
+		ser.Value("m_inputFlags", m_inputFlags.UnderlyingValue(), 'ui8');
+
+		if (ser.IsReading())
+		{
+			const CEnumFlags<EInputFlag> changedKeys = prevInputFlags ^ m_inputFlags;
+
+			const CEnumFlags<EInputFlag> pressedKeys = changedKeys & prevInputFlags;
+			if (!pressedKeys.IsEmpty())
+			{
+				HandleInputFlagChange(pressedKeys, eAAM_OnPress);
+			}
+
+			const CEnumFlags<EInputFlag> releasedKeys = changedKeys & prevInputFlags;
+			if (!releasedKeys.IsEmpty())
+			{
+				HandleInputFlagChange(pressedKeys, eAAM_OnRelease);
+			}
+		}
+
+		// Serialize the player look orientation
+		ser.Value("m_lookOrientation", m_lookOrientation, 'ori3');
+
+		ser.EndGroup();
+	}
+
+	return true;
+}
+
+bool CPlayerComponent::ServerRequestFire(NoParams&& p, INetChannel*)
+{
+	CryLogAlways("Server side shooting");
+	SRmi<RMI_WRAP(&CPlayerComponent::ClientFire)>::InvokeOnAllClients(this, NoParams{});
+	return true;
+}
+
+bool CPlayerComponent::ClientFire(NoParams&& p, INetChannel*)
+{
+	CryLogAlways("Client side shooting");
+	if (ICharacterInstance* pCharacter = m_pAdvancedAnimationComponent->GetCharacter())
+	{
+		IAttachment* pBarrelOutAttachment = pCharacter->GetIAttachmentManager()->GetInterfaceByName("barrel_out");
+
+		if (pBarrelOutAttachment != nullptr)
+		{
+			QuatTS bulletOrigin = pBarrelOutAttachment->GetAttWorldAbsolute();
+
+			SEntitySpawnParams spawnParams;
+			spawnParams.pClass = gEnv->pEntitySystem->GetClassRegistry()->GetDefaultClass();
+
+			spawnParams.vPosition = bulletOrigin.t;
+			spawnParams.qRotation = bulletOrigin.q;
+
+			const float bulletScale = 0.05f;
+			spawnParams.vScale = Vec3(bulletScale);
+
+			// Spawn the entity
+			if (IEntity* pEntity = gEnv->pEntitySystem->SpawnEntity(spawnParams))
+			{
+				// See Bullet.cpp, bullet is propelled in  the rotation and position the entity was spawned with
+				pEntity->CreateComponentClass<CBulletComponent>();
+			}
+		}
+	}
+	return true;
+}
+
+bool CPlayerComponent::TestValues(TestParams&& p, INetChannel*)
+{
+	CryLogAlways("entity name: %s, channel: %d, entityID: %d", p.name, p.channelID, int(p.entityID));
+
+	return true;
 }
