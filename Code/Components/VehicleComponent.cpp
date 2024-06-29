@@ -101,7 +101,7 @@ void CVehicleComponent::InitializeInput()
 		{
 			// Changing vehicle boost state based on Shift key
 
-			if (activationMode == (int)eAAM_OnPress)
+			if (activationMode & (int)eAAM_OnPress)
 			{
 				m_keyStates["boost"] = 1;
 			}

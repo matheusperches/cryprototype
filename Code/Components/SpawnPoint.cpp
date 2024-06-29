@@ -21,6 +21,7 @@ static void RegisterSpawnPointComponent(Schematyc::IEnvRegistrar& registrar)
 		Schematyc::CEnvRegistrationScope componentScope = scope.Register(SCHEMATYC_MAKE_ENV_COMPONENT(CSpawnPointComponent));
 		// Functions
 		{
+
 		}
 	}
 }

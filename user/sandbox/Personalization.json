@@ -1,4 +1,7 @@
 {
+    "Asset Browser": {
+        "RecentImportPath": null
+    },
     "AssetFolderModel": {
         "AddedFolders": null
     },
@@ -813,7 +816,8 @@
     },
     "Environment Editor": {
         "Recent Files": [
-            "Libs/environmentpresets/example.env.cryasset"
+            "Libs/environmentpresets/example.env.cryasset",
+            "test.env.cryasset"
         ]
     },
     "FavoritesHelper": {
@@ -821,8 +825,9 @@
     },
     "Level Editor": {
         "Recent Files": [
-            "assets/Levels/test_level/test_level.level",
             "assets/Levels/example/example.level",
+            "assets/Levels/template/example/example.level",
+            "assets/Levels/test_level/test_level.level",
             "assets/levels/test_level/test_level.level"
         ]
     },
