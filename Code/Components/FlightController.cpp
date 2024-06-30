@@ -2,6 +2,8 @@
 #pragma once
 #include "StdAfx.h"
 #include "FlightController.h"
+#include "ShipThrusterComponent.h"
+#include "ThrusterParams.h"
 
 #include <CryRenderer/IRenderAuxGeom.h>
 #include <CrySchematyc/Env/Elements/EnvComponent.h>
@@ -13,8 +15,8 @@
 // Forward declaration
 #include <DefaultComponents/Input/InputComponent.h>
 #include <Components/VehicleComponent.h>
-#include "ShipThrusterComponent.h"
-#include "ThrusterParams.h"
+#include <Components/Player.h>
+
 
 // Registers the component to be used in the engine
 static void RegisterFlightController(Schematyc::IEnvRegistrar& registrar)
@@ -37,6 +39,7 @@ void CFlightController::Initialize()
 	m_pShipThrusterComponent = m_pEntity->GetOrCreateComponent<CShipThrusterComponent>();
 	m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
 	m_physEntity = m_pEntity->GetPhysicalEntity();
+	m_pVehicleComponent = m_pEntity->GetOrCreateComponent<CVehicleComponent>();
 }
 
 Cry::Entity::EventFlags CFlightController::GetEventMask() const
@@ -58,7 +61,7 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 	break;
 	case EEntityEvent::Update:
 	{
-		if(Validator())
+		if(m_pVehicleComponent->GetIsPiloting())
 		{
 			m_frameTime = gEnv->pTimer->GetFrameTime();
 			ProcessFlight();
@@ -73,23 +76,9 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 	}
 }
 
-bool CFlightController::GetIsPiloting()
-{
-	return gEnv->pConsole->GetCVar("is_piloting")->GetIVal() == 1 ? true : false;
-}
-
 void CFlightController::GetVehicleInputManager()
 {
 	m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
-}
-
-bool CFlightController::Validator()
-{
-	if (GetIsPiloting() && m_pEntity->GetChildCount() > 0)
-	{
-		return true;
-	}
-	else return false;
 }
 
 void CFlightController::InitializeJerkParams()
@@ -324,18 +313,15 @@ void CFlightController::UpdateAccelerationState(JerkAccelerationData& accelData,
 
 Vec3 CFlightController::AccelToImpulse(Vec3 desiredAccel)
 {
-	if (Validator())
+	if (m_physEntity)
 	{
-		if (m_physEntity)
+		// Retrieving the dynamics of our entity
+		pe_status_dynamics dynamics;
+		if (m_physEntity->GetStatus(&dynamics))
 		{
-			// Retrieving the dynamics of our entity
-			pe_status_dynamics dynamics;
-			if (m_physEntity->GetStatus(&dynamics))
-			{
-				Vec3 impulse = desiredAccel * dynamics.mass * m_frameTime; // Calculates our final impulse based on the entity's mass.
-				m_totalImpulse += impulse.GetLength();
-				return impulse;
-			}
+			Vec3 impulse = desiredAccel * dynamics.mass * m_frameTime; // Calculates our final impulse based on the entity's mass.
+			m_totalImpulse += impulse.GetLength();
+			return impulse;
 		}
 	}
 	return Vec3(ZERO);

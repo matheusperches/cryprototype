@@ -113,14 +113,29 @@ class CPlayerComponent final : public IEntityComponent
 
 	struct TestParams
 	{
-		string name; 
+		string name;
 		int channelID; 
 		EntityId entityID;
 		void SerializeWith(TSerialize ser)
 		{
 			ser.Value("name", name, 'stab');
 			ser.Value("channelID", channelID);
-			ser.Value("entityID", entityID);
+			ser.Value("entityID", entityID, 'eid');
+		}
+	};
+	struct SerializeVehicleSwitchData
+	{
+		string requestorName;
+		EntityId requestorID;
+		string targetName;
+		EntityId targetID;
+		void SerializeWith(TSerialize ser)
+		{
+			ser.Value("requestorName", requestorName, 'stab');
+			ser.Value("requestorID", requestorID);
+			ser.Value("targetName", targetName, 'stab');
+			ser.Value("targetID", targetID);
+			CryLog("Serializing: requestorID = %d, targetID = %d", requestorID, targetID);
 		}
 	};
 
@@ -141,7 +156,9 @@ public:
 
 	bool ServerRequestFire(NoParams&& p, INetChannel*);
 	bool ClientFire(NoParams&& p, INetChannel*);
-	bool TestValues(TestParams&& p, INetChannel*);
+
+	bool ServerEnterVehicle(SerializeVehicleSwitchData&& data, INetChannel*);
+	bool EnterVehicle(SerializeVehicleSwitchData&& data, INetChannel*);
 
 	// Reflect type to set a unique identifier for this component
 	static void ReflectType(Schematyc::CTypeDesc<CPlayerComponent>& desc)

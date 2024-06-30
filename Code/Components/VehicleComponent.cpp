@@ -134,7 +134,12 @@ void CVehicleComponent::InitializeInput()
 			{
 				if (activationMode & (int)eAAM_OnPress)
 				{
-					CPlayerManager::GetInstance().CharacterSwitcher(m_pEntity, m_pEntity->GetChild(0));
+					if(pilotID)
+					CPlayerManager::GetInstance().EnterExitVehicle(GetEntityId(), pilotID);
+					else
+					{
+						CryLog("Trying to leave the vehicle without a pilot ID!");
+					}
 				}
 			}
 		});
@@ -153,5 +158,14 @@ float CVehicleComponent::GetAxisValue(const string& axisName)
 
 bool CVehicleComponent::GetIsPiloting()
 {
-	return gEnv->pConsole->GetCVar("is_piloting")->GetIVal() == 1 ? true : false;
+	for (uint32 i = 0; i < GetEntity()->GetChildCount(); ++i)
+	{
+		IEntity* pChildEntity = GetEntity()->GetChild(i);
+		if (pChildEntity && pChildEntity->GetComponent<CPlayerComponent>())
+		{
+			pilotID = pChildEntity->GetId();
+			return true;
+		}
+	}
+	return false;
 }

@@ -74,8 +74,8 @@ void CPlayerComponent::Initialize()
 	// Register the Server Fire function as well 
 	SRmi<RMI_WRAP(&CPlayerComponent::ServerRequestFire)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
 	SRmi<RMI_WRAP(&CPlayerComponent::ClientFire)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
-	SRmi<RMI_WRAP(&CPlayerComponent::TestValues)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
-
+	SRmi<RMI_WRAP(&CPlayerComponent::ServerEnterVehicle)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
+	SRmi<RMI_WRAP(&CPlayerComponent::EnterVehicle)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
 }
 
 void CPlayerComponent::InitializeLocalPlayer()
@@ -125,6 +125,9 @@ void CPlayerComponent::ProcessEvent(const SEntityEvent& event)
 	break;
 	case Cry::Entity::EEvent::Reset: // Reminder: Gets called both at startup and end
 	{
+		GetEntity()->DetachAll();
+		GetEntity()->Hide(false);
+		m_pCameraComponent->Activate();
 		// Disable player when leaving game mode.
 		m_isAlive = event.nParam[0] != 0;
 	}
@@ -182,13 +185,11 @@ void CPlayerComponent::InitializePilotInput()
 			if (activationMode == eAAM_OnPress)
 			{
 				SRmi<RMI_WRAP(&CPlayerComponent::ServerRequestFire)>::InvokeOnServer(this, NoParams{});
-				SRmi<RMI_WRAP(&CPlayerComponent::TestValues)>::InvokeOnServer(this, TestParams{GetEntity()->GetName(), GetEntity()->GetNetEntity()->GetChannelId(), GetEntity()->GetId()});
 			}
 		});
 
 	// Bind the shoot action to left mouse click
 	m_pInputComponent->BindAction("pilot", "shoot", eAID_KeyboardMouse, EKeyId::eKI_Mouse1);
-
 }
 
 void CPlayerComponent::Interact(int activationMode)
@@ -200,7 +201,22 @@ void CPlayerComponent::Interact(int activationMode)
 		IEntity* pHitEntity = RayCast(offsetWorldPos, m_lookOrientation, *m_pEntity);
 		if (pHitEntity && pHitEntity->GetComponent<CVehicleComponent>())
 		{
-			CPlayerManager::GetInstance().CharacterSwitcher(m_pEntity, pHitEntity);
+			bool hasPlayerComponent = false;
+
+			// Check if the child entity has a CPlayerComponent
+			for (uint32 i = 0; i < pHitEntity->GetChildCount(); ++i)
+			{
+				IEntity* pChildEntity = pHitEntity->GetChild(i);
+				if (pChildEntity && pChildEntity->GetComponent<CPlayerComponent>())
+				{
+					hasPlayerComponent = true;
+					break;
+				}
+			}
+			if (!hasPlayerComponent)
+			{
+				SRmi<RMI_WRAP(&CPlayerComponent::ServerEnterVehicle)>::InvokeOnServer(this, SerializeVehicleSwitchData{ GetEntity()->GetName(), GetEntity()->GetId() , pHitEntity->GetName(), pHitEntity->GetId()});
+			}
 		}
 	}
 }
@@ -294,8 +310,6 @@ void CPlayerComponent::UpdateLookDirectionRequest(float frameTime)
 	const float rotationLimitsMaxPitch = 1.5f;
 
 	// Apply smoothing filter to the mouse input
-	m_mouseDeltaRotation = m_mouseDeltaSmoothingFilter.Push(m_mouseDeltaRotation).Get();
-
 	// Update angular velocity metrics
 	m_horizontalAngularVelocity = (m_mouseDeltaRotation.x * rotationSpeed) / frameTime;
 	m_averagedHorizontalAngularVelocity.Push(m_horizontalAngularVelocity);
@@ -391,7 +405,7 @@ IEntity* CPlayerComponent::RayCast(Vec3 origin, Quat dir, IEntity& pSkipSelf) co
 
 bool CPlayerComponent::GetIsPiloting()
 {
-	return gEnv->pConsole->GetCVar("is_piloting")->GetIVal() == 1 ? true : false;
+	return m_pEntity->GetParent() ? true : false;
 }
 
 void CPlayerComponent::OnReadyForGameplayOnServer()
@@ -454,7 +468,6 @@ void CPlayerComponent::Revive(const Matrix34& transform)
 	m_lookOrientation = IDENTITY;
 
 	m_mouseDeltaSmoothingFilter.Reset();
-
 	m_activeFragmentId = FRAGMENT_ID_INVALID;
 
 	m_horizontalAngularVelocity = 0.0f;
@@ -573,9 +586,15 @@ bool CPlayerComponent::ClientFire(NoParams&& p, INetChannel*)
 	return true;
 }
 
-bool CPlayerComponent::TestValues(TestParams&& p, INetChannel*)
+bool CPlayerComponent::ServerEnterVehicle(SerializeVehicleSwitchData&& data, INetChannel*)
 {
-	CryLogAlways("entity name: %s, channel: %d, entityID: %d", p.name, p.channelID, int(p.entityID));
+	SRmi<RMI_WRAP(&CPlayerComponent::EnterVehicle)>::InvokeOnAllClients(this, std::move(data));
 
+	return true;
+}
+
+bool CPlayerComponent::EnterVehicle(SerializeVehicleSwitchData&& data, INetChannel*)
+{
+	CPlayerManager::GetInstance().EnterExitVehicle(data.requestorID, data.targetID);
 	return true;
 }

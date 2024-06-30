@@ -39,7 +39,7 @@ public:
 
 
 	// Functions 
-	void CharacterSwitcher(IEntity* requestingEntity, IEntity* targetEntity);
+	void EnterExitVehicle(EntityId requestingEntityID, EntityId targetEntityID);
 	void EnterLeaveByCvar();
 
 protected:

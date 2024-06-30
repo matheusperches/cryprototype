@@ -43,6 +43,9 @@ public:
 	int IsKeyPressed(const string& actionName);
 	float GetAxisValue(const string& axisName);
 
+	// Get if we have a pilot onboard value
+	bool GetIsPiloting();
+
 	// Checking if we should listen to inputs
 	bool isActiveEntity = false;
 
@@ -66,6 +69,6 @@ private:
 	VectorMap<string, float> m_axisValues;
 	VectorMap<string, int> m_keyStates;
 
-	// Get CVar value
-	bool GetIsPiloting();
+	// Get the pilot entity ID
+	EntityId pilotID = NULL; 
 };

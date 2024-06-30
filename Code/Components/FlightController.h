@@ -2,13 +2,13 @@
 #pragma once
 
 class CShipThrusterComponent;
+class CVehicleComponent;
 
 
 namespace Cry::DefaultComponents
 {
 	class CInputComponent;
 	class CRigidBodyComponent;
-	class CVehicleComponent;
 }
 
 class CFlightController final : public IEntityComponent
@@ -73,6 +73,7 @@ protected:
 private:
 	// Default Components
 	Cry::DefaultComponents::CInputComponent* m_pInputComponent = nullptr;
+	CVehicleComponent* m_pVehicleComponent = nullptr;
 
 	// Custom Components
 	CShipThrusterComponent* m_pShipThrusterComponent = nullptr;
@@ -85,9 +86,6 @@ private:
 
 	// Physical Entity reference
 	IPhysicalEntity* m_physEntity = nullptr;
-
-	// Get CVar value
-	bool GetIsPiloting();
 
 	//Debug color
 	float m_debugColor[4] = { 1, 0, 0, 1 };
@@ -172,9 +170,6 @@ private:
 	bool IsKeyPressed(const string& actionName);
 	// Getting the Axis values from the Vehicle
 	float AxisGetter(const string& axisName);
-
-	// Validator function checking if the code can be run properly.
-	bool Validator();
 
 	// Compares the current vs target accel, and calculates the jerk
 	Vec3 UpdateAccelerationWithJerk(JerkAccelerationData& accelData, float deltaTime);
