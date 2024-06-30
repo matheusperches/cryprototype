@@ -61,20 +61,6 @@ void CShipThrusterComponent::ProcessEvent(const SEntityEvent& event)
 	}
 }
 
-bool CShipThrusterComponent::GetIsPiloting()
-{
-	return gEnv->pConsole->GetCVar("is_piloting")->GetIVal() == 1 ? true : false;
-}
-
-bool CShipThrusterComponent::Validator()
-{
-	if (GetIsPiloting() && m_pEntity->GetChildCount() > 0 && m_pEntity->GetComponent<CVehicleComponent>())
-	{
-		return true;
-	}
-	else return false;
-}
-
 Vec3 CShipThrusterComponent::UpdateAccelerationWithJerk(const Vec3& currentAccel, const Vec3& targetAccel, float deltaTime)
 {
 	Vec3 deltaAccel = targetAccel - currentAccel;
@@ -92,7 +78,7 @@ Vec3 CShipThrusterComponent::UpdateAccelerationWithJerk(const Vec3& currentAccel
 
 void CShipThrusterComponent::ApplyLinearImpulse(IPhysicalEntity* pPhysicalEntity, const Vec3& linearImpulse)
 {
-	if (Validator())
+	if (m_pEntity->GetComponent<CVehicleComponent>()->GetIsPiloting())
 	{
 		if (pPhysicalEntity)
 		{
@@ -105,7 +91,7 @@ void CShipThrusterComponent::ApplyLinearImpulse(IPhysicalEntity* pPhysicalEntity
 
 void CShipThrusterComponent::ApplyAngularImpulse(IPhysicalEntity* pPhysicalEntity, const Vec3& angularImpulse)
 {
-	if (Validator())
+	if (m_pEntity->GetComponent<CVehicleComponent>()->GetIsPiloting())
 	{
 		if (pPhysicalEntity)
 		{

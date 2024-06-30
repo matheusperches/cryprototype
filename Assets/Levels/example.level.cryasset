@@ -1,4 +1,4 @@
-<AssetMetadata version="0" type="Level" guid="984fcd77-e594-2b34-fbf5-414a47e0d684" source="" timestamp="1719708586">
+<AssetMetadata version="0" type="Level" guid="984fcd77-e594-2b34-fbf5-414a47e0d684" source="" timestamp="1719778048">
  <Files>
   <File path="example/example.level"/>
  </Files>
@@ -94,7 +94,6 @@
   <Path>objects/characters/samplecharacter/skelproxy.chr</Path>
   <Path>objects/weapons/sampleweapon/defaultweapon.cgf</Path>
   <Path>objects/weapons/sampleweapon/defaultweapon.mtl</Path>
-  <Path>scripts/ai/factions.xml</Path>
   <Path>textures/cubemaps/example/environmentprobe1_cm.dds</Path>
   <Path>textures/cubemaps/example/environmentprobe1_cm_diff.dds</Path>
  </Dependencies>

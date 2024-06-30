@@ -5811,7 +5811,7 @@
 			"type": "Level",
 			"guid": "984fcd77-e594-2b34-fbf5-414a47e0d684",
 			"name": "example",
-			"timestamp": 1719618602,
+			"timestamp": 1719778048,
 			"files": [ "Levels/example/example.level" ],
 			"workFiles": [ ],
 			"source": "",
@@ -6113,7 +6113,6 @@
 					"usageCount": 0
 				},
 				{ "path": "libs/environmentpresets/example.env", "usageCount": 1 },
-				{ "path": "materials/bullet.mtl", "usageCount": 0 },
 				{
 					"path": "objects/characters/samplecharacter/firstperson.cdf",
 					"usageCount": 0
@@ -6150,7 +6149,6 @@
 					"path": "objects/weapons/sampleweapon/defaultweapon.mtl",
 					"usageCount": 0
 				},
-				{ "path": "scripts/ai/factions.xml", "usageCount": 0 },
 				{
 					"path": "textures/cubemaps/example/environmentprobe1_cm.dds",
 					"usageCount": 0

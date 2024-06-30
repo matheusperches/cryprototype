@@ -35,11 +35,11 @@ CRY_STATIC_AUTO_REGISTER_FUNCTION(&RegisterFlightController)
 void CFlightController::Initialize()
 {
 	// Initialize stuff
-	GetVehicleInputManager();
 	m_pShipThrusterComponent = m_pEntity->GetOrCreateComponent<CShipThrusterComponent>();
-	m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
-	m_physEntity = m_pEntity->GetPhysicalEntity();
+	//m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
 	m_pVehicleComponent = m_pEntity->GetOrCreateComponent<CVehicleComponent>();
+	GetEntity()->GetNetEntity()->BecomeBound();
+	GetEntity()->GetNetEntity()->BindToNetwork();
 }
 
 Cry::Entity::EventFlags CFlightController::GetEventMask() const
@@ -54,18 +54,23 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 	{
 	case EEntityEvent::GameplayStarted:
 	{
+		/*x
 		ResetJerkParams();
 		InitializeAccelParamsVectors();
-		InitializeJerkParams(); 
+		InitializeJerkParams();
+		m_physEntity = m_pEntity->GetPhysicalEntity();
+		*/
 	}
 	break;
 	case EEntityEvent::Update:
 	{
+		/*
 		if(m_pVehicleComponent->GetIsPiloting())
 		{
-			m_frameTime = gEnv->pTimer->GetFrameTime();
-			ProcessFlight();
+			const float m_frameTime = event.fParam[0];
+			ProcessFlight(m_frameTime);
 		}
+		*/
 	}
 	break;
 	case Cry::Entity::EEvent::Reset:
@@ -78,7 +83,7 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 
 void CFlightController::GetVehicleInputManager()
 {
-	m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
+	//m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
 }
 
 void CFlightController::InitializeJerkParams()
@@ -132,14 +137,20 @@ float CFlightController::DegreesToRadian(float degrees)
 	return degrees * (gf_PI / 180.f);
 }
 
-bool CFlightController::IsKeyPressed(const string& actionName)
+int CFlightController::KeyState(const string& actionName)
 {
-	return m_pEntity->GetComponent<CVehicleComponent>()->IsKeyPressed(actionName);
+	if (m_pVehicleComponent->m_pPlayerComponent)
+		return m_pVehicleComponent->m_pPlayerComponent->GetComponent<CPlayerComponent>()->IsKeyPressed(actionName);
+	else
+		return 0;
 }
 
 float CFlightController::AxisGetter(const string& axisName)
 {
-	return m_pEntity->GetComponent<CVehicleComponent>()->GetAxisValue(axisName);
+	if (m_pVehicleComponent->m_pPlayerComponent)
+		return m_pVehicleComponent->m_pPlayerComponent->GetComponent<CPlayerComponent>()->GetAxisValue(axisName);
+	else
+		return 0;
 }
 
 Vec3 CFlightController::ImpulseWorldToLocal(const Vec3& localDirection)
@@ -311,15 +322,15 @@ void CFlightController::UpdateAccelerationState(JerkAccelerationData& accelData,
 	}
 }
 
-Vec3 CFlightController::AccelToImpulse(Vec3 desiredAccel)
+Vec3 CFlightController::AccelToImpulse(Vec3 desiredAccel, float frameTime)
 {
-	if (m_physEntity)
+	if (physEntity)
 	{
 		// Retrieving the dynamics of our entity
 		pe_status_dynamics dynamics;
-		if (m_physEntity->GetStatus(&dynamics))
+		if (physEntity->GetStatus(&dynamics))
 		{
-			Vec3 impulse = desiredAccel * dynamics.mass * m_frameTime; // Calculates our final impulse based on the entity's mass.
+			Vec3 impulse = desiredAccel * dynamics.mass * frameTime; // Calculates our final impulse based on the entity's mass.
 			m_totalImpulse += impulse.GetLength();
 			return impulse;
 		}
@@ -340,10 +351,10 @@ float CFlightController::GetImpulse() const
 
 Vec3 CFlightController::GetVelocity()
 {
-	if (m_physEntity)
+	if (physEntity)
 	{
 		pe_status_dynamics dynamics; // Retrieving the dynamics of our entity
-		if (m_physEntity->GetStatus(&dynamics))
+		if (physEntity->GetStatus(&dynamics))
 		{
 			Vec3 velocity = dynamics.v; // In world space 
 
@@ -357,10 +368,10 @@ Vec3 CFlightController::GetVelocity()
 	return Vec3();
 }
 
-float CFlightController::GetAcceleration()
+float CFlightController::GetAcceleration(float frameTime)
 {
 	m_shipVelocity.currentVelocity = GetVelocity().GetLength();
-	float acceleration = (m_shipVelocity.currentVelocity - m_shipVelocity.previousVelocity) / m_frameTime;
+	float acceleration = (m_shipVelocity.currentVelocity - m_shipVelocity.previousVelocity) / frameTime;
 	m_shipVelocity.previousVelocity = m_shipVelocity.currentVelocity;
 
 	return acceleration;
@@ -373,27 +384,25 @@ float CFlightController::GetAcceleration()
 *  Step 3. Convert the result of step 2 into a force and apply that force. 
 *  Repeat step 1 to 3 for other axis.
 */
-void CFlightController::ProcessFlight()
+void CFlightController::ProcessFlight(float frameTime)
 {
 	ResetImpulseCounter();
 	m_linearAccelData.targetJerkAccel = ScaleAccel(m_linearAxisParamsMap); // Scale and set the target acceleration for linear movement
 
-	m_linearAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_linearAccelData, m_frameTime); 	// Infuse the acceleration value with the current jerk coeficient
+	m_linearAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_linearAccelData, frameTime); 	// Infuse the acceleration value with the current jerk coeficient
 
-
-	m_pShipThrusterComponent->ApplyLinearImpulse(m_physEntity, AccelToImpulse(m_linearAccelData.currentJerkAccel));	// Convert the acceleration to an impulse and apply it to the ship for linear movement
+	m_pShipThrusterComponent->ApplyLinearImpulse(physEntity, AccelToImpulse(m_linearAccelData.currentJerkAccel, frameTime));	// Convert the acceleration to an impulse and apply it to the ship for linear movement
 
 	m_rollAccelData.targetJerkAccel = ScaleAccel(m_rollAxisParamsMap);
-	m_rollAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_rollAccelData, m_frameTime);
-	m_pShipThrusterComponent->ApplyAngularImpulse(m_physEntity, AccelToImpulse(m_rollAccelData.currentJerkAccel));
+	m_rollAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_rollAccelData, frameTime);
+	m_pShipThrusterComponent->ApplyAngularImpulse(physEntity, AccelToImpulse(m_rollAccelData.currentJerkAccel, frameTime));
 
 	m_pitchYawAccelData.targetJerkAccel = ScaleAccel(m_pitchYawAxisParamsMap);
-	m_pitchYawAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_pitchYawAccelData, m_frameTime);
-	m_pShipThrusterComponent->ApplyAngularImpulse(m_physEntity, AccelToImpulse(m_pitchYawAccelData.currentJerkAccel));
+	m_pitchYawAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_pitchYawAccelData, frameTime);
+	m_pShipThrusterComponent->ApplyAngularImpulse(physEntity, AccelToImpulse(m_pitchYawAccelData.currentJerkAccel, frameTime));
 
 	// On-screen Debug 
-
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 60, 2, m_debugColor, false, "Velocity: %.2f", GetVelocity().GetLength());
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 90, 2, m_debugColor, false, "acceleration: %.2f", GetAcceleration());
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 90, 2, m_debugColor, false, "acceleration: %.2f", GetAcceleration(frameTime));
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 120, 2, m_debugColor, false, "total impulse: %.3f", GetImpulse());
 }

@@ -71,7 +71,7 @@ void CPlayerComponent::Initialize()
 
 	// Register the RemoteReviveOnClient function as a Remote Method Invocation (RMI) that can be executed by the server on clients
 	SRmi<RMI_WRAP(&CPlayerComponent::RemoteReviveOnClient)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
-	// Register the Server Fire function as well 
+	// Do so for the other relevant functions as well 
 	SRmi<RMI_WRAP(&CPlayerComponent::ServerRequestFire)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
 	SRmi<RMI_WRAP(&CPlayerComponent::ClientFire)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
 	SRmi<RMI_WRAP(&CPlayerComponent::ServerEnterVehicle)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
@@ -87,6 +87,7 @@ void CPlayerComponent::InitializeLocalPlayer()
 	m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
 
 	InitializePilotInput();
+	InitializeShipInput();
 }
 
 Cry::Entity::EventFlags CPlayerComponent::GetEventMask() const
@@ -112,29 +113,39 @@ void CPlayerComponent::ProcessEvent(const SEntityEvent& event)
 			return;
 
 		const float frameTime = event.fParam[0];
-		UpdatePlayerMovementRequest(frameTime);
-		UpdateLookDirectionRequest(frameTime);
-		UpdateAnimation(frameTime);
-
-		if (IsLocalClient())
+		// only execute if we are not piloting
+		if (!GetIsPiloting())
 		{
-			if (m_pCameraComponent)
-			UpdateCamera(frameTime);
+			UpdatePlayerMovementRequest(frameTime);
+			UpdateLookDirectionRequest(frameTime);
+			UpdateAnimation(frameTime);
+
+			if (IsLocalClient())
+			{
+				if (m_pCameraComponent)
+					UpdateCamera(frameTime);
+			}
 		}
+		else
+		{
+			m_position = GetEntity()->GetWorldPos();
+			m_rotation = GetEntity()->GetWorldRotation();
+		}
+		
 	}
 	break;
 	case Cry::Entity::EEvent::Reset: // Reminder: Gets called both at startup and end
 	{
-		GetEntity()->DetachAll();
+		GetEntity()->DetachThis(); // Detach the pilot from the ship
 		GetEntity()->Hide(false);
 		m_pCameraComponent->Activate();
+		gEnv->pConsole->GetCVar("is_piloting")->Set(false);
 		// Disable player when leaving game mode.
 		m_isAlive = event.nParam[0] != 0;
 	}
 	break;
 	}
 }
-
 
 void CPlayerComponent::InitializePilotInput()
 {
@@ -168,13 +179,13 @@ void CPlayerComponent::InitializePilotInput()
 
 	m_pInputComponent->RegisterAction("pilot", "updown", [this](int activationMode, float value) {
 		m_mouseDeltaRotation.y = -value; 
-		NetMarkAspectsDirty(InputAspect);
+		NetMarkAspectsDirty(InputAndPosAspect);
 		});
 	m_pInputComponent->BindAction("pilot", "updown", eAID_KeyboardMouse, eKI_MouseY);
 
 	m_pInputComponent->RegisterAction("pilot", "leftright", [this](int activationMode, float value) {
 		m_mouseDeltaRotation.x = -value;
-		NetMarkAspectsDirty(InputAspect);
+		NetMarkAspectsDirty(InputAndPosAspect);
 		});
 	m_pInputComponent->BindAction("pilot", "leftright", eAID_KeyboardMouse, eKI_MouseX);
 
@@ -182,7 +193,7 @@ void CPlayerComponent::InitializePilotInput()
 	m_pInputComponent->RegisterAction("pilot", "shoot", [this](int activationMode, float value)
 		{
 			// Only fire on press, not release
-			if (activationMode == eAAM_OnPress)
+			if (activationMode == eAAM_OnPress && !GetIsPiloting())
 			{
 				SRmi<RMI_WRAP(&CPlayerComponent::ServerRequestFire)>::InvokeOnServer(this, NoParams{});
 			}
@@ -190,6 +201,71 @@ void CPlayerComponent::InitializePilotInput()
 
 	// Bind the shoot action to left mouse click
 	m_pInputComponent->BindAction("pilot", "shoot", eAID_KeyboardMouse, EKeyId::eKI_Mouse1);
+}
+
+void CPlayerComponent::InitializeShipInput()
+{
+	// Translation Controls
+	m_pInputComponent->RegisterAction("ship", "accel_forward", [this](int activationMode, float value) { m_axisValues["accel_forward"] = value; NetMarkAspectsDirty(InputAndPosAspect); });
+	m_pInputComponent->BindAction("ship", "accel_forward", eAID_KeyboardMouse, eKI_W);
+
+	m_pInputComponent->RegisterAction("ship", "accel_backward", [this](int activationMode, float value) {m_axisValues["accel_backward"] = value; NetMarkAspectsDirty(InputAndPosAspect); });
+	m_pInputComponent->BindAction("ship", "accel_backward", eAID_KeyboardMouse, eKI_S);
+
+	m_pInputComponent->RegisterAction("ship", "accel_right", [this](int activationMode, float value) {m_axisValues["accel_right"] = value; NetMarkAspectsDirty(InputAndPosAspect); });
+	m_pInputComponent->BindAction("ship", "accel_right", eAID_KeyboardMouse, eKI_D);
+
+	m_pInputComponent->RegisterAction("ship", "accel_left", [this](int activationMode, float value) {m_axisValues["accel_left"] = value; NetMarkAspectsDirty(InputAndPosAspect); });
+	m_pInputComponent->BindAction("ship", "accel_left", eAID_KeyboardMouse, eKI_A);
+
+	m_pInputComponent->RegisterAction("ship", "accel_up", [this](int activationMode, float value) {m_axisValues["accel_up"] = value; NetMarkAspectsDirty(InputAndPosAspect); });
+	m_pInputComponent->BindAction("ship", "accel_up", eAID_KeyboardMouse, eKI_Space);
+
+	m_pInputComponent->RegisterAction("ship", "accel_down", [this](int activationMode, float value) {m_axisValues["accel_down"] = value; NetMarkAspectsDirty(InputAndPosAspect); });
+	m_pInputComponent->BindAction("ship", "accel_down", eAID_KeyboardMouse, eKI_LCtrl);
+
+	m_pInputComponent->RegisterAction("ship", "boost", [this](int activationMode, float value)
+		{
+			// Changing vehicle boost state based on Shift key
+
+			if (activationMode & (int)eAAM_OnPress)
+			{
+				m_keyStates["boost"] = 1;
+			}
+			else if (activationMode == eAAM_OnRelease)
+			{
+				m_keyStates["boost"] = 0;
+			}
+		});
+	m_pInputComponent->BindAction("ship", "boost", eAID_KeyboardMouse, eKI_LShift);
+
+	// Rotation Controls
+
+	m_pInputComponent->RegisterAction("ship", "yaw", [this](int activationMode, float value) {m_axisValues["pitch"] = value; });
+	m_pInputComponent->BindAction("ship", "yaw", eAID_KeyboardMouse, eKI_MouseY);
+
+	m_pInputComponent->RegisterAction("ship", "pitch", [this](int activationMode, float value) {m_axisValues["yaw"] = value; });
+	m_pInputComponent->BindAction("ship", "pitch", eAID_KeyboardMouse, eKI_MouseX);
+
+	m_pInputComponent->RegisterAction("ship", "roll_left", [this](int activationMode, float value) {m_axisValues["roll_left"] = value; });
+	m_pInputComponent->BindAction("ship", "roll_left", eAID_KeyboardMouse, eKI_Q);
+
+	m_pInputComponent->RegisterAction("ship", "roll_right", [this](int activationMode, float value) {m_axisValues["roll_right"] = value; });
+	m_pInputComponent->BindAction("ship", "roll_right", eAID_KeyboardMouse, eKI_E);
+
+	// Exiting the vehicle
+	m_pInputComponent->RegisterAction("ship", "exit", [this](int activationMode, float value)
+		{
+			// Checking the cvar value, if we are the ship, then change it back to the human.
+			if (GetIsPiloting())
+			{
+				if (activationMode == (int)eAAM_OnPress)
+				{
+					CryLog("Leave vehicle triggered!");
+				}
+			}
+		});
+	m_pInputComponent->BindAction("ship", "exit", eAID_KeyboardMouse, EKeyId::eKI_Y);
 }
 
 void CPlayerComponent::Interact(int activationMode)
@@ -221,10 +297,20 @@ void CPlayerComponent::Interact(int activationMode)
 	}
 }
 
+int CPlayerComponent::IsKeyPressed(const string& actionName)
+{
+	return m_keyStates[actionName];
+}
+
+float CPlayerComponent::GetAxisValue(const string& axisName)
+{
+	return m_axisValues[axisName];
+}
+
 void CPlayerComponent::UpdatePlayerMovementRequest(float frameTime)
 {
 	// Don't handle input if we are in air
-	if (!m_pCharacterController->IsOnGround() || GetIsPiloting())
+	if (!m_pCharacterController->IsOnGround())
 		return;
 
 	Vec3 velocity = ZERO;
@@ -265,6 +351,7 @@ void CPlayerComponent::UpdatePlayerMovementRequest(float frameTime)
 
 void CPlayerComponent::UpdateCamera(float frameTime)
 {
+
 	// Start with updating look orientation from the latest input
 	Ang3 ypr = CCamera::CreateAnglesYPR(Matrix33(m_lookOrientation));
 
@@ -323,7 +410,6 @@ void CPlayerComponent::UpdateLookDirectionRequest(float frameTime)
 	ypr.x += m_mouseDeltaRotation.x * rotationSpeed;
 
 	// Pitch
-	// TODO: Perform soft clamp here instead of hard wall, should reduce rot speed in this direction when close to limit.
 	ypr.y = CLAMP(ypr.y + m_mouseDeltaRotation.y * rotationSpeed, rotationLimitsMinPitch, rotationLimitsMaxPitch);
 	// Roll (skip)
 	ypr.z = 0;
@@ -462,7 +548,7 @@ void CPlayerComponent::Revive(const Matrix34& transform)
 
 	// Reset input now that the player respawned
 	m_inputFlags.Clear();
-	NetMarkAspectsDirty(InputAspect);
+	NetMarkAspectsDirty(InputAndPosAspect);
 
 	m_mouseDeltaRotation = ZERO;
 	m_lookOrientation = IDENTITY;
@@ -508,13 +594,13 @@ void CPlayerComponent::HandleInputFlagChange(const CEnumFlags<EInputFlag> flags,
 
 	if (IsLocalClient())
 	{
-		NetMarkAspectsDirty(InputAspect);
+		NetMarkAspectsDirty(InputAndPosAspect);
 	}
 }
 
 bool CPlayerComponent::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags)
 {
-	if (aspect == InputAspect)
+	if (aspect == InputAndPosAspect && !GetIsPiloting())
 	{
 		ser.BeginGroup("PlayerInput");
 
@@ -588,13 +674,21 @@ bool CPlayerComponent::ClientFire(NoParams&& p, INetChannel*)
 
 bool CPlayerComponent::ServerEnterVehicle(SerializeVehicleSwitchData&& data, INetChannel*)
 {
-	SRmi<RMI_WRAP(&CPlayerComponent::EnterVehicle)>::InvokeOnAllClients(this, std::move(data));
+	SRmi<RMI_WRAP(&CPlayerComponent::EnterVehicle)>::InvokeOnOwnClient(this, std::move(data));
 
 	return true;
 }
 
 bool CPlayerComponent::EnterVehicle(SerializeVehicleSwitchData&& data, INetChannel*)
 {
-	CPlayerManager::GetInstance().EnterExitVehicle(data.requestorID, data.targetID);
+	//CPlayerManager::GetInstance().EnterExitVehicle(data.requestorID, data.targetID);
+
+	IEntity* requestingEntity = gEnv->pEntitySystem->GetEntity(data.requestorID);
+	IEntity* targetEntity = gEnv->pEntitySystem->GetEntity(data.targetID);
+	targetEntity->AttachChild(requestingEntity);
+	requestingEntity->Hide(true);
+	targetEntity->GetComponent<Cry::DefaultComponents::CCameraComponent>()->Activate(); // Activate the target's camera to switch view points
+	gEnv->pConsole->GetCVar("is_piloting")->Set(true);
+
 	return true;
 }

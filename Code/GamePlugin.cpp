@@ -12,6 +12,7 @@
 
 #include <Components/PlayerManager.h>
 #include "Components/Player.h"
+#include "Components/VehicleComponent.h"
 
 // Included only once per DLL module.
 #include <CryCore/Platform/platform_impl.inl>
@@ -39,7 +40,7 @@ bool CGamePlugin::Initialize(SSystemGlobalEnvironment& env, const SSystemInitPar
 	// Register for engine system events, in our case we need ESYSTEM_EVENT_GAME_POST_INIT to load the map
 	gEnv->pSystem->GetISystemEventDispatcher()->RegisterListener(this, "CGamePlugin");
 	bool value = false;
-	//Create SpawnAndUseShip cvar
+	//Create a cvar
 	m_isPiloting = REGISTER_INT("is_piloting", value , VF_CHEAT, "is the player piloting");
 	m_isPiloting->Set(value);
 

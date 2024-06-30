@@ -50,7 +50,7 @@ class CPlayerComponent final : public IEntityComponent
 		Interact = 1 << 6
 	};
 
-	static constexpr EEntityAspects InputAspect = eEA_GameClientD;
+	static constexpr EEntityAspects InputAndPosAspect = eEA_GameClientA;
 
 	template<typename T, size_t SAMPLES_COUNT>
 	class MovingAverage
@@ -152,7 +152,7 @@ public:
 
 	virtual bool NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags) override;
 
-	virtual NetworkAspectType GetNetSerializeAspectMask() const override { return InputAspect; }
+	virtual NetworkAspectType GetNetSerializeAspectMask() const override { return InputAndPosAspect; }
 
 	bool ServerRequestFire(NoParams&& p, INetChannel*);
 	bool ClientFire(NoParams&& p, INetChannel*);
@@ -183,13 +183,14 @@ public:
 	void OnReadyForGameplayOnServer();
 	bool IsLocalClient() const { return (m_pEntity->GetFlags() & ENTITY_FLAG_LOCAL_PLAYER) != 0; }
 
-	// Checking if we should listen to inputs
-	bool isActiveEntity = false;
+	int IsKeyPressed(const string& actionName);
+	float GetAxisValue(const string& axisName);
 
 protected: 
 
 	// Functions
 	void InitializePilotInput();
+	void InitializeShipInput();
 	void UpdatePlayerMovementRequest(float frameTime);
 	void UpdateLookDirectionRequest(float frameTime);
 	void UpdateAnimation(float frameTime);
@@ -222,7 +223,7 @@ protected:
 	// Remote method intended to be called on all remote clients when a player spawns on the server
 	bool RemoteReviveOnClient(RemoteReviveParams&& params, INetChannel* pNetChannel);
 
-protected: 
+private: 
 
 	bool m_isAlive = false;
 	int m_interactActivationMode;
@@ -244,6 +245,14 @@ protected:
 	Vec3 m_cameraDefaultPos = Vec3(0.f, 0.f, 1.75f);
 	Vec2 m_movementDelta = ZERO;
 	Vec2 m_mouseDeltaRotation = ZERO;
+
+	// Ship variables
+	Vec3 m_position = ZERO;
+	Quat m_rotation = ZERO;
+
+	//Input maps
+	VectorMap<string, float> m_axisValues;
+	VectorMap<string, int> m_keyStates;
 
 	const float m_cameraPitchMax = 1.5f; 
 	const float m_cameraPitchMin = -1.2f;

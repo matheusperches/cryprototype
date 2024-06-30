@@ -32,9 +32,6 @@ public:
 	virtual void Initialize() override;
 	virtual Cry::Entity::EventFlags GetEventMask() const override;
 
-	// Get CVar value
-	bool GetIsPiloting();
-
 	// Get current thruster state
 	EShipThrusterState GetThrusterState()
 	{

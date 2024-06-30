@@ -69,10 +69,22 @@ public:
 		Linear
 	};
 
+	// Physical Entity reference
+	IPhysicalEntity* physEntity = nullptr;
+
+	// Axis Vector initializer
+	void InitializeAccelParamsVectors();
+	// Jerk data initializer
+	void InitializeJerkParams();
+	// Reset the jerk values 
+	void ResetJerkParams();
+
+	// Put the flight calculations in order, segmented by axis group, to produce motion.
+	void ProcessFlight(float frameTime);
+
 protected:
 private:
 	// Default Components
-	Cry::DefaultComponents::CInputComponent* m_pInputComponent = nullptr;
 	CVehicleComponent* m_pVehicleComponent = nullptr;
 
 	// Custom Components
@@ -81,11 +93,8 @@ private:
 	const float m_MAX_INPUT_VALUE = 1.f; // Maximum clamped input value
 	const float m_MIN_INPUT_VALUE = -1.f; // Maximum clamped input value
 	
-	// Game State
+	// Ship State
 	EFlightMode m_pFlightMode = EFlightMode::Newtonian;
-
-	// Physical Entity reference
-	IPhysicalEntity* m_physEntity = nullptr;
 
 	//Debug color
 	float m_debugColor[4] = { 1, 0, 0, 1 };
@@ -138,9 +147,6 @@ private:
 	// Tracking the total impulse generated
 	float m_totalImpulse = 0.f;
 
-	// Tracking FrameTime
-	float m_frameTime = 0.f;
-
 	// Watching the target accelerations (before jerk is applied) to track the ship state
 	Vec3 targetLinearAccel = ZERO;
 	Vec3 targetRollAccelDir = ZERO;
@@ -158,16 +164,11 @@ private:
 	VectorMap<AxisType, DynArray<AxisAccelParams>> m_rollAxisParamsMap;
 	VectorMap<AxisType, DynArray<AxisAccelParams>> m_pitchYawAxisParamsMap;
 
-	// Axis Vector initializer
-	void InitializeAccelParamsVectors();
-	// Jerk data initializer
-	void InitializeJerkParams();
-	// Reset the jerk values 
-	void ResetJerkParams();
+	
 	// Receive the input manager from VehicleComponent
 	void GetVehicleInputManager();
 	// Getting the key states from the Vehicle
-	bool IsKeyPressed(const string& actionName);
+	int KeyState(const string& actionName);
 	// Getting the Axis values from the Vehicle
 	float AxisGetter(const string& axisName);
 
@@ -183,17 +184,14 @@ private:
 	// Utility functions
 	float DegreesToRadian(float degrees);
 	Vec3 GetVelocity();
-	float GetAcceleration();
+	float GetAcceleration(float frameTime);
 
 	// Convert world coordinates to local coordinates
 	Vec3 ImpulseWorldToLocal(const Vec3& localDirection);
 	float NormalizeInput(float inputValue, bool isMouse = false) const;
 
 	// Converts the accel target (after jerk) which contains both direction and magnitude, into thrust values.
-	Vec3 AccelToImpulse(Vec3 desiredAccel);  
+	Vec3 AccelToImpulse(Vec3 desiredAccel, float frameTime);  
 	float GetImpulse() const;
 	void ResetImpulseCounter();
-
-	// Put the flight calculations in order, segmented by axis group, to produce motion.
-	void ProcessFlight();
 };

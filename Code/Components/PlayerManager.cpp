@@ -24,7 +24,7 @@ CRY_STATIC_AUTO_REGISTER_FUNCTION(&RegisterCPlayerManager)
 
 void CPlayerManager::Initialize()
 {
-	// Nothing to see here... yet
+	//
 }
 
 Cry::Entity::EventFlags CPlayerManager::GetEventMask() const
@@ -68,8 +68,6 @@ void CPlayerManager::EnterExitVehicle(EntityId requestingEntityID, EntityId targ
 				targetEntity->AttachChild(requestingEntity);
 				requestingEntity->Hide(true);
 				targetEntity->GetComponent<Cry::DefaultComponents::CCameraComponent>()->Activate(); // Activate the target's camera to switch view points
-				targetEntity->GetComponent<CVehicleComponent>()->isActiveEntity = true; // Toggle the variable to listen to the entity's inputs
-				requestingEntity->GetComponent<CPlayerComponent>()->isActiveEntity = false;
 				gEnv->pConsole->GetCVar("is_piloting")->Set(true);
 			}
 		}
@@ -79,10 +77,7 @@ void CPlayerManager::EnterExitVehicle(EntityId requestingEntityID, EntityId targ
 			targetEntity->DetachThis(); // Detach the pilot from the ship
 			targetEntity->SetWorldTM(requestingEntity->GetWorldTM() * currentPosWithOffset);
 			targetEntity->Hide(false);
-
 			targetEntity->GetComponent<Cry::DefaultComponents::CCameraComponent>()->Activate();
-			targetEntity->GetComponent<CPlayerComponent>()->isActiveEntity = true;
-			requestingEntity->GetComponent<CVehicleComponent>()->isActiveEntity = false;
 			gEnv->pConsole->GetCVar("is_piloting")->Set(false);
 		}
 	}

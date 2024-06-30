@@ -8,6 +8,8 @@
 #include <CryCore/StaticInstanceList.h>
 #include <CrySchematyc/Env/IEnvRegistrar.h>
 #include <CryEntitySystem/IEntitySystem.h>
+#include <CryNetwork/Rmi.h>
+#include <CryNetwork/ISerialize.h>
 
 // Forward declaration
 #include <DefaultComponents/Cameras/CameraComponent.h>
@@ -31,18 +33,34 @@ CRY_STATIC_AUTO_REGISTER_FUNCTION(&RegisterVehicleComponent)
 
 void CVehicleComponent::Initialize()
 {
+	m_pRigidBodyComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CRigidBodyComponent>();
+	m_pFlightController = m_pEntity->GetOrCreateComponent<CFlightController>();
+
+	// Set entity to be visible
+	GetEntity()->SetFlags(GetEntity()->GetFlags() | ENTITY_FLAG_CLIENT_ONLY);
+
+	// Load the cube geometry
+	const char* geometryPath = "%engine%/engineassets/objects/primitive_cube.cgf";  // Example path to the cube mesh
+	GetEntity()->LoadGeometry(0, geometryPath);
+
+	// Optionally, set a material
+	const char* materialPath = "%ENGINE%/EngineAssets/Materials/material_default.mtl";
+	GetEntity()->SetMaterial(gEnv->p3DEngine->GetMaterialManager()->LoadMaterial(materialPath));
+	/*
 	m_pCameraComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CCameraComponent>();
 	m_pCameraComponent->EnableAutomaticActivation(false);
 	m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
-	m_pRigidBodyComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CRigidBodyComponent>();
-	m_pFlightController = m_pEntity->GetOrCreateComponent<CFlightController>();
 	InitializeInput();
+	*/
+	m_pEntity->GetNetEntity()->EnableDelegatableAspect(eEA_Physics, false);
+	GetEntity()->GetNetEntity()->BecomeBound();
+	GetEntity()->GetNetEntity()->BindToNetwork();
 }
 
 Cry::Entity::EventFlags CVehicleComponent::GetEventMask() const
 {
 	//Listening to the update event
-	return EEntityEvent::Update | EEntityEvent::GameplayStarted | EEntityEvent::Reset;
+	return EEntityEvent::GameplayStarted | EEntityEvent::Update | EEntityEvent::Reset;
 }
 
 void CVehicleComponent::ProcessEvent(const SEntityEvent& event)
@@ -52,20 +70,36 @@ void CVehicleComponent::ProcessEvent(const SEntityEvent& event)
 	case EEntityEvent::GameplayStarted:
 	{
 		m_hasGameStarted = true;
-
-		// ------------------------- //
-		// Executing actions if we are the active entity (changed by PlayerManager.cpp)
-		// ------------------------- //
-
-		if (GetIsPiloting())
+		if (gEnv->bServer)
 		{
-			m_pCameraComponent->Activate();
+			SEntitySpawnParams spawnParams;
+			spawnParams.pClass = gEnv->pEntitySystem->GetClassRegistry()->GetDefaultClass();
+			spawnParams.vPosition = GetEntity()->GetWorldPos();
+			spawnParams.qRotation = GetEntity()->GetWorldRotation();
+			gEnv->pEntitySystem->SpawnEntity(spawnParams);
+			SEntityPhysicalizeParams physParams;
+			physParams.type = PE_RIGID;
+			m_pEntity->Physicalize(physParams);
 		}
+
+		m_pFlightController->ResetJerkParams();
+		m_pFlightController->InitializeAccelParamsVectors();
+		m_pFlightController->InitializeJerkParams();
+		m_pFlightController->physEntity = m_pEntity->GetPhysicalEntity();
 	}
 	break;
 	case EEntityEvent::Update:
 	{
+		NetMarkAspectsDirty(positionAspect);
+		m_position = GetEntity()->GetWorldPos();
+		m_rotation = GetEntity()->GetWorldRotation();
 
+		if (GetIsPiloting())
+		{
+			const float m_frameTime = event.fParam[0];
+			GetEntity()->UpdateComponentEventMask(m_pEntity->GetComponent<CVehicleComponent>());
+			m_pFlightController->ProcessFlight(m_frameTime);
+		}
 	}
 	break;
 	case Cry::Entity::EEvent::Reset:
@@ -164,8 +198,25 @@ bool CVehicleComponent::GetIsPiloting()
 		if (pChildEntity && pChildEntity->GetComponent<CPlayerComponent>())
 		{
 			pilotID = pChildEntity->GetId();
+			m_pPlayerComponent = pChildEntity;
 			return true;
 		}
 	}
 	return false;
+}
+
+IEntity* CVehicleComponent::GetPlayerComponent()
+{
+	return m_pPlayerComponent;
+}
+
+bool CVehicleComponent::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags)
+{
+	if (aspect == positionAspect)
+	{
+		ser.Value("vehicle_position", m_position);
+		ser.Value("vehicle_rotation", m_rotation);
+	}
+
+	return true;
 }
