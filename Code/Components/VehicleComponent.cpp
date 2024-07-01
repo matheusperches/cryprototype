@@ -52,8 +52,6 @@ void CVehicleComponent::Initialize()
 	m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
 	InitializeInput();
 	*/
-	m_position = GetEntity()->GetPos();
-	m_rotation = GetEntity()->GetWorldRotation();
 
 	GetEntity()->EnablePhysics(true);
 	GetEntity()->PhysicsNetSerializeEnable(true);
@@ -94,15 +92,12 @@ void CVehicleComponent::ProcessEvent(const SEntityEvent& event)
 	break;
 	case EEntityEvent::Update:
 	{
-		m_position = GetEntity()->GetPos();
-		m_rotation = GetEntity()->GetWorldRotation();
-
 		if (GetIsPiloting())
 		{
-			const float m_frameTime = event.fParam[0];
-			m_pFlightController->ProcessFlight(m_frameTime);
-			m_velocity = m_pFlightController->GetVelocity();
-			NetMarkAspectsDirty(vehicle_aspect);
+			//const float m_frameTime = event.fParam[0];
+			//m_pFlightController->ProcessFlight(m_frameTime);
+			//m_velocity = m_pFlightController->GetVelocity();
+			//NetMarkAspectsDirty(kVehicleAspect);
 		}
 	}
 	break;
@@ -137,21 +132,23 @@ IEntity* CVehicleComponent::GetPlayerComponent()
 bool CVehicleComponent::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags)
 {
 
-	if (aspect == vehicle_aspect)
+	if (aspect & kVehicleAspect)
 	{
-		ser.BeginGroup("ShipMovement");
-
-		if (ser.IsReading())
-		{
-			GetEntity()->SetPos(m_position);
-			GetEntity()->SetRotation(m_rotation);
-		}
+		/*
+		ser.BeginGroup("vehicleMovement");
 
 		ser.Value("vehicle_position", m_position, 'wrld');
 		ser.Value("vehicle_rotation", m_rotation, 'ori1');
 		ser.Value("vehicle_velocity", m_velocity, 'pav0');
 
 		ser.EndGroup();
+
+		if (ser.IsReading())
+		{
+			GetEntity()->SetPos(m_position);
+			GetEntity()->SetRotation(m_rotation);
+		}
+		*/
 		return true;
 	}
 	return false;

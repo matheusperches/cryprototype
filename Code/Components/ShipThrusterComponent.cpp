@@ -61,21 +61,6 @@ void CShipThrusterComponent::ProcessEvent(const SEntityEvent& event)
 	}
 }
 
-Vec3 CShipThrusterComponent::UpdateAccelerationWithJerk(const Vec3& currentAccel, const Vec3& targetAccel, float deltaTime)
-{
-	Vec3 deltaAccel = targetAccel - currentAccel;
-	Vec3 jerk = deltaAccel * jerkRate * deltaTime;
-	Vec3 newAccel = currentAccel + jerk;
-
-	// Optional: Clamp newAccel to targetAccel to prevent overshooting
-	if ((deltaAccel.dot(jerk) < 0.f))
-	{
-		newAccel = targetAccel;
-	}
-
-	return newAccel;
-}
-
 void CShipThrusterComponent::ApplyLinearImpulse(IPhysicalEntity* pPhysicalEntity, const Vec3& linearImpulse)
 {
 	if (m_pEntity->GetComponent<CVehicleComponent>()->GetIsPiloting())

@@ -19,7 +19,8 @@ namespace CustomComponents
 ////////////////////////////////////////////////////////
 class CVehicleComponent final : public IEntityComponent
 {
-	static constexpr EEntityAspects vehicle_aspect = eEA_GameClientA;
+	static constexpr EEntityAspects kVehicleAspect = eEA_GameClientA;
+
 public:
 
 
@@ -34,7 +35,7 @@ public:
 
 	virtual bool NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags) override;
 
-	virtual NetworkAspectType GetNetSerializeAspectMask() const override { return vehicle_aspect; }
+	virtual NetworkAspectType GetNetSerializeAspectMask() const override { return kVehicleAspect;  }
 
 	// Reflect type to set a unique identifier for this component
 	// and provide additional information to expose it in the sandbox
@@ -52,6 +53,7 @@ public:
 	IEntity* m_pPlayerComponent = nullptr;
 
 protected:
+
 private:
 	// Default Components
 	Cry::DefaultComponents::CCameraComponent* m_pCameraComponent;
@@ -65,6 +67,8 @@ private:
 	// Ref flight controller
 	CFlightController* m_pFlightController;
 
+	
+
 	// Variables
 	bool m_hasGameStarted = false;
 
@@ -76,5 +80,5 @@ private:
 	Quat m_shipLookOrientation = ZERO;
 
 	// Get the pilot entity ID
-	EntityId pilotID = NULL; 
+	EntityId pilotID = NULL;
 };

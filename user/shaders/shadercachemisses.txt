@@ -30,3 +30,4 @@
 [ShaderList_PC.txt]<2>SkyHDR@SkyHDRPS()()(0)(0)(0)(0)(PS)
 [ShaderList_PC.txt]<2>Water@WaterVS(%SUN_SHINE|%FOAM)(%_RT_QUALITY1|%_RT_NO_TESSELLATION|%_RT_REVERSE_DEPTH)(0)(0)(0)(0)(VS)
 [ShaderList_PC.txt]<2>Water@WaterPS(%SUN_SHINE|%FOAM)(%_RT_FOG|%_RT_QUALITY1|%_RT_NO_TESSELLATION)(0)(0)(0)(0)(PS)
+[ShaderList_PC.txt]<2>WaterFogVolume@OceanOutofPS()(%_RT_FOG|%_RT_SAMPLE0)(0)(0)(0)(0)(PS)

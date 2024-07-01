@@ -40,10 +40,7 @@ public:
 
 	// Flight Behavior
 	void ApplyLinearImpulse(IPhysicalEntity* pPhysicalEntity, const Vec3& linearImpulse);
-	void ApplyAngularImpulse(IPhysicalEntity* pPhysicalEntity, const Vec3& linearImpulse);
-
-	// Adjusts the acceleration rate change over time 
-	Vec3 UpdateAccelerationWithJerk(const Vec3& currentAccel, const Vec3& targetAccel, float deltaTime);
+	void ApplyAngularImpulse(IPhysicalEntity* pPhysicalEntity, const Vec3& angularImpulse);
 
 protected:
 private:
@@ -55,9 +52,6 @@ private:
 	bool hasGameStarted = false;
 	pe_action_impulse impulseAction;
 	float jerkRate = 0.f;
-
-	// Validator functions checking if the code can be run properly.
-	bool Validator();
 
 	// Thruster state
 	EShipThrusterState m_currentThrusterState;

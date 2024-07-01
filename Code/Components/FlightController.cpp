@@ -11,6 +11,8 @@
 #include <CrySchematyc/Env/IEnvRegistrar.h>
 #include <CryEntitySystem/IEntitySystem.h>
 #include <CryPhysics/physinterface.h>
+#include <CryNetwork/Rmi.h>
+#include <CryNetwork/ISerialize.h>
 
 // Forward declaration
 #include <DefaultComponents/Input/InputComponent.h>
@@ -38,8 +40,15 @@ void CFlightController::Initialize()
 	m_pShipThrusterComponent = m_pEntity->GetOrCreateComponent<CShipThrusterComponent>();
 	//m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
 	m_pVehicleComponent = m_pEntity->GetOrCreateComponent<CVehicleComponent>();
-	GetEntity()->GetNetEntity()->BecomeBound();
-	GetEntity()->GetNetEntity()->BindToNetwork();
+
+	m_shipPosition = GetEntity()->GetWorldPos();
+	m_shipOrientation = GetEntity()->GetWorldRotation();
+
+	SRmi<RMI_WRAP(&CFlightController::ServerApplyLinearImpulse)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
+	SRmi<RMI_WRAP(&CFlightController::ServerApplyAngularImpulse)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
+	SRmi<RMI_WRAP(&CFlightController::ServerProcessShipData)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
+	SRmi<RMI_WRAP(&CFlightController::ClientUpdateShipData)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
+
 }
 
 Cry::Entity::EventFlags CFlightController::GetEventMask() const
@@ -59,7 +68,21 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 	break;
 	case EEntityEvent::Update:
 	{
+		if (m_pVehicleComponent->GetIsPiloting())
+		{
+			const float m_frameTime = event.fParam[0];
+			ProcessFlight(m_frameTime);
+			// Update position and orientation
+			m_shipPosition = GetEntity()->GetWorldPos();
+			m_shipOrientation = GetEntity()->GetWorldRotation();
 
+			// Mark the physics aspect as dirty to ensure it gets serialized
+			GetEntity()->GetNetEntity()->MarkAspectsDirty(kVehiclePhysics);
+
+			// Send updates to the server
+			SendUpdatesToServer();
+		}
+		
 	}
 	break;
 	case Cry::Entity::EEvent::Reset:
@@ -366,6 +389,33 @@ float CFlightController::GetAcceleration(float frameTime)
 	return acceleration;
 }
 
+void CFlightController::ApplyLinearImpulse(IPhysicalEntity* pPhysicalEntity, const Vec3& linearImpulse)
+{
+	if (m_pEntity->GetComponent<CVehicleComponent>()->GetIsPiloting())
+	{
+		if (pPhysicalEntity)
+		{
+			pe_action_impulse impulseAction;
+			// Apply the force at the specified position and rotation
+			impulseAction.impulse = linearImpulse;
+			pPhysicalEntity->Action(&impulseAction);
+		}
+	}
+}
+
+void CFlightController::ApplyAngularImpulse(IPhysicalEntity* pPhysicalEntity, const Vec3& angularImpulse)
+{
+	if (m_pEntity->GetComponent<CVehicleComponent>()->GetIsPiloting())
+	{
+		if (pPhysicalEntity)
+		{
+			pe_action_impulse torqueAction;
+			torqueAction.angImpulse = angularImpulse;
+			pPhysicalEntity->Action(&torqueAction);
+		}
+	}
+}
+
 /* Puts the flight calculations in order, segmented by axis group, to produce motion.
 *  Starts by resetting the impulse counter, a variable used to track how much total impulse we are generating. 
 *  Step 1. Call ScaleAccel to create a desired acceleration, with a local space direction, scaled by the magnitude of the input.
@@ -376,22 +426,159 @@ float CFlightController::GetAcceleration(float frameTime)
 void CFlightController::ProcessFlight(float frameTime)
 {
 	ResetImpulseCounter();
+
 	m_linearAccelData.targetJerkAccel = ScaleAccel(m_linearAxisParamsMap); // Scale and set the target acceleration for linear movement
 
 	m_linearAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_linearAccelData, frameTime); 	// Infuse the acceleration value with the current jerk coeficient
 
-	m_pShipThrusterComponent->ApplyLinearImpulse(physEntity, AccelToImpulse(m_linearAccelData.currentJerkAccel, frameTime));	// Convert the acceleration to an impulse and apply it to the ship for linear movement
+	SRmi<RMI_WRAP(&CFlightController::ServerApplyLinearImpulse)>::InvokeOnServer(this, SerializeImpulseData{ AccelToImpulse(m_linearAccelData.currentJerkAccel, frameTime)});
 
 	m_rollAccelData.targetJerkAccel = ScaleAccel(m_rollAxisParamsMap);
 	m_rollAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_rollAccelData, frameTime);
-	m_pShipThrusterComponent->ApplyAngularImpulse(physEntity, AccelToImpulse(m_rollAccelData.currentJerkAccel, frameTime));
+	SRmi<RMI_WRAP(&CFlightController::ServerApplyAngularImpulse)>::InvokeOnServer(this, SerializeImpulseData{AccelToImpulse(m_rollAccelData.currentJerkAccel, frameTime)});
+	Vec3 rollImpulse = AccelToImpulse(m_rollAccelData.currentJerkAccel, frameTime);
+	m_angularImpulse += rollImpulse;
+
 
 	m_pitchYawAccelData.targetJerkAccel = ScaleAccel(m_pitchYawAxisParamsMap);
 	m_pitchYawAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_pitchYawAccelData, frameTime);
-	m_pShipThrusterComponent->ApplyAngularImpulse(physEntity, AccelToImpulse(m_pitchYawAccelData.currentJerkAccel, frameTime));
+	SRmi<RMI_WRAP(&CFlightController::ServerApplyAngularImpulse)>::InvokeOnServer(this, SerializeImpulseData{ AccelToImpulse(m_pitchYawAccelData.currentJerkAccel, frameTime) });
+	Vec3 pitchYawImpulse = AccelToImpulse(m_pitchYawAccelData.currentJerkAccel, frameTime);
+	m_angularImpulse += pitchYawImpulse;
 
 	// On-screen Debug 
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 60, 2, m_debugColor, false, "Velocity: %.2f", GetVelocity().GetLength());
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 90, 2, m_debugColor, false, "acceleration: %.2f", GetAcceleration(frameTime));
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 120, 2, m_debugColor, false, "total impulse: %.3f", GetImpulse());
+}
+
+bool CFlightController::ServerApplyLinearImpulse(SerializeImpulseData&& data, INetChannel*)
+{
+	IPhysicalEntity* pPhysicalEntity = GetEntity()->GetPhysics();
+
+	if (pPhysicalEntity)
+	{
+		ApplyLinearImpulse(pPhysicalEntity, data.linearImpulse);
+		m_linearImpulse = data.linearImpulse;
+		NetMarkAspectsDirty(kVehiclePhysics);
+	}
+	return true;
+
+}
+
+bool CFlightController::ServerApplyAngularImpulse(SerializeImpulseData&& data, INetChannel*)
+{
+	IPhysicalEntity* pPhysicalEntity = GetEntity()->GetPhysics();
+
+	if (pPhysicalEntity)
+	{
+		ApplyAngularImpulse(pPhysicalEntity, data.angularImpulse);
+		m_angularImpulse = data.angularImpulse;
+		NetMarkAspectsDirty(kVehiclePhysics);
+	}
+	return true;
+}
+
+void CFlightController::SendUpdatesToServer()
+{
+	// Create data to be sent to the server
+	SerializeImpulseData data;
+	data.position = m_shipPosition;
+	data.orientation = m_shipOrientation;
+	data.linearImpulse = m_linearImpulse;
+	data.angularImpulse = m_angularImpulse;
+
+	// Invoke the server method to handle the data
+	SRmi<RMI_WRAP(&CFlightController::ServerProcessShipData)>::InvokeOnServer(this, std::move(data));
+}
+
+
+bool CFlightController::ServerProcessShipData(SerializeImpulseData&& data, INetChannel* pChannel)
+{
+	IEntity* pEntity = GetEntity();
+
+	// Validate and apply the received data
+	pEntity->SetPos(data.position);
+	pEntity->SetRotation(data.orientation);
+
+	IPhysicalEntity* pPhysics = pEntity->GetPhysics();
+	if (pPhysics)
+	{
+		// Apply linear and angular impulses
+		pe_action_impulse linearImpulseAction;
+		linearImpulseAction.impulse = data.linearImpulse;
+		pPhysics->Action(&linearImpulseAction);
+
+		pe_action_impulse angularImpulseAction;
+		angularImpulseAction.angImpulse = data.angularImpulse;
+		pPhysics->Action(&angularImpulseAction);
+	}
+
+	// Broadcast the updated state to all clients
+	SRmi<RMI_WRAP(&CFlightController::ClientUpdateShipData)>::InvokeOnAllClients(this, std::move(data));
+
+	return true;
+}
+
+
+bool CFlightController::ClientUpdateShipData(SerializeImpulseData&& data, INetChannel* pChannel)
+{
+	IEntity* pEntity = GetEntity();
+
+	// Apply the received data
+	pEntity->SetPos(data.position);
+	pEntity->SetRotation(data.orientation);
+
+	IPhysicalEntity* pPhysics = pEntity->GetPhysics();
+	if (pPhysics)
+	{
+		// Apply linear and angular impulses
+		pe_action_impulse linearImpulseAction;
+		linearImpulseAction.impulse = data.linearImpulse;
+		pPhysics->Action(&linearImpulseAction);
+
+		pe_action_impulse angularImpulseAction;
+		angularImpulseAction.angImpulse = data.angularImpulse;
+		pPhysics->Action(&angularImpulseAction);
+	}
+
+	return true;
+}
+
+bool CFlightController::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags)
+{
+
+	if (aspect & kVehiclePhysics)
+	{
+		ser.BeginGroup("vehicleMovement");
+
+		ser.Value("m_shipPosition", m_shipPosition);
+		ser.Value("m_shipOrientation", m_shipOrientation, 'ori3');
+		ser.Value("m_linearImpulse", m_linearImpulse);
+		ser.Value("m_angularImpulse", m_angularImpulse);
+
+		ser.EndGroup();
+
+		if (ser.IsReading())
+		{
+			IEntity* pEntity = GetEntity();
+			pEntity->SetPos(m_shipPosition);
+			pEntity->SetRotation(m_shipOrientation);
+
+			IPhysicalEntity* pPhysics = pEntity->GetPhysics();
+			if (pPhysics)
+			{
+				// Apply linear and angular impulses
+				pe_action_impulse linearImpulseAction;
+				linearImpulseAction.impulse = m_linearImpulse;
+				pPhysics->Action(&linearImpulseAction);
+
+				pe_action_impulse angularImpulseAction;
+				angularImpulseAction.angImpulse = m_angularImpulse;
+				pPhysics->Action(&angularImpulseAction);
+			}
+		}
+		return true;
+	}
+	return false;
 }

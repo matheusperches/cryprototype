@@ -13,6 +13,8 @@ namespace Cry::DefaultComponents
 
 class CFlightController final : public IEntityComponent
 {
+	static constexpr EEntityAspects kVehiclePhysics = eEA_All;
+
 public:
 	CFlightController() = default;
 	virtual ~CFlightController() = default;
@@ -50,6 +52,27 @@ public:
 		desc.AddMember(&CFlightController::m_PitchYawJerkDecelRate, 'pydr', "pyjerkdecel", "Pitch/Yaw Jerk decel rate", "Adjusts the decel rate", ZERO);
 	}
 
+	virtual bool NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags) override;
+
+	virtual NetworkAspectType GetNetSerializeAspectMask() const override { return kVehiclePhysics; }
+
+	struct SerializeImpulseData
+	{
+		Vec3 position = ZERO;        // Position of the entity
+		Quat orientation = ZERO;     // Orientation of the entity
+		Vec3 linearImpulse = ZERO;   // Linear impulse to be applied
+		Vec3 angularImpulse = ZERO;  // Angular impulse to be applied
+
+		void SerializeWith(TSerialize ser)
+		{
+			ser.Value("position", position);
+			ser.Value("orientation", orientation, 'ori3');
+			ser.Value("linearImpulse", linearImpulse);
+			ser.Value("angularImpulse", angularImpulse);
+		}
+	};
+
+
 	enum class EFlightMode
 	{
 		Coupled,
@@ -82,8 +105,22 @@ public:
 	// Put the flight calculations in order, segmented by axis group, to produce motion.
 	void ProcessFlight(float frameTime);
 
+	bool ServerApplyLinearImpulse(SerializeImpulseData&& data, INetChannel*);
+
+	bool ServerApplyAngularImpulse(SerializeImpulseData&& data, INetChannel*);
+
+	bool ServerProcessShipData(SerializeImpulseData&& data, INetChannel* pChannel);
+
+	bool ClientUpdateShipData(SerializeImpulseData&& data, INetChannel* pChannel);
+
+	void SendUpdatesToServer();
+
 	Vec3 GetVelocity();
 	float GetAcceleration(float frameTime);
+
+	// Impulse generators
+	void ApplyLinearImpulse(IPhysicalEntity* pPhysicalEntity, const Vec3& linearImpulse);
+	void ApplyAngularImpulse(IPhysicalEntity* pPhysicalEntity, const Vec3& linearImpulse);
 
 protected:
 private:
@@ -147,13 +184,20 @@ private:
 	float m_PitchYawJerkRate = 0.f;
 	float m_PitchYawJerkDecelRate = 0.f;
 
-	// Tracking the total impulse generated
+	// Tracking the impulses generated
 	float m_totalImpulse = 0.f;
+	float m_totalAngularImpulse = 0.f;
+	Vec3 m_linearImpulse = ZERO;
+	Vec3 m_angularImpulse = ZERO;
 
 	// Watching the target accelerations (before jerk is applied) to track the ship state
 	Vec3 targetLinearAccel = ZERO;
 	Vec3 targetRollAccelDir = ZERO;
 	Vec3 targetPitchYawAccel = ZERO;
+
+	// Tracking ship position and orientation
+	Vec3 m_shipPosition = ZERO;
+	Quat m_shipOrientation = ZERO;
 
 
 	// struct to combine thruster axis and actuation
