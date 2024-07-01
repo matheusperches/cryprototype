@@ -50,7 +50,7 @@ class CPlayerComponent final : public IEntityComponent
 		Interact = 1 << 6
 	};
 
-	static constexpr EEntityAspects InputAndPosAspect = eEA_GameClientA;
+	static constexpr EEntityAspects entityAspect = eEA_GameClientA;
 
 	template<typename T, size_t SAMPLES_COUNT>
 	class MovingAverage
@@ -152,7 +152,7 @@ public:
 
 	virtual bool NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags) override;
 
-	virtual NetworkAspectType GetNetSerializeAspectMask() const override { return InputAndPosAspect; }
+	virtual NetworkAspectType GetNetSerializeAspectMask() const override { return entityAspect; }
 
 	bool ServerRequestFire(NoParams&& p, INetChannel*);
 	bool ClientFire(NoParams&& p, INetChannel*);
@@ -266,6 +266,7 @@ private:
 	bool m_isInteractPressed = false;
 
 	int m_cameraJointId = -1;
+	bool m_isVisible = true;
 
 	CEnumFlags<EInputFlag> m_inputFlags;
 	MovingAverage<Vec2, 10> m_mouseDeltaSmoothingFilter;

@@ -82,6 +82,9 @@ public:
 	// Put the flight calculations in order, segmented by axis group, to produce motion.
 	void ProcessFlight(float frameTime);
 
+	Vec3 GetVelocity();
+	float GetAcceleration(float frameTime);
+
 protected:
 private:
 	// Default Components
@@ -183,8 +186,6 @@ private:
 
 	// Utility functions
 	float DegreesToRadian(float degrees);
-	Vec3 GetVelocity();
-	float GetAcceleration(float frameTime);
 
 	// Convert world coordinates to local coordinates
 	Vec3 ImpulseWorldToLocal(const Vec3& localDirection);

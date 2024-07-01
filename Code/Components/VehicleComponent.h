@@ -19,7 +19,7 @@ namespace CustomComponents
 ////////////////////////////////////////////////////////
 class CVehicleComponent final : public IEntityComponent
 {
-	static constexpr EEntityAspects positionAspect = eEA_GameClientC;
+	static constexpr EEntityAspects vehicle_aspect = eEA_GameClientA;
 public:
 
 
@@ -34,7 +34,7 @@ public:
 
 	virtual bool NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags) override;
 
-	virtual NetworkAspectType GetNetSerializeAspectMask() const override { return positionAspect; }
+	virtual NetworkAspectType GetNetSerializeAspectMask() const override { return vehicle_aspect; }
 
 	// Reflect type to set a unique identifier for this component
 	// and provide additional information to expose it in the sandbox
@@ -45,9 +45,6 @@ public:
 		desc.SetLabel("VehicleComponent");
 		desc.SetDescription("Turns the entity into a vehicle that can be entered. No Flight Logic.");
 	}
-
-	int IsKeyPressed(const string& actionName);
-	float GetAxisValue(const string& axisName);
 
 	// Get if we have a pilot onboard
 	bool GetIsPiloting();
@@ -67,9 +64,6 @@ private:
 
 	// Ref flight controller
 	CFlightController* m_pFlightController;
-
-	// Flight Inputs
-	void InitializeInput();
 
 	// Variables
 	bool m_hasGameStarted = false;

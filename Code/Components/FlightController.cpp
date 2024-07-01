@@ -54,23 +54,12 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 	{
 	case EEntityEvent::GameplayStarted:
 	{
-		/*x
-		ResetJerkParams();
-		InitializeAccelParamsVectors();
-		InitializeJerkParams();
-		m_physEntity = m_pEntity->GetPhysicalEntity();
-		*/
+
 	}
 	break;
 	case EEntityEvent::Update:
 	{
-		/*
-		if(m_pVehicleComponent->GetIsPiloting())
-		{
-			const float m_frameTime = event.fParam[0];
-			ProcessFlight(m_frameTime);
-		}
-		*/
+
 	}
 	break;
 	case Cry::Entity::EEvent::Reset:

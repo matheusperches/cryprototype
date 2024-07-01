@@ -95,6 +95,8 @@ Cry::Entity::EventFlags CPlayerComponent::GetEventMask() const
 	return 
 		Cry::Entity::EEvent::BecomeLocalPlayer |
 		Cry::Entity::EEvent::Update |
+		Cry::Entity::EEvent::Hidden | 
+		Cry::Entity::EEvent::AttachedToParent |
 		Cry::Entity::EEvent::Reset;
 }
 
@@ -132,6 +134,16 @@ void CPlayerComponent::ProcessEvent(const SEntityEvent& event)
 			m_rotation = GetEntity()->GetWorldRotation();
 		}
 		
+	}
+	break;
+	case Cry::Entity::EEvent::Hidden:
+	{
+
+	}
+	break;
+	case Cry::Entity::EEvent::AttachedToParent:
+	{
+
 	}
 	break;
 	case Cry::Entity::EEvent::Reset: // Reminder: Gets called both at startup and end
@@ -179,13 +191,13 @@ void CPlayerComponent::InitializePilotInput()
 
 	m_pInputComponent->RegisterAction("pilot", "updown", [this](int activationMode, float value) {
 		m_mouseDeltaRotation.y = -value; 
-		NetMarkAspectsDirty(InputAndPosAspect);
+		NetMarkAspectsDirty(entityAspect);
 		});
 	m_pInputComponent->BindAction("pilot", "updown", eAID_KeyboardMouse, eKI_MouseY);
 
 	m_pInputComponent->RegisterAction("pilot", "leftright", [this](int activationMode, float value) {
 		m_mouseDeltaRotation.x = -value;
-		NetMarkAspectsDirty(InputAndPosAspect);
+		NetMarkAspectsDirty(entityAspect);
 		});
 	m_pInputComponent->BindAction("pilot", "leftright", eAID_KeyboardMouse, eKI_MouseX);
 
@@ -206,22 +218,22 @@ void CPlayerComponent::InitializePilotInput()
 void CPlayerComponent::InitializeShipInput()
 {
 	// Translation Controls
-	m_pInputComponent->RegisterAction("ship", "accel_forward", [this](int activationMode, float value) { m_axisValues["accel_forward"] = value; NetMarkAspectsDirty(InputAndPosAspect); });
+	m_pInputComponent->RegisterAction("ship", "accel_forward", [this](int activationMode, float value) { m_axisValues["accel_forward"] = value; });
 	m_pInputComponent->BindAction("ship", "accel_forward", eAID_KeyboardMouse, eKI_W);
 
-	m_pInputComponent->RegisterAction("ship", "accel_backward", [this](int activationMode, float value) {m_axisValues["accel_backward"] = value; NetMarkAspectsDirty(InputAndPosAspect); });
+	m_pInputComponent->RegisterAction("ship", "accel_backward", [this](int activationMode, float value) {m_axisValues["accel_backward"] = value;});
 	m_pInputComponent->BindAction("ship", "accel_backward", eAID_KeyboardMouse, eKI_S);
 
-	m_pInputComponent->RegisterAction("ship", "accel_right", [this](int activationMode, float value) {m_axisValues["accel_right"] = value; NetMarkAspectsDirty(InputAndPosAspect); });
+	m_pInputComponent->RegisterAction("ship", "accel_right", [this](int activationMode, float value) {m_axisValues["accel_right"] = value;});
 	m_pInputComponent->BindAction("ship", "accel_right", eAID_KeyboardMouse, eKI_D);
 
-	m_pInputComponent->RegisterAction("ship", "accel_left", [this](int activationMode, float value) {m_axisValues["accel_left"] = value; NetMarkAspectsDirty(InputAndPosAspect); });
+	m_pInputComponent->RegisterAction("ship", "accel_left", [this](int activationMode, float value) {m_axisValues["accel_left"] = value;});
 	m_pInputComponent->BindAction("ship", "accel_left", eAID_KeyboardMouse, eKI_A);
 
-	m_pInputComponent->RegisterAction("ship", "accel_up", [this](int activationMode, float value) {m_axisValues["accel_up"] = value; NetMarkAspectsDirty(InputAndPosAspect); });
+	m_pInputComponent->RegisterAction("ship", "accel_up", [this](int activationMode, float value) {m_axisValues["accel_up"] = value;});
 	m_pInputComponent->BindAction("ship", "accel_up", eAID_KeyboardMouse, eKI_Space);
 
-	m_pInputComponent->RegisterAction("ship", "accel_down", [this](int activationMode, float value) {m_axisValues["accel_down"] = value; NetMarkAspectsDirty(InputAndPosAspect); });
+	m_pInputComponent->RegisterAction("ship", "accel_down", [this](int activationMode, float value) {m_axisValues["accel_down"] = value;});
 	m_pInputComponent->BindAction("ship", "accel_down", eAID_KeyboardMouse, eKI_LCtrl);
 
 	m_pInputComponent->RegisterAction("ship", "boost", [this](int activationMode, float value)
@@ -292,6 +304,7 @@ void CPlayerComponent::Interact(int activationMode)
 			if (!hasPlayerComponent)
 			{
 				SRmi<RMI_WRAP(&CPlayerComponent::ServerEnterVehicle)>::InvokeOnServer(this, SerializeVehicleSwitchData{ GetEntity()->GetName(), GetEntity()->GetId() , pHitEntity->GetName(), pHitEntity->GetId()});
+				pHitEntity->GetComponent<Cry::DefaultComponents::CCameraComponent>()->Activate(); // Activate the target's camera to switch view points
 			}
 		}
 	}
@@ -548,7 +561,7 @@ void CPlayerComponent::Revive(const Matrix34& transform)
 
 	// Reset input now that the player respawned
 	m_inputFlags.Clear();
-	NetMarkAspectsDirty(InputAndPosAspect);
+	NetMarkAspectsDirty(entityAspect);
 
 	m_mouseDeltaRotation = ZERO;
 	m_lookOrientation = IDENTITY;
@@ -594,13 +607,13 @@ void CPlayerComponent::HandleInputFlagChange(const CEnumFlags<EInputFlag> flags,
 
 	if (IsLocalClient())
 	{
-		NetMarkAspectsDirty(InputAndPosAspect);
+		NetMarkAspectsDirty(entityAspect);
 	}
 }
 
 bool CPlayerComponent::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags)
 {
-	if (aspect == InputAndPosAspect && !GetIsPiloting())
+	if (aspect == entityAspect && !GetIsPiloting())
 	{
 		ser.BeginGroup("PlayerInput");
 
@@ -627,7 +640,6 @@ bool CPlayerComponent::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8
 
 		// Serialize the player look orientation
 		ser.Value("m_lookOrientation", m_lookOrientation, 'ori3');
-
 		ser.EndGroup();
 	}
 
@@ -674,20 +686,18 @@ bool CPlayerComponent::ClientFire(NoParams&& p, INetChannel*)
 
 bool CPlayerComponent::ServerEnterVehicle(SerializeVehicleSwitchData&& data, INetChannel*)
 {
-	SRmi<RMI_WRAP(&CPlayerComponent::EnterVehicle)>::InvokeOnOwnClient(this, std::move(data));
-
+	SRmi<RMI_WRAP(&CPlayerComponent::EnterVehicle)>::InvokeOnAllClients(this, std::move(data));
 	return true;
 }
 
 bool CPlayerComponent::EnterVehicle(SerializeVehicleSwitchData&& data, INetChannel*)
 {
 	//CPlayerManager::GetInstance().EnterExitVehicle(data.requestorID, data.targetID);
-
 	IEntity* requestingEntity = gEnv->pEntitySystem->GetEntity(data.requestorID);
 	IEntity* targetEntity = gEnv->pEntitySystem->GetEntity(data.targetID);
 	targetEntity->AttachChild(requestingEntity);
 	requestingEntity->Hide(true);
-	targetEntity->GetComponent<Cry::DefaultComponents::CCameraComponent>()->Activate(); // Activate the target's camera to switch view points
+	m_isVisible = false;
 	gEnv->pConsole->GetCVar("is_piloting")->Set(true);
 
 	return true;

@@ -37,7 +37,7 @@ void CVehicleComponent::Initialize()
 	m_pFlightController = m_pEntity->GetOrCreateComponent<CFlightController>();
 
 	// Set entity to be visible
-	GetEntity()->SetFlags(GetEntity()->GetFlags() | ENTITY_FLAG_CLIENT_ONLY);
+	GetEntity()->SetFlags(GetEntity()->GetFlags() | ENTITY_FLAG_CALC_PHYSICS);
 
 	// Load the cube geometry
 	const char* geometryPath = "%engine%/engineassets/objects/primitive_cube.cgf";  // Example path to the cube mesh
@@ -52,8 +52,12 @@ void CVehicleComponent::Initialize()
 	m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
 	InitializeInput();
 	*/
+	m_position = GetEntity()->GetPos();
+	m_rotation = GetEntity()->GetWorldRotation();
+
+	GetEntity()->EnablePhysics(true);
+	GetEntity()->PhysicsNetSerializeEnable(true);
 	m_pEntity->GetNetEntity()->EnableDelegatableAspect(eEA_Physics, false);
-	GetEntity()->GetNetEntity()->BecomeBound();
 	GetEntity()->GetNetEntity()->BindToNetwork();
 }
 
@@ -90,15 +94,15 @@ void CVehicleComponent::ProcessEvent(const SEntityEvent& event)
 	break;
 	case EEntityEvent::Update:
 	{
-		NetMarkAspectsDirty(positionAspect);
-		m_position = GetEntity()->GetWorldPos();
+		m_position = GetEntity()->GetPos();
 		m_rotation = GetEntity()->GetWorldRotation();
 
 		if (GetIsPiloting())
 		{
 			const float m_frameTime = event.fParam[0];
-			GetEntity()->UpdateComponentEventMask(m_pEntity->GetComponent<CVehicleComponent>());
 			m_pFlightController->ProcessFlight(m_frameTime);
+			m_velocity = m_pFlightController->GetVelocity();
+			NetMarkAspectsDirty(vehicle_aspect);
 		}
 	}
 	break;
@@ -108,86 +112,6 @@ void CVehicleComponent::ProcessEvent(const SEntityEvent& event)
 	}
 	break;
 	}
-}
-
-void CVehicleComponent::InitializeInput()
-{
-	// Translation Controls
-	m_pInputComponent->RegisterAction("ship", "accel_forward", [this](int activationMode, float value) { m_axisValues["accel_forward"] = value;});
-	m_pInputComponent->BindAction("ship", "accel_forward", eAID_KeyboardMouse, eKI_W);
-
-	m_pInputComponent->RegisterAction("ship", "accel_backward", [this](int activationMode, float value) {m_axisValues["accel_backward"] = value;});
-	m_pInputComponent->BindAction("ship", "accel_backward", eAID_KeyboardMouse, eKI_S);
-
-	m_pInputComponent->RegisterAction("ship", "accel_right", [this](int activationMode, float value) {m_axisValues["accel_right"] = value;});
-	m_pInputComponent->BindAction("ship", "accel_right", eAID_KeyboardMouse, eKI_D);
-
-	m_pInputComponent->RegisterAction("ship", "accel_left", [this](int activationMode, float value) {m_axisValues["accel_left"] = value;});
-	m_pInputComponent->BindAction("ship", "accel_left", eAID_KeyboardMouse, eKI_A);
-
-	m_pInputComponent->RegisterAction("ship", "accel_up", [this](int activationMode, float value) {m_axisValues["accel_up"] = value;});
-	m_pInputComponent->BindAction("ship", "accel_up", eAID_KeyboardMouse, eKI_Space);
-
-	m_pInputComponent->RegisterAction("ship", "accel_down", [this](int activationMode, float value) {m_axisValues["accel_down"] = value;});
-	m_pInputComponent->BindAction("ship", "accel_down", eAID_KeyboardMouse, eKI_LCtrl);
-
-	m_pInputComponent->RegisterAction("ship", "boost", [this](int activationMode, float value)
-		{
-			// Changing vehicle boost state based on Shift key
-
-			if (activationMode & (int)eAAM_OnPress)
-			{
-				m_keyStates["boost"] = 1;
-			}
-			else if (activationMode == eAAM_OnRelease)
-			{
-				m_keyStates["boost"] = 0;
-			}
-		});
-	m_pInputComponent->BindAction("ship", "boost", eAID_KeyboardMouse, eKI_LShift);
-
-	// Rotation Controls
-
-	m_pInputComponent->RegisterAction("ship", "yaw", [this](int activationMode, float value) {m_axisValues["pitch"] = value;});
-	m_pInputComponent->BindAction("ship", "yaw", eAID_KeyboardMouse, eKI_MouseY);
-	
-	m_pInputComponent->RegisterAction("ship", "pitch", [this](int activationMode, float value) {m_axisValues["yaw"] = value; });
-	m_pInputComponent->BindAction("ship", "pitch", eAID_KeyboardMouse, eKI_MouseX);
-
-	m_pInputComponent->RegisterAction("ship", "roll_left", [this](int activationMode, float value) {m_axisValues["roll_left"] = value; });
-	m_pInputComponent->BindAction("ship", "roll_left", eAID_KeyboardMouse, eKI_Q);
-
-	m_pInputComponent->RegisterAction("ship", "roll_right", [this](int activationMode, float value) {m_axisValues["roll_right"] = value; });
-	m_pInputComponent->BindAction("ship", "roll_right", eAID_KeyboardMouse, eKI_E);
-
-	// Exiting the vehicle
-	m_pInputComponent->RegisterAction("ship", "exit", [this](int activationMode, float value)
-		{ 
-			// Checking the cvar value, if we are the ship, then change it back to the human.
-			if (GetIsPiloting())
-			{
-				if (activationMode & (int)eAAM_OnPress)
-				{
-					if(pilotID)
-					CPlayerManager::GetInstance().EnterExitVehicle(GetEntityId(), pilotID);
-					else
-					{
-						CryLog("Trying to leave the vehicle without a pilot ID!");
-					}
-				}
-			}
-		});
-	m_pInputComponent->BindAction("ship", "exit", eAID_KeyboardMouse, EKeyId::eKI_Y);
-}
-
-int CVehicleComponent::IsKeyPressed(const string& actionName)
-{
-	return m_keyStates[actionName];
-}
-
-float CVehicleComponent::GetAxisValue(const string& axisName)
-{
-	return m_axisValues[axisName];
 }
 
 bool CVehicleComponent::GetIsPiloting()
@@ -212,11 +136,23 @@ IEntity* CVehicleComponent::GetPlayerComponent()
 
 bool CVehicleComponent::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags)
 {
-	if (aspect == positionAspect)
-	{
-		ser.Value("vehicle_position", m_position);
-		ser.Value("vehicle_rotation", m_rotation);
-	}
 
-	return true;
+	if (aspect == vehicle_aspect)
+	{
+		ser.BeginGroup("ShipMovement");
+
+		if (ser.IsReading())
+		{
+			GetEntity()->SetPos(m_position);
+			GetEntity()->SetRotation(m_rotation);
+		}
+
+		ser.Value("vehicle_position", m_position, 'wrld');
+		ser.Value("vehicle_rotation", m_rotation, 'ori1');
+		ser.Value("vehicle_velocity", m_velocity, 'pav0');
+
+		ser.EndGroup();
+		return true;
+	}
+	return false;
 }
