@@ -13,7 +13,7 @@ namespace Cry::DefaultComponents
 
 class CFlightController final : public IEntityComponent
 {
-	static constexpr EEntityAspects kVehiclePhysics = eEA_All;
+	static constexpr EEntityAspects kVehiclePhysics = eEA_Physics;
 
 public:
 	CFlightController() = default;
@@ -65,10 +65,19 @@ public:
 
 		void SerializeWith(TSerialize ser)
 		{
-			ser.Value("position", position);
+			ser.Value("position", position, 'wrld');
 			ser.Value("orientation", orientation, 'ori3');
-			ser.Value("linearImpulse", linearImpulse);
-			ser.Value("angularImpulse", angularImpulse);
+			ser.Value("linearImpulse", linearImpulse, 'vimp');
+			ser.Value("angularImpulse", angularImpulse, 'vimp');
+		}
+	};
+	struct SerializeImpulse
+	{
+		Vec3 impulse = ZERO;
+
+		void SerializeWith(TSerialize ser)
+		{
+			ser.Value("impulse", impulse, 'vimp');
 		}
 	};
 
@@ -119,8 +128,8 @@ public:
 	float GetAcceleration(float frameTime);
 
 	// Impulse generators
-	void ApplyLinearImpulse(IPhysicalEntity* pPhysicalEntity, const Vec3& linearImpulse);
-	void ApplyAngularImpulse(IPhysicalEntity* pPhysicalEntity, const Vec3& linearImpulse);
+	bool ClientApplyLinearImpulse(SerializeImpulse&& data, INetChannel*);
+	bool ClientApplyAngularImpulse(SerializeImpulse&& data, INetChannel*);
 
 protected:
 private:

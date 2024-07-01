@@ -648,14 +648,12 @@ bool CPlayerComponent::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8
 
 bool CPlayerComponent::ServerRequestFire(NoParams&& p, INetChannel*)
 {
-	CryLogAlways("Server side shooting");
 	SRmi<RMI_WRAP(&CPlayerComponent::ClientFire)>::InvokeOnAllClients(this, NoParams{});
 	return true;
 }
 
 bool CPlayerComponent::ClientFire(NoParams&& p, INetChannel*)
 {
-	CryLogAlways("Client side shooting");
 	if (ICharacterInstance* pCharacter = m_pAdvancedAnimationComponent->GetCharacter())
 	{
 		IAttachment* pBarrelOutAttachment = pCharacter->GetIAttachmentManager()->GetInterfaceByName("barrel_out");

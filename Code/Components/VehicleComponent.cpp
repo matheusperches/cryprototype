@@ -52,11 +52,6 @@ void CVehicleComponent::Initialize()
 	m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
 	InitializeInput();
 	*/
-
-	GetEntity()->EnablePhysics(true);
-	GetEntity()->PhysicsNetSerializeEnable(true);
-	m_pEntity->GetNetEntity()->EnableDelegatableAspect(eEA_Physics, false);
-	GetEntity()->GetNetEntity()->BindToNetwork();
 }
 
 Cry::Entity::EventFlags CVehicleComponent::GetEventMask() const
@@ -127,29 +122,4 @@ bool CVehicleComponent::GetIsPiloting()
 IEntity* CVehicleComponent::GetPlayerComponent()
 {
 	return m_pPlayerComponent;
-}
-
-bool CVehicleComponent::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags)
-{
-
-	if (aspect & kVehicleAspect)
-	{
-		/*
-		ser.BeginGroup("vehicleMovement");
-
-		ser.Value("vehicle_position", m_position, 'wrld');
-		ser.Value("vehicle_rotation", m_rotation, 'ori1');
-		ser.Value("vehicle_velocity", m_velocity, 'pav0');
-
-		ser.EndGroup();
-
-		if (ser.IsReading())
-		{
-			GetEntity()->SetPos(m_position);
-			GetEntity()->SetRotation(m_rotation);
-		}
-		*/
-		return true;
-	}
-	return false;
 }
