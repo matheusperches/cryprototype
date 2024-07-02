@@ -50,7 +50,6 @@ class CPlayerComponent final : public IEntityComponent
 		Interact = 1 << 6
 	};
 
-	static constexpr EEntityAspects entityAspect = eEA_GameClientA;
 
 	template<typename T, size_t SAMPLES_COUNT>
 	class MovingAverage
@@ -139,7 +138,21 @@ class CPlayerComponent final : public IEntityComponent
 		}
 	};
 
+	struct SerializeTransformData
+	{
+		Vec3 position;
+		Quat orientation;
+
+		void SerializeWith(TSerialize ser)
+		{
+			ser.Value("position", position, 'wrld');
+			ser.Value("orientation", orientation, 'ori3');
+		}
+	};
+
 public:
+
+	static constexpr EEntityAspects kPlayerAspect = eEA_GameClientA;
 	CPlayerComponent() = default;
 	virtual ~CPlayerComponent() = default;
 
@@ -152,13 +165,19 @@ public:
 
 	virtual bool NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags) override;
 
-	virtual NetworkAspectType GetNetSerializeAspectMask() const override { return entityAspect; }
+	virtual NetworkAspectType GetNetSerializeAspectMask() const override { return kPlayerAspect; }
 
 	bool ServerRequestFire(NoParams&& p, INetChannel*);
 	bool ClientFire(NoParams&& p, INetChannel*);
 
 	bool ServerEnterVehicle(SerializeVehicleSwitchData&& data, INetChannel*);
-	bool EnterVehicle(SerializeVehicleSwitchData&& data, INetChannel*);
+	bool ClientEnterVehicle(SerializeVehicleSwitchData&& data, INetChannel*);
+
+	bool ServerExitVehicle(NoParams&& data, INetChannel*);
+	void SendNewPositionToServer(const Matrix34& newTransform);
+	bool ServerUpdatePlayerPosition(SerializeTransformData&& data, INetChannel*);
+	bool ClientApplyNewPosition(SerializeTransformData&& data, INetChannel*);
+	bool ClientExitVehicle(NoParams&& data, INetChannel*);
 
 	// Reflect type to set a unique identifier for this component
 	static void ReflectType(Schematyc::CTypeDesc<CPlayerComponent>& desc)

@@ -41,7 +41,8 @@ void CFlightController::Initialize()
 	//m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
 	m_pVehicleComponent = m_pEntity->GetOrCreateComponent<CVehicleComponent>();
 
-	m_pEntity->GetNetEntity()->EnableDelegatableAspect(eEA_GameClientA, true);
+	GetEntity()->GetNetEntity()->EnableDelegatableAspect(eEA_GameClientA, true);
+	GetEntity()->GetNetEntity()->EnableDelegatableAspect(eEA_Physics, false);
 
 	SRmi<RMI_WRAP(&CFlightController::ServerApplyImpulse)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
 	SRmi<RMI_WRAP(&CFlightController::ClientApplyImpulse)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
@@ -446,17 +447,20 @@ bool CFlightController::ClientApplyImpulse(SerializeImpulseData&& data, INetChan
 		actionImpulse.angImpulse = data.rollImpulse + data.pitchYawImpulse;
 		pPhysicalEntity->Action(&actionImpulse);
 
+		// Update our impulse tracking variables to send over to the server
 		m_linearImpulse = data.linearImpulse;
 		m_angularImpulse = data.rollImpulse + data.pitchYawImpulse;
+
+		NetMarkAspectsDirty(kVehicleAspect);
 		NetMarkAspectsDirty(kVehiclePhysics);
+		
 	}
 	return true;
 }
 
 bool CFlightController::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags)
 {
-
-	if (aspect & kVehiclePhysics)
+	if (aspect & kVehicleAspect | kVehiclePhysics)
 	{
 		ser.BeginGroup("vehicleMovement");
 
@@ -465,7 +469,6 @@ bool CFlightController::NetSerialize(TSerialize ser, EEntityAspects aspect, uint
 		ser.Value("m_linearImpulse", m_linearImpulse, 'vimp');
 		ser.Value("m_angularImpulse", m_angularImpulse, 'vimp');
 		ser.EndGroup();
-
 		return true;
 	}
 	return false;

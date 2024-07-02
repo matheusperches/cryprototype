@@ -1,0 +1,570 @@
+Exception Code: 0xC0000005
+Exception Addr: 0x0033:0x00007FFD5BFA8CD1
+Exception Module: <Unknown>
+Exception Name  : EXCEPTION_ACCESS_VIOLATION
+Exception Description: Attempt to read from address 0x0000000000000000
+The memory could not be "read"
+Exception Code: 0xC0000005
+Exception Addr: 0x0033:0x00007FFD5BFA8CD1
+Exception Module: <Unknown>
+Exception Description: EXCEPTION_ACCESS_VIOLATION, Attempt to read from address 0x0000000000000000
+The memory could not be "read"
+Memory in use: 385.2MB
+Debug Status: 
+Out of Memory: 0
+MainThread Id: 37128
+[Crashed] Thread Id: 37128
+[Crashed] ThreadName: Main
+
+[Crashed] Call Stack: ["Main" [37128]]
+
+=============================================================================
+17) function=Game.dll+0xe8cd1
+16) function=Game.dll+0xeac34
+15) function=Game.dll+0xebcce
+14) function=CryNetwork.dll+0xbca0a
+13) function=CryNetwork.dll+0x23deeb
+12) function=CryNetwork.dll+0x23b899
+11) function=CryNetwork.dll+0x256487
+10) function=CrySystem.dll+0x3ce8f6
+ 9) function=CrySystem.dll+0x35f115
+ 8) function=CrySystem.dll+0x3b8276
+ 7) function=CrySystem.dll+0x2fa3ff
+ 6) function=Game_Server.exe+0x22a9c
+ 5) function=Game_Server.exe+0x3d514
+ 4) function=Game_Server.exe+0x3ec9e
+ 3) function=KERNEL32.DLL+0x1257d
+ 2) function=ntdll.dll+0x5af28
+ 1) function=ntdll.dll+0x5af28
+=============================================================================
+
+
+Call Stack: ["JobSystem_Worker_0 (Blocking)" [37256]]
+ 8) function=ntdll.dll+0xa0024
+  7) function=KERNELBASE.dll+0x3952e
+  6) function=CrySystem.dll+0x58b211
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["Streaming AsyncCallback" [37264]]
+ 8) function=ntdll.dll+0xa0024
+  7) function=KERNELBASE.dll+0x3952e
+  6) function=CrySystem.dll+0x1b00dd
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Worker_0" [37216]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c90f
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Worker_1" [37220]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c90f
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Worker_2" [37224]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c90f
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Worker_3" [37228]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c90f
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Worker_4" [37232]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c90f
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Worker_5" [37236]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c90f
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Worker_6" [37240]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c90f
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Worker_7" [37244]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c90f
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Helper_8" [37248]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c02a
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Helper_9" [37252]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c02a
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["Streaming File IO HDD" [37260]]
+ 9) function=ntdll.dll+0xa0024
+  8) function=KERNELBASE.dll+0x3952e
+  7) function=CrySystem.dll+0x2d71dd
+  6) function=CrySystem.dll+0x1ae4b8
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["NetAddressSolver" [37376]]
+10) function=ntdll.dll+0xa3b94
+  9) function=ntdll.dll+0x696bb
+  8) function=KERNELBASE.dll+0x6eaa9
+  7) function=CryNetwork.dll+0x25e339
+  6) function=CryNetwork.dll+0x144684
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["ServiceNetwork" [37380]]
+ 9) function=ntdll.dll+0xa0624
+  8) function=ntdll.dll+0x55683
+  7) function=KERNELBASE.dll+0x49acd
+  6) function=CrySystem.dll+0x5ed025
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["Network" [37400]]
+ 9) function=ntdll.dll+0xa0024
+  8) function=KERNELBASE.dll+0x3952e
+  7) function=CryNetwork.dll+0x25e3ad
+  6) function=CryNetwork.dll+0x2576df
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["PhysicsWorkerThread_0" [37484]]
+ 8) function=ntdll.dll+0xa0024
+  7) function=KERNELBASE.dll+0x3952e
+  6) function=CryPhysics.dll+0x2225d8
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["WindowsConsoleInput" [37204]]
+ 9) function=ntdll.dll+0xa0af4
+  8) function=KERNELBASE.dll+0x56089
+  7) function=KERNELBASE.dll+0x55f8e
+  6) function=CrySystem.dll+0x3c9c0f
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["CaptureCrashScreenShot" [37144]]
+10) function=ntdll.dll+0xa3b94
+  9) function=ntdll.dll+0x696bb
+  8) function=KERNELBASE.dll+0x6eaa9
+  7) function=MSVCP140.dll+0x122c5
+  6) function=CrySystem.dll+0x2ceff3
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+Exception Code: 0xC0000005
+Exception Addr: 0x0033:0x00007FFD5BFA8CD1
+Exception Module: <Unknown>
+Exception Name  : EXCEPTION_ACCESS_VIOLATION
+Exception Description: Attempt to read from address 0x0000000000000000
+The memory could not be "read"
+Exception Code: 0xC0000005
+Exception Addr: 0x0033:0x00007FFD5BFA8CD1
+Exception Module: <Unknown>
+Exception Description: EXCEPTION_ACCESS_VIOLATION, Attempt to read from address 0x0000000000000000
+The memory could not be "read"
+Memory in use: 385.3MB
+Debug Status: 
+Out of Memory: 0
+MainThread Id: 3224
+[Crashed] Thread Id: 3224
+[Crashed] ThreadName: Main
+
+[Crashed] Call Stack: ["Main" [3224]]
+
+=============================================================================
+17) function=Game.dll+0xe8cd1
+16) function=Game.dll+0xeac34
+15) function=Game.dll+0xebcce
+14) function=CryNetwork.dll+0xbca0a
+13) function=CryNetwork.dll+0x23deeb
+12) function=CryNetwork.dll+0x23b899
+11) function=CryNetwork.dll+0x256487
+10) function=CrySystem.dll+0x3ce8f6
+ 9) function=CrySystem.dll+0x35f115
+ 8) function=CrySystem.dll+0x3b8276
+ 7) function=CrySystem.dll+0x2fa3ff
+ 6) function=Game_Server.exe+0x22a9c
+ 5) function=Game_Server.exe+0x3d514
+ 4) function=Game_Server.exe+0x3ec9e
+ 3) function=KERNEL32.DLL+0x1257d
+ 2) function=ntdll.dll+0x5af28
+ 1) function=ntdll.dll+0x5af28
+=============================================================================
+
+
+Call Stack: ["JobSystem_Worker_0 (Blocking)" [35636]]
+ 8) function=ntdll.dll+0xa0024
+  7) function=KERNELBASE.dll+0x3952e
+  6) function=CrySystem.dll+0x58b211
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["Streaming AsyncCallback" [36936]]
+ 8) function=ntdll.dll+0xa0024
+  7) function=KERNELBASE.dll+0x3952e
+  6) function=CrySystem.dll+0x1b00dd
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Worker_0" [37112]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c90f
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Worker_1" [37136]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c90f
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Worker_2" [37132]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c90f
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Worker_3" [37144]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c90f
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Worker_4" [37204]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c90f
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Worker_5" [36948]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c90f
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Worker_6" [36916]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c90f
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Worker_7" [36912]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c90f
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Helper_8" [36932]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c02a
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["JobSystem_Helper_9" [36904]]
+ 9) function=ntdll.dll+0xa3b94
+  8) function=ntdll.dll+0x696bb
+  7) function=KERNELBASE.dll+0x6eaa9
+  6) function=CrySystem.dll+0x58c02a
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["Streaming File IO HDD" [37320]]
+ 9) function=ntdll.dll+0xa0024
+  8) function=KERNELBASE.dll+0x3952e
+  7) function=CrySystem.dll+0x2d71dd
+  6) function=CrySystem.dll+0x1ae4b8
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["NetAddressSolver" [6068]]
+10) function=ntdll.dll+0xa3b94
+  9) function=ntdll.dll+0x696bb
+  8) function=KERNELBASE.dll+0x6eaa9
+  7) function=CryNetwork.dll+0x25e339
+  6) function=CryNetwork.dll+0x144684
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["ServiceNetwork" [37832]]
+ 9) function=ntdll.dll+0xa0624
+  8) function=ntdll.dll+0x55683
+  7) function=KERNELBASE.dll+0x49acd
+  6) function=CrySystem.dll+0x5ed025
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["Network" [35268]]
+ 9) function=ntdll.dll+0xa0024
+  8) function=KERNELBASE.dll+0x3952e
+  7) function=CryNetwork.dll+0x25e3ad
+  6) function=CryNetwork.dll+0x2576df
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["PhysicsWorkerThread_0" [32308]]
+ 8) function=ntdll.dll+0xa0024
+  7) function=KERNELBASE.dll+0x3952e
+  6) function=CryPhysics.dll+0x2225d8
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["WindowsConsoleInput" [27456]]
+ 9) function=ntdll.dll+0xa0af4
+  8) function=KERNELBASE.dll+0x56089
+  7) function=KERNELBASE.dll+0x55f8e
+  6) function=CrySystem.dll+0x3c9c0f
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 
+
+
+Call Stack: ["CaptureCrashScreenShot" [25196]]
+10) function=ntdll.dll+0xa3b94
+  9) function=ntdll.dll+0x696bb
+  8) function=KERNELBASE.dll+0x6eaa9
+  7) function=MSVCP140.dll+0x122c5
+  6) function=CrySystem.dll+0x2ceff3
+  5) function=CrySystem.dll+0x2115ae
+  4) function=ucrtbase.dll+0x29333
+  3) function=KERNEL32.DLL+0x1257d
+  2) function=ntdll.dll+0x5af28
+  1) function=ntdll.dll+0x5af28
+ 

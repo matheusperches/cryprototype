@@ -71,11 +71,19 @@ void CPlayerComponent::Initialize()
 
 	// Register the RemoteReviveOnClient function as a Remote Method Invocation (RMI) that can be executed by the server on clients
 	SRmi<RMI_WRAP(&CPlayerComponent::RemoteReviveOnClient)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
+
 	// Do so for the other relevant functions as well 
 	SRmi<RMI_WRAP(&CPlayerComponent::ServerRequestFire)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
 	SRmi<RMI_WRAP(&CPlayerComponent::ClientFire)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
+
 	SRmi<RMI_WRAP(&CPlayerComponent::ServerEnterVehicle)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
-	SRmi<RMI_WRAP(&CPlayerComponent::EnterVehicle)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
+	SRmi<RMI_WRAP(&CPlayerComponent::ClientEnterVehicle)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
+
+	SRmi<RMI_WRAP(&CPlayerComponent::ServerExitVehicle)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
+	SRmi<RMI_WRAP(&CPlayerComponent::ClientExitVehicle)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
+
+	SRmi<RMI_WRAP(&CPlayerComponent::ServerUpdatePlayerPosition)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered); 
+	SRmi<RMI_WRAP(&CPlayerComponent::ClientApplyNewPosition)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
 }
 
 void CPlayerComponent::InitializeLocalPlayer()
@@ -133,17 +141,16 @@ void CPlayerComponent::ProcessEvent(const SEntityEvent& event)
 			m_position = GetEntity()->GetWorldPos();
 			m_rotation = GetEntity()->GetWorldRotation();
 		}
-		
 	}
 	break;
 	case Cry::Entity::EEvent::Hidden:
 	{
-
+		NetMarkAspectsDirty(kPlayerAspect);
 	}
 	break;
 	case Cry::Entity::EEvent::AttachedToParent:
 	{
-
+		NetMarkAspectsDirty(kPlayerAspect);
 	}
 	break;
 	case Cry::Entity::EEvent::Reset: // Reminder: Gets called both at startup and end
@@ -191,13 +198,13 @@ void CPlayerComponent::InitializePilotInput()
 
 	m_pInputComponent->RegisterAction("pilot", "updown", [this](int activationMode, float value) {
 		m_mouseDeltaRotation.y = -value; 
-		NetMarkAspectsDirty(entityAspect);
+		NetMarkAspectsDirty(kPlayerAspect);
 		});
 	m_pInputComponent->BindAction("pilot", "updown", eAID_KeyboardMouse, eKI_MouseY);
 
 	m_pInputComponent->RegisterAction("pilot", "leftright", [this](int activationMode, float value) {
 		m_mouseDeltaRotation.x = -value;
-		NetMarkAspectsDirty(entityAspect);
+		NetMarkAspectsDirty(kPlayerAspect);
 		});
 	m_pInputComponent->BindAction("pilot", "leftright", eAID_KeyboardMouse, eKI_MouseX);
 
@@ -273,6 +280,9 @@ void CPlayerComponent::InitializeShipInput()
 			{
 				if (activationMode == (int)eAAM_OnPress)
 				{
+					SRmi<RMI_WRAP(&CPlayerComponent::ServerExitVehicle)>::InvokeOnServer(this, NoParams{});
+					// Activate the player's camera
+					GetEntity()->GetComponent<Cry::DefaultComponents::CCameraComponent>()->Activate();
 					CryLog("Leave vehicle triggered!");
 				}
 			}
@@ -561,7 +571,7 @@ void CPlayerComponent::Revive(const Matrix34& transform)
 
 	// Reset input now that the player respawned
 	m_inputFlags.Clear();
-	NetMarkAspectsDirty(entityAspect);
+	NetMarkAspectsDirty(kPlayerAspect);
 
 	m_mouseDeltaRotation = ZERO;
 	m_lookOrientation = IDENTITY;
@@ -607,13 +617,13 @@ void CPlayerComponent::HandleInputFlagChange(const CEnumFlags<EInputFlag> flags,
 
 	if (IsLocalClient())
 	{
-		NetMarkAspectsDirty(entityAspect);
+		NetMarkAspectsDirty(kPlayerAspect);
 	}
 }
 
 bool CPlayerComponent::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags)
 {
-	if (aspect == entityAspect && !GetIsPiloting())
+	if (aspect == kPlayerAspect && !GetIsPiloting())
 	{
 		ser.BeginGroup("PlayerInput");
 
@@ -684,19 +694,83 @@ bool CPlayerComponent::ClientFire(NoParams&& p, INetChannel*)
 
 bool CPlayerComponent::ServerEnterVehicle(SerializeVehicleSwitchData&& data, INetChannel*)
 {
-	SRmi<RMI_WRAP(&CPlayerComponent::EnterVehicle)>::InvokeOnAllClients(this, std::move(data));
+	SRmi<RMI_WRAP(&CPlayerComponent::ClientEnterVehicle)>::InvokeOnAllClients(this, std::move(data));
 	return true;
 }
 
-bool CPlayerComponent::EnterVehicle(SerializeVehicleSwitchData&& data, INetChannel*)
+bool CPlayerComponent::ClientEnterVehicle(SerializeVehicleSwitchData&& data, INetChannel*)
 {
-	//CPlayerManager::GetInstance().EnterExitVehicle(data.requestorID, data.targetID);
 	IEntity* requestingEntity = gEnv->pEntitySystem->GetEntity(data.requestorID);
 	IEntity* targetEntity = gEnv->pEntitySystem->GetEntity(data.targetID);
 	targetEntity->AttachChild(requestingEntity);
 	requestingEntity->Hide(true);
 	m_isVisible = false;
 	gEnv->pConsole->GetCVar("is_piloting")->Set(true);
+
+	return true;
+}
+
+bool CPlayerComponent::ServerExitVehicle(NoParams&& data, INetChannel*)
+{
+	SRmi<RMI_WRAP(&CPlayerComponent::ClientExitVehicle)>::InvokeOnAllClients(this, std::move(data));
+	return true;
+}
+
+void CPlayerComponent::SendNewPositionToServer(const Matrix34& newTransform)
+{
+	Vec3 newPosition = newTransform.GetTranslation();
+	Quat newOrientation = Quat(newTransform);
+
+	SRmi<RMI_WRAP(&CPlayerComponent::ServerUpdatePlayerPosition)>::InvokeOnServer(this, SerializeTransformData{ newPosition, newOrientation });
+}
+
+bool CPlayerComponent::ServerUpdatePlayerPosition(SerializeTransformData&& data, INetChannel*)
+{
+	IEntity* playerEntity = GetEntity();
+
+	// Validate and apply the received data
+	Matrix34 newTransform = Matrix34::Create(Vec3(1.0f), data.orientation, data.position);
+	playerEntity->SetWorldTM(newTransform);
+
+	// Broadcast the updated state to all clients
+	SRmi<RMI_WRAP(&CPlayerComponent::ClientApplyNewPosition)>::InvokeOnAllClients(this, std::move(data));
+
+	return true;
+}
+
+bool CPlayerComponent::ClientApplyNewPosition(SerializeTransformData&& data, INetChannel*)
+{
+	IEntity* playerEntity = GetEntity();
+
+	// Apply the received data
+	Matrix34 newTransform = Matrix34::Create(Vec3(1.0f), data.orientation, data.position);
+	playerEntity->SetWorldTM(newTransform);
+
+	return true;
+}
+
+bool CPlayerComponent::ClientExitVehicle(NoParams&& data, INetChannel*)
+{
+	IEntity* vehicleEntity = GetEntity()->GetParent();
+	IEntity* playerEntity = GetEntity();
+
+	playerEntity->SetWorldTM(vehicleEntity->GetWorldTM());
+	Vec3 offset = Vec3(-1.0f, 0.0f, 0.0f);
+
+	// Calculate the new position with the offset applied
+	Matrix34 newTransform = playerEntity->GetWorldTM();
+	newTransform.SetTranslation(newTransform.GetTranslation() + offset);
+
+	// Set the player's world transformation with the offset
+	playerEntity->SetWorldTM(newTransform);
+	playerEntity->DetachThis();
+
+	// Unhide the player
+	playerEntity->Hide(false);
+	gEnv->pConsole->GetCVar("is_piloting")->Set(false);
+
+	SendNewPositionToServer(newTransform);
+	NetMarkAspectsDirty(kPlayerAspect);
 
 	return true;
 }

@@ -13,7 +13,8 @@ namespace Cry::DefaultComponents
 
 class CFlightController final : public IEntityComponent
 {
-	static constexpr EEntityAspects kVehiclePhysics = eEA_GameClientA;
+	static constexpr EEntityAspects kVehicleAspect = eEA_GameClientA;
+	static constexpr EEntityAspects kVehiclePhysics = eEA_Physics;
 
 public:
 	CFlightController() = default;
@@ -54,7 +55,7 @@ public:
 
 	virtual bool NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags) override;
 
-	virtual NetworkAspectType GetNetSerializeAspectMask() const override { return kVehiclePhysics; }
+	virtual NetworkAspectType GetNetSerializeAspectMask() const override { return kVehicleAspect | kVehiclePhysics; }
 
 	struct SerializeImpulseData
 	{
@@ -80,6 +81,18 @@ public:
 		void SerializeWith(TSerialize ser)
 		{
 			ser.Value("impulse", impulse, 'vimp');
+		}
+	};
+
+	struct SerializeTransformData
+	{
+		Vec3 position;
+		Quat orientation;
+
+		void SerializeWith(TSerialize ser)
+		{
+			ser.Value("position", position, 'wrld');
+			ser.Value("orientation", orientation, 'ori3');
 		}
 	};
 
