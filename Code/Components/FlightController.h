@@ -13,7 +13,7 @@ namespace Cry::DefaultComponents
 
 class CFlightController final : public IEntityComponent
 {
-	static constexpr EEntityAspects kVehiclePhysics = eEA_Physics;
+	static constexpr EEntityAspects kVehiclePhysics = eEA_GameClientA;
 
 public:
 	CFlightController() = default;
@@ -61,14 +61,16 @@ public:
 		Vec3 position = ZERO;        // Position of the entity
 		Quat orientation = ZERO;     // Orientation of the entity
 		Vec3 linearImpulse = ZERO;   // Linear impulse to be applied
-		Vec3 angularImpulse = ZERO;  // Angular impulse to be applied
+		Vec3 rollImpulse = ZERO;  // Angular impulse to be applied
+		Vec3 pitchYawImpulse = ZERO;  // Angular impulse to be applied
 
 		void SerializeWith(TSerialize ser)
 		{
 			ser.Value("position", position, 'wrld');
 			ser.Value("orientation", orientation, 'ori3');
 			ser.Value("linearImpulse", linearImpulse, 'vimp');
-			ser.Value("angularImpulse", angularImpulse, 'vimp');
+			ser.Value("angularImpulse", rollImpulse, 'vimp');
+			ser.Value("angularImpulse", pitchYawImpulse, 'vimp');
 		}
 	};
 	struct SerializeImpulse
@@ -78,6 +80,14 @@ public:
 		void SerializeWith(TSerialize ser)
 		{
 			ser.Value("impulse", impulse, 'vimp');
+		}
+	};
+
+	struct NoParams
+	{
+		void SerializeWith(TSerialize ser)
+		{
+
 		}
 	};
 
@@ -114,22 +124,13 @@ public:
 	// Put the flight calculations in order, segmented by axis group, to produce motion.
 	void ProcessFlight(float frameTime);
 
-	bool ServerApplyLinearImpulse(SerializeImpulseData&& data, INetChannel*);
-
-	bool ServerApplyAngularImpulse(SerializeImpulseData&& data, INetChannel*);
-
-	bool ServerProcessShipData(SerializeImpulseData&& data, INetChannel* pChannel);
-
-	bool ClientUpdateShipData(SerializeImpulseData&& data, INetChannel* pChannel);
-
-	void SendUpdatesToServer();
+	// Impulse generator
+	bool ServerApplyImpulse(SerializeImpulseData&& data, INetChannel*);
 
 	Vec3 GetVelocity();
 	float GetAcceleration(float frameTime);
 
-	// Impulse generators
-	bool ClientApplyLinearImpulse(SerializeImpulse&& data, INetChannel*);
-	bool ClientApplyAngularImpulse(SerializeImpulse&& data, INetChannel*);
+	bool ClientApplyImpulse(SerializeImpulseData&& data, INetChannel*);
 
 protected:
 private:
