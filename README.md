@@ -1,6 +1,8 @@
 # CryEngine FPS and flyable vehicle prototype
- - WIP (this is getting interesting...)
- - So far it includes a first person character with movement and jumping functionality and a vehicle, as well as the system that allows the interaction between the two entities (enter / exit vehicle).
- - A flyable entity with full six degrees of freedom control
-  -  Fully customizable flight parameters which include:  accelerations for linear and angular motion, root jerk with customizable accel and decel values.
-  -  More to come...
+## Features
+ - First person character with a raycast system
+ - A fully customizable flyable entity with six degrees of freedom control
+ - Tunable accelerations profiles for linear and angular motion,
+ - Jerk accel and decel values for linear and angular motion (separated into roll and pitch & yaw)
+ - (very) Experimental multiplayer implementation
+ - Players can enter different ships and fly around the test level.
