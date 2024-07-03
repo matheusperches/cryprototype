@@ -357,14 +357,12 @@ Vec3 CFlightController::GetVelocity()
 {
 	if (physEntity)
 	{
-		pe_status_dynamics dynamics; // Retrieving the dynamics of our entity
+		pe_status_dynamics dynamics;
 		if (physEntity->GetStatus(&dynamics))
 		{
 			Vec3 velocity = dynamics.v; // In world space 
 
 			Matrix34 worldToLocalMatrix = m_pEntity->GetWorldTM().GetInverted();
-
-			// Transforming the velocity to local space
 
 			return worldToLocalMatrix.TransformVector(velocity);
 		}
@@ -410,7 +408,7 @@ void CFlightController::ProcessFlight(float frameTime)
 		AccelToImpulse(m_pitchYawAccelData.currentJerkAccel, frameTime) 
 		});
 
-	// On-screen Debug 
+	// Debug 
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 60, 2, m_debugColor, false, "Velocity: %.2f", GetVelocity().GetLength());
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 90, 2, m_debugColor, false, "acceleration: %.2f", GetAcceleration(frameTime));
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 120, 2, m_debugColor, false, "total impulse: %.3f", GetImpulse());
@@ -452,15 +450,13 @@ bool CFlightController::ClientApplyImpulse(SerializeImpulseData&& data, INetChan
 		m_angularImpulse = data.rollImpulse + data.pitchYawImpulse;
 
 		NetMarkAspectsDirty(kVehicleAspect);
-		NetMarkAspectsDirty(kVehiclePhysics);
-		
 	}
 	return true;
 }
 
 bool CFlightController::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags)
 {
-	if (aspect & kVehicleAspect | kVehiclePhysics)
+	if (aspect & kVehicleAspect)
 	{
 		ser.BeginGroup("vehicleMovement");
 
@@ -469,6 +465,7 @@ bool CFlightController::NetSerialize(TSerialize ser, EEntityAspects aspect, uint
 		ser.Value("m_linearImpulse", m_linearImpulse, 'vimp');
 		ser.Value("m_angularImpulse", m_angularImpulse, 'vimp');
 		ser.EndGroup();
+
 		return true;
 	}
 	return false;

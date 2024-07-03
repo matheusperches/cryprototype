@@ -1,9 +1,12 @@
 {
     "Asset Browser": {
-        "RecentImportPath": null
+        "RecentImportPath": "C:/Users/mathe/Documents/CRYENGINE Projects/cryprototype/Assets/Objects/Weapons/SampleWeapon/"
     },
     "AssetFolderModel": {
-        "AddedFolders": null
+        "AddedFolders": [
+            "test",
+            "test/test"
+        ]
     },
     "CAssetPicker": {
         "LayoutCharacter": {
@@ -618,7 +621,7 @@
             "foldersSplitter": "AAAA/wAAAAEAAAACAAABAAAAAwAB/////wEAAAABAA==",
             "foldersView": {
                 "selected": [
-                    "Objects/Weapons/SampleWeapon"
+                    "Materials"
                 ]
             },
             "mainViewSplitter": "AAAA/wAAAAEAAAACAAAAOgAAAQAB/////wEAAAABAA==",
@@ -805,6 +808,187 @@
                 }
             },
             "viewMode": 1
+        },
+        "LayoutTexture": {
+            "adaptiveLayout": true,
+            "breadcrumbsVisible": true,
+            "detailsView": {
+                "columnData": {
+                    "Favorite": {
+                        "data": "Favorite",
+                        "visible": true,
+                        "visualIndex": 0,
+                        "width": 16
+                    },
+                    "Folder": {
+                        "data": "Folder",
+                        "visible": false,
+                        "visualIndex": 4,
+                        "width": 0
+                    },
+                    "Height": {
+                        "data": "Height",
+                        "visible": false,
+                        "visualIndex": 9,
+                        "width": 0
+                    },
+                    "Mip count": {
+                        "data": "Mip count",
+                        "visible": false,
+                        "visualIndex": 10,
+                        "width": 0
+                    },
+                    "Name": {
+                        "data": "Name",
+                        "visible": true,
+                        "visualIndex": 1,
+                        "width": 208
+                    },
+                    "Parent": {
+                        "data": "Parent",
+                        "visible": false,
+                        "visualIndex": 11,
+                        "width": 0
+                    },
+                    "Status": {
+                        "data": "Status",
+                        "visible": true,
+                        "visualIndex": 3,
+                        "width": 100
+                    },
+                    "Type": {
+                        "data": "Type",
+                        "visible": true,
+                        "visualIndex": 2,
+                        "width": 120
+                    },
+                    "Unique Id": {
+                        "data": "Unique Id",
+                        "visible": false,
+                        "visualIndex": 5,
+                        "width": 0
+                    },
+                    "Width": {
+                        "data": "Width",
+                        "visible": false,
+                        "visualIndex": 8,
+                        "width": 0
+                    },
+                    "_filter_string_": {
+                        "data": "_filter_string_",
+                        "visible": false,
+                        "visualIndex": 7,
+                        "width": 0
+                    },
+                    "_thumb_": {
+                        "data": "_thumb_",
+                        "visible": false,
+                        "visualIndex": 6,
+                        "width": 0
+                    }
+                },
+                "columnOrder": [
+                    "Favorite",
+                    "Name",
+                    "Type",
+                    "Status",
+                    "Folder",
+                    "Unique Id",
+                    "_thumb_",
+                    "_filter_string_",
+                    "Width",
+                    "Height",
+                    "Mip count",
+                    "Parent"
+                ],
+                "headerSortingOrder": {
+                    "sortOrder": 0,
+                    "sortedSection": 1
+                },
+                "version": 1
+            },
+            "editorContent": {
+                "isLocked": true,
+                "toolBarArea": [
+                    {
+                        "items": [
+                            {
+                                "index": 0,
+                                "name": "FileToolBar",
+                                "type": 0,
+                                "visible": false
+                            }
+                        ]
+                    },
+                    {
+                        "items": [
+                        ]
+                    },
+                    {
+                        "items": [
+                        ]
+                    },
+                    {
+                        "items": [
+                            {
+                                "index": 0,
+                                "spacerType": 0,
+                                "type": 1
+                            },
+                            {
+                                "index": 1,
+                                "name": "ViewToolBar",
+                                "type": 0,
+                                "visible": false
+                            },
+                            {
+                                "index": 2,
+                                "spacerType": 1,
+                                "type": 1
+                            },
+                            {
+                                "index": 3,
+                                "name": "View TypeToolBar",
+                                "type": 0,
+                                "visible": false
+                            }
+                        ]
+                    }
+                ],
+                "toolBars": [
+                    {
+                        "area": 0,
+                        "name": "FileToolBar"
+                    },
+                    {
+                        "area": 3,
+                        "name": "View TypeToolBar"
+                    },
+                    {
+                        "area": 3,
+                        "name": "ViewToolBar"
+                    }
+                ]
+            },
+            "filters": {
+                "expanded": false
+            },
+            "foldersSplitter": "AAAA/wAAAAEAAAACAAABAAAAAwAB/////wEAAAABAA==",
+            "foldersView": {
+                "selected": [
+                    "%engine%/engineassets/textures"
+                ]
+            },
+            "mainViewSplitter": "AAAA/wAAAAEAAAACAAAAOgAAAQAB/////wEAAAABAA==",
+            "recursiveView": false,
+            "showFolders": true,
+            "thumbnailView": {
+                "size": {
+                    "height": 64,
+                    "width": 64
+                }
+            },
+            "viewMode": 1
         }
     },
     "EngineFileDialog": {
@@ -833,6 +1017,14 @@
     },
     "Material Editor": {
         "Recent Files": [
+            "materials/dark_specular.mtl.cryasset",
+            "materials/dark_red.mtl.cryasset",
+            "Materials/bullet.mtl.cryasset",
+            "materials/dark_blue.mtl.cryasset",
+            "Materials/custom_mat.mtl.cryasset",
+            "materials/bullet1.mtl.cryasset",
+            "materials/custom_mat.mtl.cryasset",
+            "%engine%/engineassets/objects/editorprimitive.mtl.cryasset",
             "%engine%/engineassets/objects/helper.mtl.cryasset"
         ]
     }

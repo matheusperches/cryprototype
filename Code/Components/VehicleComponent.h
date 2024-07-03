@@ -48,10 +48,11 @@ public:
 protected:
 
 private:
+
 	// Default Components
-	Cry::DefaultComponents::CCameraComponent* m_pCameraComponent;
-	Cry::DefaultComponents::CInputComponent* m_pInputComponent;
-	Cry::DefaultComponents::CRigidBodyComponent* m_pRigidBodyComponent;
+	Cry::DefaultComponents::CCameraComponent* pCameraComponent = nullptr;
+	Cry::DefaultComponents::CInputComponent* pInputComponent = nullptr;
+	Cry::DefaultComponents::CRigidBodyComponent* m_pRigidBodyComponent = nullptr;
 
 	Vec3 m_position = ZERO;
 	Quat m_rotation = ZERO;

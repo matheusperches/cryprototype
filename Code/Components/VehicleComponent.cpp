@@ -36,28 +36,18 @@ void CVehicleComponent::Initialize()
 	m_pRigidBodyComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CRigidBodyComponent>();
 	m_pFlightController = m_pEntity->GetOrCreateComponent<CFlightController>();
 
-	// Set entity to be visible
-	GetEntity()->SetFlags(GetEntity()->GetFlags() | ENTITY_FLAG_CALC_PHYSICS);
-
 	// Load the cube geometry
 	const char* geometryPath = "%engine%/engineassets/objects/primitive_cube.cgf";  // Example path to the cube mesh
 	GetEntity()->LoadGeometry(0, geometryPath);
 
-	// Optionally, set a material
-	const char* materialPath = "%ENGINE%/EngineAssets/Materials/material_default.mtl";
-	GetEntity()->SetMaterial(gEnv->p3DEngine->GetMaterialManager()->LoadMaterial(materialPath));
-	/*
-	m_pCameraComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CCameraComponent>();
-	m_pCameraComponent->EnableAutomaticActivation(false);
-	m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
-	InitializeInput();
-	*/
+	//const char* materialPath = "%ENGINE%/EngineAssets/Materials/material_default.mtl";
+	//GetEntity()->SetMaterial(gEnv->p3DEngine->GetMaterialManager()->LoadMaterial(materialPath));
 }
 
 Cry::Entity::EventFlags CVehicleComponent::GetEventMask() const
 {
 	//Listening to the update event
-	return EEntityEvent::GameplayStarted | EEntityEvent::Update | EEntityEvent::Reset;
+	return EEntityEvent::GameplayStarted;
 }
 
 void CVehicleComponent::ProcessEvent(const SEntityEvent& event)
@@ -67,38 +57,11 @@ void CVehicleComponent::ProcessEvent(const SEntityEvent& event)
 	case EEntityEvent::GameplayStarted:
 	{
 		m_hasGameStarted = true;
-		if (gEnv->bServer)
-		{
-			SEntitySpawnParams spawnParams;
-			spawnParams.pClass = gEnv->pEntitySystem->GetClassRegistry()->GetDefaultClass();
-			spawnParams.vPosition = GetEntity()->GetWorldPos();
-			spawnParams.qRotation = GetEntity()->GetWorldRotation();
-			gEnv->pEntitySystem->SpawnEntity(spawnParams);
-			SEntityPhysicalizeParams physParams;
-			physParams.type = PE_RIGID;
-			m_pEntity->Physicalize(physParams);
-		}
 
 		m_pFlightController->ResetJerkParams();
 		m_pFlightController->InitializeAccelParamsVectors();
 		m_pFlightController->InitializeJerkParams();
 		m_pFlightController->physEntity = m_pEntity->GetPhysicalEntity();
-	}
-	break;
-	case EEntityEvent::Update:
-	{
-		if (GetIsPiloting())
-		{
-			//const float m_frameTime = event.fParam[0];
-			//m_pFlightController->ProcessFlight(m_frameTime);
-			//m_velocity = m_pFlightController->GetVelocity();
-			//NetMarkAspectsDirty(kVehicleAspect);
-		}
-	}
-	break;
-	case Cry::Entity::EEvent::Reset:
-	{
-		m_hasGameStarted = false;
 	}
 	break;
 	}

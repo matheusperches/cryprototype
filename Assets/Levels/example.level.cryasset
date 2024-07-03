@@ -1,10 +1,14 @@
-<AssetMetadata version="0" type="Level" guid="984fcd77-e594-2b34-fbf5-414a47e0d684" source="" timestamp="1719778048">
+<AssetMetadata version="0" type="Level" guid="984fcd77-e594-2b34-fbf5-414a47e0d684" source="" timestamp="1719961633">
  <Files>
   <File path="example/example.level"/>
  </Files>
  <Dependencies>
+  <Path>%editor%/materials/shaderlist.xml</Path>
   <Path>%editor%/objects/envcube.cgf</Path>
   <Path>%editor%/objects/envcube.mtl</Path>
+  <Path>%editor%/objects/mtlobjects.mtl</Path>
+  <Path>%editor%/objects/mtlplane.cgf</Path>
+  <Path>%editor%/objects/mtlsphere.cgf</Path>
   <Path>%engine%/engineassets/icons/averagememoryusage.dds</Path>
   <Path>%engine%/engineassets/icons/highmemoryusage.dds</Path>
   <Path>%engine%/engineassets/icons/livepreview.dds</Path>
@@ -22,8 +26,8 @@
   <Path>%engine%/engineassets/objects/primitive_sphere.cgf</Path>
   <Path>%engine%/engineassets/texturemsg/defaultnouvs.dds</Path>
   <Path>%engine%/engineassets/texturemsg/defaultsolids.mtl</Path>
+  <Path>%engine%/engineassets/textures/default_probe_cm.dds</Path>
   <Path>%engine%/engineassets/textures/skys/night/half_moon.dds</Path>
-  <Path>%engine%/engineassets/textures/white.dds</Path>
   <Path>animations/mannequin/adb/firstpersoncontrollerdefinition.xml</Path>
   <Path>animations/mannequin/adb/playerfragmentids.xml</Path>
   <Path>animations/mannequin/adb/playertags.xml</Path>
@@ -85,6 +89,9 @@
   <Path>editor/resourcecache/objects/characters/samplecharacter/mcg_spec.dds</Path>
   <Path>engineassets/materials/water/ocean_default.mtl</Path>
   <Path usageCount="1">libs/environmentpresets/example.env</Path>
+  <Path>materials/dark_red.mtl</Path>
+  <Path>materials/dark_specular.mtl</Path>
+  <Path>materials/dark_specular.mtl</Path>
   <Path>objects/characters/samplecharacter/firstperson.cdf</Path>
   <Path>objects/characters/samplecharacter/mcg_ddna.dds</Path>
   <Path>objects/characters/samplecharacter/mcg_diff.dds</Path>

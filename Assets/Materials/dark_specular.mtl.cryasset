@@ -1,0 +1,12 @@
+<AssetMetadata version="0" type="Material" guid="02895f80-7786-4a31-6024-03471399206e" source="" timestamp="1719961618">
+ <Files>
+  <File path="dark_specular.mtl"/>
+ </Files>
+ <Details>
+  <Detail name="subMaterialCount">0</Detail>
+  <Detail name="textureCount">1</Detail>
+ </Details>
+ <Dependencies>
+  <Path usageCount="1">%engine%/engineassets/textures/white.dds</Path>
+ </Dependencies>
+</AssetMetadata>
