@@ -5247,8 +5247,8 @@
 			"type": "Animation",
 			"guid": "127507fd-d79c-1091-33fb-38eac631da57",
 			"name": "jog_bck_3p",
-			"timestamp": 133635424978504579,
-			"files": [ "animations/motusanims/jog_bck_3p.caf" ],
+			"timestamp": 1719068897,
+			"files": [ "Animations/motusAnims/jog_bck_3p.caf" ],
 			"workFiles": [ ],
 			"source": "",
 			"metadata": "Animations/motusAnims/jog_bck_3p.caf.cryasset",
@@ -5427,8 +5427,8 @@
 			"type": "Animation",
 			"guid": "d5861a50-6837-d6bc-7dac-4037d73a76f0",
 			"name": "stepRotate_lft_180_3p",
-			"timestamp": 133635424980354611,
-			"files": [ "animations/motusanims/steprotate/stepRotate_lft_180_3p.caf" ],
+			"timestamp": 1719068898,
+			"files": [ "Animations/motusAnims/stepRotate/stepRotate_lft_180_3p.caf" ],
 			"workFiles": [ ],
 			"source": "",
 			"metadata": "Animations/motusAnims/stepRotate/stepRotate_lft_180_3p.caf.cryasset",
@@ -5655,8 +5655,8 @@
 			"type": "Animation",
 			"guid": "74df591e-f47c-51be-1f3c-2131e18bc49c",
 			"name": "walkcross_fwd_lft_3p",
-			"timestamp": 133635424981901479,
-			"files": [ "animations/motusanims/strafe/walkcross_fwd_lft_3p.caf" ],
+			"timestamp": 1719068898,
+			"files": [ "Animations/motusAnims/strafe/walkcross_fwd_lft_3p.caf" ],
 			"workFiles": [ ],
 			"source": "",
 			"metadata": "Animations/motusAnims/strafe/walkcross_fwd_lft_3p.caf.cryasset",
@@ -5787,8 +5787,8 @@
 			"type": "Animation",
 			"guid": "a41303bf-bc0f-6509-b7c3-a8f3744539d9",
 			"name": "walk_fwd_3p",
-			"timestamp": 133635424978825614,
-			"files": [ "animations/motusanims/walk_fwd_3p.caf" ],
+			"timestamp": 1719068897,
+			"files": [ "Animations/motusAnims/walk_fwd_3p.caf" ],
 			"workFiles": [ ],
 			"source": "",
 			"metadata": "Animations/motusAnims/walk_fwd_3p.caf.cryasset",
@@ -5811,19 +5811,15 @@
 			"type": "Level",
 			"guid": "984fcd77-e594-2b34-fbf5-414a47e0d684",
 			"name": "example",
-			"timestamp": 1719961261,
+			"timestamp": 1720016375,
 			"files": [ "Levels/example/example.level" ],
 			"workFiles": [ ],
 			"source": "",
 			"metadata": "Levels/example.level.cryasset",
 			"details": [ ],
 			"dependencies": [
-				{ "path": "%editor%/materials/shaderlist.xml", "usageCount": 0 },
 				{ "path": "%editor%/objects/envcube.cgf", "usageCount": 0 },
 				{ "path": "%editor%/objects/envcube.mtl", "usageCount": 0 },
-				{ "path": "%editor%/objects/mtlobjects.mtl", "usageCount": 0 },
-				{ "path": "%editor%/objects/mtlplane.cgf", "usageCount": 0 },
-				{ "path": "%editor%/objects/mtlsphere.cgf", "usageCount": 0 },
 				{
 					"path": "%engine%/engineassets/icons/averagememoryusage.dds",
 					"usageCount": 0
@@ -5896,7 +5892,6 @@
 					"path": "%engine%/engineassets/textures/skys/night/half_moon.dds",
 					"usageCount": 0
 				},
-				{ "path": "%engine%/engineassets/textures/white.dds", "usageCount": 0 },
 				{
 					"path": "animations/mannequin/adb/firstpersoncontrollerdefinition.xml",
 					"usageCount": 0
@@ -6117,11 +6112,8 @@
 					"usageCount": 0
 				},
 				{ "path": "libs/environmentpresets/example.env", "usageCount": 1 },
-				{ "path": "materials/bullet.mtl", "usageCount": 0 },
-				{ "path": "materials/bullet1.mtl", "usageCount": 0 },
 				{ "path": "materials/dark_red.mtl", "usageCount": 0 },
-				{ "path": "materials/dark_red.mtl", "usageCount": 0 },
-				{ "path": "materials/untitled.mtl", "usageCount": 0 },
+				{ "path": "materials/dark_specular.mtl", "usageCount": 0 },
 				{
 					"path": "objects/characters/samplecharacter/firstperson.cdf",
 					"usageCount": 0
@@ -6642,23 +6634,6 @@
 		},
 		{
 			"type": "Material",
-			"guid": "7d60aeec-12e2-5297-2446-ad54908c3b0e",
-			"name": "black_specular",
-			"timestamp": 1719959363,
-			"files": [ "Materials/bullet1.mtl" ],
-			"workFiles": [ ],
-			"source": "",
-			"metadata": "Materials/black_specular.mtl.cryasset",
-			"details": [
-				{ "key": "subMaterialCount", "value": "0" },
-				{ "key": "textureCount", "value": "1" }
-			],
-			"dependencies": [
-				{ "path": "%engine%/EngineAssets/Textures/white.dds", "usageCount": 1 }
-			]
-		},
-		{
-			"type": "Material",
 			"guid": "76452ec6-d264-9a3a-7281-6b9f58516e00",
 			"name": "bullet",
 			"timestamp": 1719068897,
@@ -6676,23 +6651,6 @@
 		},
 		{
 			"type": "Material",
-			"guid": "b9e921f1-5637-532e-3bbd-e2e45f479e92",
-			"name": "bullet1",
-			"timestamp": 1719959364,
-			"files": [ "Materials/bullet1.mtl" ],
-			"workFiles": [ ],
-			"source": "",
-			"metadata": "Materials/bullet1.mtl.cryasset",
-			"details": [
-				{ "key": "subMaterialCount", "value": "0" },
-				{ "key": "textureCount", "value": "1" }
-			],
-			"dependencies": [
-				{ "path": "%engine%/EngineAssets/Textures/white.dds", "usageCount": 1 }
-			]
-		},
-		{
-			"type": "Material",
 			"guid": "38734487-edb3-2c6a-e774-696eb3142aba",
 			"name": "dark_red",
 			"timestamp": 1719961269,
@@ -6700,6 +6658,23 @@
 			"workFiles": [ ],
 			"source": "",
 			"metadata": "Materials/dark_red.mtl.cryasset",
+			"details": [
+				{ "key": "subMaterialCount", "value": "0" },
+				{ "key": "textureCount", "value": "1" }
+			],
+			"dependencies": [
+				{ "path": "%engine%/engineassets/textures/white.dds", "usageCount": 1 }
+			]
+		},
+		{
+			"type": "Material",
+			"guid": "02895f80-7786-4a31-6024-03471399206e",
+			"name": "dark_specular",
+			"timestamp": 1719961618,
+			"files": [ "Materials/dark_specular.mtl" ],
+			"workFiles": [ ],
+			"source": "",
+			"metadata": "Materials/dark_specular.mtl.cryasset",
 			"details": [
 				{ "key": "subMaterialCount", "value": "0" },
 				{ "key": "textureCount", "value": "1" }

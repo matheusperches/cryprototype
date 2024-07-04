@@ -7,7 +7,6 @@ class CVehicleComponent;
 
 namespace Cry::DefaultComponents
 {
-	class CInputComponent;
 	class CRigidBodyComponent;
 }
 
@@ -170,7 +169,7 @@ private:
 		Vec3 targetJerkAccel;
 		AccelState state;
 
-		JerkAccelerationData() : jerk(0), jerkDecelRate(0), currentJerkAccel(0), targetJerkAccel(0), state(AccelState::Idle) {}
+		JerkAccelerationData() : jerk(0.f), jerkDecelRate(0.f), currentJerkAccel(0.f), targetJerkAccel(0.f), state(AccelState::Idle) {}
 	};
 
 	JerkAccelerationData m_linearAccelData = {};
@@ -182,7 +181,7 @@ private:
 		float currentVelocity;
 		float previousVelocity;
 
-		VelocityData() : currentVelocity(0), previousVelocity(0) {}
+		VelocityData() : currentVelocity(0.f), previousVelocity(0.f) {}
 	};
 
 	VelocityData m_shipVelocity = {};
@@ -233,9 +232,6 @@ private:
 	VectorMap<AxisType, DynArray<AxisAccelParams>> m_rollAxisParamsMap;
 	VectorMap<AxisType, DynArray<AxisAccelParams>> m_pitchYawAxisParamsMap;
 
-	
-	// Receive the input manager from VehicleComponent
-	void GetVehicleInputManager();
 	// Getting the key states from the Vehicle
 	int KeyState(const string& actionName);
 	// Getting the Axis values from the Vehicle

@@ -40,8 +40,6 @@ void CVehicleComponent::Initialize()
 	const char* geometryPath = "%engine%/engineassets/objects/primitive_cube.cgf";  // Example path to the cube mesh
 	GetEntity()->LoadGeometry(0, geometryPath);
 
-	//const char* materialPath = "%ENGINE%/EngineAssets/Materials/material_default.mtl";
-	//GetEntity()->SetMaterial(gEnv->p3DEngine->GetMaterialManager()->LoadMaterial(materialPath));
 }
 
 Cry::Entity::EventFlags CVehicleComponent::GetEventMask() const
@@ -69,6 +67,8 @@ void CVehicleComponent::ProcessEvent(const SEntityEvent& event)
 
 bool CVehicleComponent::GetIsPiloting()
 {
+	// Iterates over the child entities, trying to find the player component 
+	// If one is found, return true.
 	for (uint32 i = 0; i < GetEntity()->GetChildCount(); ++i)
 	{
 		IEntity* pChildEntity = GetEntity()->GetChild(i);
