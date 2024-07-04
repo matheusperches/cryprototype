@@ -43,8 +43,8 @@ void CFlightController::Initialize()
 	GetEntity()->GetNetEntity()->EnableDelegatableAspect(eEA_GameClientA, false);
 	GetEntity()->GetNetEntity()->EnableDelegatableAspect(eEA_Physics, false);
 
-	SRmi<RMI_WRAP(&CFlightController::ServerApplyImpulse)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
-	SRmi<RMI_WRAP(&CFlightController::ClientApplyImpulse)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
+	SRmi<RMI_WRAP(&CFlightController::ServerRequestImpulse)>::Register(this, eRAT_Urgent, false, eNRT_ReliableOrdered);
+	SRmi<RMI_WRAP(&CFlightController::ClientRequestImpulse)>::Register(this, eRAT_Urgent, false, eNRT_ReliableOrdered);
 
 	GetEntity()->EnablePhysics(true);
 	GetEntity()->PhysicsNetSerializeEnable(true);
@@ -159,7 +159,7 @@ Vec3 CFlightController::ImpulseWorldToLocal(const Vec3& localDirection)
 	return worldDirection;
 }
 
-float CFlightController::NormalizeInput(float inputValue, bool isMouse) const
+float CFlightController::ClampInput(float inputValue, bool isMouse) const
 {
 	// Scale the input value by the sensitivity factor
 	if (isMouse)
@@ -186,7 +186,7 @@ Vec3 CFlightController::ScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelP
 		{
 			if (axisType == AxisType::Linear)
 			{
-				normalizeInputValue = NormalizeInput(AxisGetter(accelParams.axisName)); // Retrieve input value for the current axis and normalize to a range of -1 to 1
+				normalizeInputValue = ClampInput(AxisGetter(accelParams.axisName)); // Retrieve input value for the current axis and normalize to a range of -1 to 1
 				if (accelParams.axisName == "accel_forward") 
 				{
 					m_localDirection = Vec3(0.f, 1.f, 0.f); // Forward in local space
@@ -214,7 +214,7 @@ Vec3 CFlightController::ScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelP
 			}
 			else if (axisType == AxisType::PitchYaw)
 			{
-				normalizeInputValue = NormalizeInput(AxisGetter(accelParams.axisName), true);
+				normalizeInputValue = ClampInput(AxisGetter(accelParams.axisName), true);
 				if (accelParams.axisName == "yaw") 
 				{
 					m_localDirection = Vec3(0.f, 0.f, -1.f);
@@ -226,7 +226,7 @@ Vec3 CFlightController::ScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelP
 			}
 			else if (axisType == AxisType::Roll)
 			{
-				normalizeInputValue = NormalizeInput(AxisGetter(accelParams.axisName));
+				normalizeInputValue = ClampInput(AxisGetter(accelParams.axisName));
 				if (accelParams.axisName == "roll_left") 
 				{
 					m_localDirection = Vec3(0.f, -1.f, 0.f);
@@ -240,8 +240,6 @@ Vec3 CFlightController::ScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelP
 			m_accelDirection += m_localDirection * normalizeInputValue; // Accumulate axis direction with magnitude in local space, scaling by the normalized input
 			m_requestedAccel += m_localDirection * accelParams.AccelAmount * normalizeInputValue; // Accumulate desired acceleration based on thrust amount and input value, combining for multiple axes
 
-
-			CryLog("m_requestedAccel: x = %f, y=%f, z=%f", m_requestedAccel.x, m_requestedAccel.y, m_requestedAccel.z);
 		}
 
 		if (m_accelDirection.GetLength() > 1.f) // Normalize accelDirection to mitigate excessive accelerations when combining inputs
@@ -330,6 +328,7 @@ Vec3 CFlightController::AccelToImpulse(Vec3 desiredAccel, float frameTime)
 			Vec3 impulse = Vec3(ZERO);
 			impulse = desiredAccel * dynamics.mass * frameTime; // Calculates our final impulse based on the entity's mass.
 			m_totalImpulse += impulse.GetLength();
+			CryLog("impulse: %f", impulse.GetLength());
 			return impulse;
 		}
 	}
@@ -363,23 +362,22 @@ Vec3 CFlightController::GetVelocity()
 
 float CFlightController::GetAcceleration(float frameTime)
 {
-	m_shipVelocity.currentVelocity = 0.f;
 	m_shipVelocity.currentVelocity = GetVelocity().GetLength();
-	float acceleration = 0.f;
-	if (m_shipVelocity.currentVelocity - m_shipVelocity.previousVelocity == 0.f)
+	float deltaV = m_shipVelocity.currentVelocity - m_shipVelocity.previousVelocity;
+
+	if (deltaV < FLT_EPSILON)
 	{
 		return 0.f;
 	}
-	acceleration = (m_shipVelocity.currentVelocity - m_shipVelocity.previousVelocity) / frameTime;
+
+	float acceleration = deltaV / frameTime;
 	m_shipVelocity.previousVelocity = m_shipVelocity.currentVelocity;
 	if (acceleration < 0.f)
 		acceleration *= -1.f;
 
-	if (acceleration > 15.f)
    	CryLog("acceleration: %f", acceleration);
 	CryLog("m_shipVelocity.currentVelocity: %f", m_shipVelocity.currentVelocity);
 	CryLog("m_shipVelocity.previousVelocity: %f", m_shipVelocity.previousVelocity);
-
 
 	return acceleration;
 }
@@ -405,27 +403,36 @@ void CFlightController::ProcessFlight(float frameTime)
 	m_pitchYawAccelData.targetJerkAccel = ScaleAccel(m_pitchYawAxisParamsMap);
 	m_pitchYawAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_pitchYawAccelData, frameTime);
 
-	SRmi<RMI_WRAP(&CFlightController::ServerApplyImpulse)>::InvokeOnServer(this, SerializeImpulseData{ 
-		Vec3(ZERO), 
-		Quat(ZERO), 
-		AccelToImpulse(m_linearAccelData.currentJerkAccel, frameTime), //Vec3(ZERO), Vec3(ZERO)
-		AccelToImpulse(m_rollAccelData.currentJerkAccel, frameTime), 
-		AccelToImpulse(m_pitchYawAccelData.currentJerkAccel, frameTime) 
-		});
+	
+	// Send movement data to the server if we are connected, apply locally if not
+	if (!gEnv->bServer)
+	{
+		SRmi<RMI_WRAP(&CFlightController::ServerRequestImpulse)>::InvokeOnServer(this, SerializeImpulseData{
+		Vec3(ZERO),
+		Quat(ZERO),
+		AccelToImpulse(m_linearAccelData.currentJerkAccel, frameTime),
+		AccelToImpulse(m_rollAccelData.currentJerkAccel, frameTime),
+		AccelToImpulse(m_pitchYawAccelData.currentJerkAccel, frameTime)
+			});
+	}
+	else 
+		ApplyImpulse(AccelToImpulse(m_linearAccelData.currentJerkAccel, frameTime), AccelToImpulse(m_rollAccelData.currentJerkAccel, frameTime), AccelToImpulse(m_pitchYawAccelData.currentJerkAccel, frameTime));
+	
 	// Debug
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 60, 2, m_debugColor, false, "Velocity: %.2f", GetVelocity().GetLength());
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 90, 2, m_debugColor, false, "acceleration: %.2f", GetAcceleration(frameTime));
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 120, 2, m_debugColor, false, "total impulse: %.3f", GetImpulse());
 }
 
-bool CFlightController::ServerApplyImpulse(SerializeImpulseData&& data, INetChannel*)
+bool CFlightController::ServerRequestImpulse(SerializeImpulseData&& data, INetChannel*)
 {
 	IPhysicalEntity* pPhysicalEntity = GetEntity()->GetPhysics();
 
 	if (pPhysicalEntity)
 	{
-		SRmi<RMI_WRAP(&CFlightController::ClientApplyImpulse)>::InvokeOnAllClients(this, SerializeImpulseData{ Vec3(ZERO), Quat(ZERO), data.linearImpulse, data.rollImpulse, data.pitchYawImpulse});
-		// Update position and orientation
+		SRmi<RMI_WRAP(&CFlightController::ClientRequestImpulse)>::InvokeOnAllClients(this, std::move(data));
+
+		// Update position and orientation serialization variables
 		m_shipPosition = GetEntity()->GetWorldPos();
 		Matrix34 shipWorldTM = GetEntity()->GetWorldTM();
 		m_shipOrientation = Quat(shipWorldTM);
@@ -434,26 +441,35 @@ bool CFlightController::ServerApplyImpulse(SerializeImpulseData&& data, INetChan
 	return true;
 }
 
-bool CFlightController::ClientApplyImpulse(SerializeImpulseData&& data, INetChannel*)
+bool CFlightController::ClientRequestImpulse(SerializeImpulseData&& data, INetChannel*)
+{
+	IPhysicalEntity* pPhysicalEntity = GetEntity()->GetPhysics();
+	if (pPhysicalEntity)
+	{
+		ApplyImpulse(data.linearImpulse, data.rollImpulse, data.pitchYawImpulse);
+		NetMarkAspectsDirty(kVehicleAspect);
+	}
+	return true;
+}
+
+bool CFlightController::ApplyImpulse(Vec3 linearImpulse, Vec3 rollImpulse, Vec3 pitchYawImpulse)
 {
 	IPhysicalEntity* pPhysicalEntity = GetEntity()->GetPhysics();
 	if (pPhysicalEntity)
 	{
 		// Apply linear impulse
 		pe_action_impulse actionImpulse;
-		actionImpulse.impulse = data.linearImpulse;
+		actionImpulse.impulse = linearImpulse;
 		pPhysicalEntity->Action(&actionImpulse);
 
 		// Apply angular impulse
 		actionImpulse.impulse = Vec3(ZERO);
-		actionImpulse.angImpulse = data.rollImpulse + data.pitchYawImpulse;
+		actionImpulse.angImpulse = rollImpulse + pitchYawImpulse;
 		pPhysicalEntity->Action(&actionImpulse);
 
 		// Update our impulse tracking variables to send over to the server
-		m_linearImpulse = data.linearImpulse;
-		m_angularImpulse = data.rollImpulse + data.pitchYawImpulse;
-
-		NetMarkAspectsDirty(kVehicleAspect);
+		m_linearImpulse = linearImpulse;
+		m_angularImpulse = rollImpulse + pitchYawImpulse;
 	}
 	return true;
 }
@@ -466,8 +482,8 @@ bool CFlightController::NetSerialize(TSerialize ser, EEntityAspects aspect, uint
 
 		ser.Value("m_shipPosition", m_shipPosition, 'wrld');
 		ser.Value("m_shipOrientation", m_shipOrientation, 'ori3');
-		ser.Value("m_linearImpulse", m_linearImpulse, 'vimp');
-		ser.Value("m_angularImpulse", m_angularImpulse, 'vimp');
+		ser.Value("m_linearImpulse", m_linearImpulse);
+		ser.Value("m_angularImpulse", m_angularImpulse);
 		ser.EndGroup();
 
 		return true;

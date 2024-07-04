@@ -706,7 +706,6 @@ bool CPlayerComponent::ClientEnterVehicle(SerializeVehicleSwitchData&& data, INe
 	requestingEntity->Hide(true);
 	m_isVisible = false;
 	gEnv->pConsole->GetCVar("is_piloting")->Set(true);
-
 	return true;
 }
 

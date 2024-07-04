@@ -67,9 +67,9 @@ public:
 		{
 			ser.Value("position", position, 'wrld');
 			ser.Value("orientation", orientation, 'ori3');
-			ser.Value("linearImpulse", linearImpulse, 'vimp');
-			ser.Value("angularImpulse", rollImpulse, 'vimp');
-			ser.Value("angularImpulse", pitchYawImpulse, 'vimp');
+			ser.Value("linearImpulse", linearImpulse);
+			ser.Value("angularImpulse", rollImpulse);
+			ser.Value("angularImpulse", pitchYawImpulse);
 		}
 	};
 	struct SerializeImpulse
@@ -136,12 +136,14 @@ public:
 	void ProcessFlight(float frameTime);
 
 	// Impulse generator
-	bool ServerApplyImpulse(SerializeImpulseData&& data, INetChannel*);
+	bool ServerRequestImpulse(SerializeImpulseData&& data, INetChannel*);
 
 	Vec3 GetVelocity();
 	float GetAcceleration(float frameTime);
 
-	bool ClientApplyImpulse(SerializeImpulseData&& data, INetChannel*);
+	bool ClientRequestImpulse(SerializeImpulseData&& data, INetChannel*);
+
+	bool ApplyImpulse(Vec3 linearImpulse = ZERO, Vec3 rollImpulse = ZERO, Vec3 pitchYawImpulse = ZERO);
 
 protected:
 private:
@@ -251,7 +253,7 @@ private:
 
 	// Convert world coordinates to local coordinates
 	Vec3 ImpulseWorldToLocal(const Vec3& localDirection);
-	float NormalizeInput(float inputValue, bool isMouse = false) const;
+	float ClampInput(float inputValue, bool isMouse = false) const;
 
 	// Converts the accel target (after jerk) which contains both direction and magnitude, into thrust values.
 	Vec3 AccelToImpulse(Vec3 desiredAccel, float frameTime);  
