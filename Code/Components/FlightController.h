@@ -4,7 +4,6 @@
 class CShipThrusterComponent;
 class CVehicleComponent;
 
-
 namespace Cry::DefaultComponents
 {
 	class CRigidBodyComponent;
@@ -55,6 +54,19 @@ public:
 
 	virtual NetworkAspectType GetNetSerializeAspectMask() const override { return kVehicleAspect; }
 
+	// Axis Vector initializer
+	void InitializeAccelParamsVectors();
+	// Jerk data initializer
+	void InitializeJerkParams();
+	// Reset the jerk values 
+	void ResetJerkParams();
+
+	// Physical Entity reference
+	IPhysicalEntity* physEntity = nullptr;
+
+protected:
+private:
+
 	struct SerializeImpulseData
 	{
 		Vec3 position = ZERO;        // Position of the entity
@@ -72,13 +84,14 @@ public:
 			ser.Value("angularImpulse", pitchYawImpulse);
 		}
 	};
+
 	struct SerializeImpulse
 	{
 		Vec3 impulse = ZERO;
 
 		void SerializeWith(TSerialize ser)
 		{
-			ser.Value("impulse", impulse, 'vimp');
+			ser.Value("impulse", impulse);
 		}
 	};
 
@@ -94,20 +107,23 @@ public:
 		}
 	};
 
-	struct NoParams
-	{
-		void SerializeWith(TSerialize ser)
-		{
-
-		}
-	};
-
-
-	enum class EFlightMode
+	enum class FlightMode
 	{
 		Coupled,
 		Newtonian,
 	};
+
+	enum class FlightAssists
+	{
+		Gravity,
+		Comstab, 
+	};
+
+	struct AssistActState {
+		int keyState;
+	};
+
+	std::unordered_map<FlightAssists,AssistActState > m_AssistsStateMap;
 
 	enum class AccelState
 	{
@@ -115,52 +131,6 @@ public:
 		Accelerating,
 		Decelerating
 	};
-	enum class AxisType
-	{
-		Roll,
-		PitchYaw,
-		Linear
-	};
-
-	// Physical Entity reference
-	IPhysicalEntity* physEntity = nullptr;
-
-	// Axis Vector initializer
-	void InitializeAccelParamsVectors();
-	// Jerk data initializer
-	void InitializeJerkParams();
-	// Reset the jerk values 
-	void ResetJerkParams();
-
-	// Put the flight calculations in order, segmented by axis group, to produce motion.
-	void ProcessFlight(float frameTime);
-
-	// Impulse generator
-	bool ServerRequestImpulse(SerializeImpulseData&& data, INetChannel*);
-
-	Vec3 GetVelocity();
-	float GetAcceleration(float frameTime);
-
-	bool ClientRequestImpulse(SerializeImpulseData&& data, INetChannel*);
-
-	bool ApplyImpulse(Vec3 linearImpulse = ZERO, Vec3 rollImpulse = ZERO, Vec3 pitchYawImpulse = ZERO);
-
-protected:
-private:
-	// Default Components
-	CVehicleComponent* m_pVehicleComponent = nullptr;
-
-	// Custom Components
-	CShipThrusterComponent* m_pShipThrusterComponent = nullptr;
-
-	const float m_MAX_INPUT_VALUE = 1.f; // Maximum clamped input value
-	const float m_MIN_INPUT_VALUE = -1.f; // Maximum clamped input value
-	
-	// Ship State
-	EFlightMode m_pFlightMode = EFlightMode::Newtonian;
-
-	//Debug color
-	float m_debugColor[4] = { 1, 0, 0, 1 };
 
 	// Accel data structures. Jerk values for each are set in Initialize(), retrieved from AddMember listings above.
 	struct JerkAccelerationData
@@ -178,6 +148,24 @@ private:
 	JerkAccelerationData m_rollAccelData = {};
 	JerkAccelerationData m_pitchYawAccelData = {};
 
+	enum class AxisType
+	{
+		Roll,
+		PitchYaw,
+		Linear
+	};
+
+	// struct to combine thruster axis and actuation
+	struct AxisAccelParams {
+		string axisName;
+		float AccelAmount;
+	};
+
+	// Vector maps to organize our axis types, names and input data together 
+	VectorMap<AxisType, DynArray<AxisAccelParams>> m_linearAxisParamsMap;
+	VectorMap<AxisType, DynArray<AxisAccelParams>> m_rollAxisParamsMap;
+	VectorMap<AxisType, DynArray<AxisAccelParams>> m_pitchYawAxisParamsMap;
+
 	struct VelocityData
 	{
 		float currentVelocity;
@@ -187,6 +175,92 @@ private:
 	};
 
 	VelocityData m_shipVelocity = {};
+
+	// Getting the key states from the Vehicle
+	int KeyState(const string& actionName);
+
+	// Getting the Axis values from the Vehicle
+	float AxisGetter(const string& axisName);
+
+	// Utility functions
+	float DegreesToRadian(float degrees);
+
+	// Convert world coordinates to local coordinates
+	Vec3 ImpulseWorldToLocal(const Vec3& localDirection);
+
+	// Clamping the input between -1 and 1, as well as implementing mouse sensitivity scale for the newtonian mode.
+	float ClampInput(float inputValue, bool isMouse = false) const;
+
+	/* This function is instrumental for the correct execution of UpdateAccelerationWithJerk()
+	*  This function is called by each axis group independently (Pitch / Yaw; Roll; Linear)
+	*  Obtains the target acceleration from the JerkAccelerationData struct and updates the struct with the current state.
+	*  targetAccel is upated according to the player input (-1; 1). Any value different than zero means the player wants to move.
+	*  Simply sets the acceleration state if the target Accel is zero.
+	*/
+	void UpdateAccelerationState(JerkAccelerationData& accelData, const Vec3& targetAccel);
+
+	// Compares the current vs target accel, and calculates the jerk
+	Vec3 UpdateAccelerationWithJerk(JerkAccelerationData& accelData, float frameTime);
+
+	// Scales the acceleration asked, according to input magnitude, taking into account the inputs pressed
+	Vec3 NewtonianScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelParams>>& axisAccelParamsMap);
+
+	/* Newtonian Flight Mode: Acceleration requests on an input scale.
+	*  Step 1. For each axis group, call NewtonianScaleAccel to create a desired acceleration, with a local space direction, scaled by the magnitude of the input.
+	*  Step 2. Infuse jerk into the result of step 1
+	*  Step 3. Convert the result of step 2 into a force and apply that force.
+	*/
+	void NewtonianFM(float frameTime);
+
+	void CoupledFM(float frameTime);
+
+	// Compensates for the gravity pull
+	void GravityAssist(float frameTime);
+
+	/* Avoids drift by reducing the linear velocity in proportion to the alignment to your forward direction vector.
+	*  Cannot be used in decoupled mode
+	*/
+	void ComstabAssist(float frameTime);
+
+	// Signals selection changes to the handlers
+	void FlightComputerManager();
+
+	// toggle between the flight modes on a key press
+	void FlightModeHandler(FlightMode fm);
+
+	// Toggle assists on a key press
+	void AssistHandler(std::unordered_map<FlightAssists, AssistActState > m_AssistsStateMap);
+
+	// Impulse generator
+	bool ServerRequestImpulse(SerializeImpulseData&& data, INetChannel*);
+
+	bool ClientRequestImpulse(SerializeImpulseData&& data, INetChannel*);
+
+	// Converts the accel target (after jerk) which contains both direction and magnitude, into thrust values.
+	Vec3 AccelToImpulse(Vec3 desiredAccel, float frameTime);
+	float GetImpulse() const;
+	void ResetImpulseCounter();
+
+	bool ApplyImpulse(Vec3 linearImpulse = ZERO, Vec3 rollImpulse = ZERO, Vec3 pitchYawImpulse = ZERO);
+
+	// Calculate current vel / accel
+	Vec3 GetVelocity();
+	float GetAcceleration(float frameTime);
+
+	// Default Components
+	CVehicleComponent* m_pVehicleComponent = nullptr;
+
+	// Custom Components
+	CShipThrusterComponent* m_pShipThrusterComponent = nullptr;
+
+	// tracking frametime
+	float m_frameTime = 0.f;
+
+	const float m_MAX_INPUT_VALUE = 1.f; // Maximum clamped input value
+	const float m_MIN_INPUT_VALUE = -1.f; // Maximum clamped input value
+
+	//Debug color
+	const float m_debugColor[4] = { 1, 0, 0, 1 };
 
 	// Performance variables
 	float m_fwdAccel = 0.f;
@@ -221,42 +295,4 @@ private:
 	// Tracking ship position and orientation
 	Vec3 m_shipPosition = ZERO;
 	Quat m_shipOrientation = ZERO;
-
-
-	// struct to combine thruster axis and actuation
-	struct AxisAccelParams {
-		string axisName;
-		float AccelAmount;
-	};
-
-	// Vector maps to organize our axis types, names and input data together 
-	VectorMap<AxisType, DynArray<AxisAccelParams>> m_linearAxisParamsMap;
-	VectorMap<AxisType, DynArray<AxisAccelParams>> m_rollAxisParamsMap;
-	VectorMap<AxisType, DynArray<AxisAccelParams>> m_pitchYawAxisParamsMap;
-
-	// Getting the key states from the Vehicle
-	int KeyState(const string& actionName);
-	// Getting the Axis values from the Vehicle
-	float AxisGetter(const string& axisName);
-
-	// Compares the current vs target accel, and calculates the jerk
-	Vec3 UpdateAccelerationWithJerk(JerkAccelerationData& accelData, float deltaTime);
-
-	// Scales the acceleration asked, according to input magnitude, taking into account the inputs pressed
-	Vec3 ScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelParams>>& axisAccelParamsMap);
-
-	// Updates the enum class "AccelState" according to our ship state.
-	void UpdateAccelerationState(JerkAccelerationData& accelData, const Vec3& targetAccel);
-
-	// Utility functions
-	float DegreesToRadian(float degrees);
-
-	// Convert world coordinates to local coordinates
-	Vec3 ImpulseWorldToLocal(const Vec3& localDirection);
-	float ClampInput(float inputValue, bool isMouse = false) const;
-
-	// Converts the accel target (after jerk) which contains both direction and magnitude, into thrust values.
-	Vec3 AccelToImpulse(Vec3 desiredAccel, float frameTime);  
-	float GetImpulse() const;
-	void ResetImpulseCounter();
 };

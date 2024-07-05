@@ -212,7 +212,7 @@ void CPlayerComponent::InitializePilotInput()
 	m_pInputComponent->RegisterAction("pilot", "shoot", [this](int activationMode, float value)
 		{
 			// Only fire on press, not release
-			if (activationMode == eAAM_OnPress && !GetIsPiloting())
+			if (activationMode & eAAM_OnPress && !GetIsPiloting())
 			{
 				SRmi<RMI_WRAP(&CPlayerComponent::ServerRequestFire)>::InvokeOnServer(this, NoParams{});
 			}
@@ -243,21 +243,6 @@ void CPlayerComponent::InitializeShipInput()
 	m_pInputComponent->RegisterAction("ship", "accel_down", [this](int activationMode, float value) {m_axisValues["accel_down"] = value;});
 	m_pInputComponent->BindAction("ship", "accel_down", eAID_KeyboardMouse, eKI_LCtrl);
 
-	m_pInputComponent->RegisterAction("ship", "boost", [this](int activationMode, float value)
-		{
-			// Changing vehicle boost state based on Shift key
-
-			if (activationMode & (int)eAAM_OnPress)
-			{
-				m_keyStates["boost"] = 1;
-			}
-			else if (activationMode == eAAM_OnRelease)
-			{
-				m_keyStates["boost"] = 0;
-			}
-		});
-	m_pInputComponent->BindAction("ship", "boost", eAID_KeyboardMouse, eKI_LShift);
-
 	// Rotation Controls
 
 	m_pInputComponent->RegisterAction("ship", "yaw", [this](int activationMode, float value) {m_axisValues["pitch"] = value; });
@@ -272,13 +257,13 @@ void CPlayerComponent::InitializeShipInput()
 	m_pInputComponent->RegisterAction("ship", "roll_right", [this](int activationMode, float value) {m_axisValues["roll_right"] = value; });
 	m_pInputComponent->BindAction("ship", "roll_right", eAID_KeyboardMouse, eKI_E);
 
-	// Exiting the vehicle
+	// Actions
 	m_pInputComponent->RegisterAction("ship", "exit", [this](int activationMode, float value)
 		{
 			// Checking the cvar value, if we are the ship, then change it back to the human.
 			if (GetIsPiloting())
 			{
-				if (activationMode == (int)eAAM_OnPress)
+				if (activationMode & eAAM_OnPress)
 				{
 					SRmi<RMI_WRAP(&CPlayerComponent::ServerExitVehicle)>::InvokeOnServer(this, NoParams{});
 					// Activate the player's camera
@@ -288,6 +273,48 @@ void CPlayerComponent::InitializeShipInput()
 			}
 		});
 	m_pInputComponent->BindAction("ship", "exit", eAID_KeyboardMouse, EKeyId::eKI_Y);
+
+	m_pInputComponent->RegisterAction("ship", "boost", [this](int activationMode, float value)
+		{
+			// Changing vehicle boost state based on Shift key
+
+			if (activationMode & eAAM_OnPress)
+			{
+				m_keyStates["boost"] = 1;
+			}
+			else if (activationMode & eAAM_OnRelease)
+			{
+				m_keyStates["boost"] = 0;
+			}
+		});
+	m_pInputComponent->BindAction("ship", "boost", eAID_KeyboardMouse, eKI_LShift);
+
+	m_pInputComponent->RegisterAction("ship", "toggle_fm", [this](int activationMode, float value) {
+		
+		if (activationMode & eAAM_OnPress && m_keyStates["toggle_fm"] == 0)
+			m_keyStates["toggle_fm"] = 1;
+		else if (activationMode & eAAM_OnPress)
+			m_keyStates["toggle_fm"] = 0;
+		});
+	m_pInputComponent->BindAction("ship", "toggle_fm", eAID_KeyboardMouse, eKI_V);
+
+	m_pInputComponent->RegisterAction("ship", "toggle_gravity", [this](int activationMode, float value) {
+
+		if (activationMode & eAAM_OnPress && m_keyStates["toggle_gravity"] == 0)
+			m_keyStates["toggle_gravity"] = 1;
+		else if (activationMode & eAAM_OnPress)
+			m_keyStates["toggle_gravity"] = 0;
+		});
+	m_pInputComponent->BindAction("ship", "toggle_gravity", eAID_KeyboardMouse, eKI_G);
+
+	m_pInputComponent->RegisterAction("ship", "toggle_comstab", [this](int activationMode, float value) {
+
+		if (activationMode & eAAM_OnPress && m_keyStates["toggle_comstab"] == 0)
+			m_keyStates["toggle_comstab"] = 1;
+		else if (activationMode & eAAM_OnPress)
+			m_keyStates["toggle_comstab"] = 0;
+		});
+	m_pInputComponent->BindAction("ship", "toggle_comstab", eAID_KeyboardMouse, eKI_C);
 }
 
 void CPlayerComponent::Interact(int activationMode)
@@ -614,7 +641,6 @@ void CPlayerComponent::HandleInputFlagChange(const CEnumFlags<EInputFlag> flags,
 	}
 	break;
 }
-
 	if (IsLocalClient())
 	{
 		NetMarkAspectsDirty(kPlayerAspect);

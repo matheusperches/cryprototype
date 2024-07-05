@@ -42,7 +42,7 @@ public:
 
 	// Get if we have a pilot onboard
 	bool GetIsPiloting();
-	IEntity* GetPlayerComponent();
+	IEntity* GetPlayerComponent() const;
 	IEntity* m_pPlayerComponent = nullptr;
 
 protected:

@@ -68,10 +68,11 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 	break;
 	case EEntityEvent::Update:
 	{
-		const float m_frameTime = event.fParam[0];
+		m_frameTime = event.fParam[0];
 		if (m_pVehicleComponent->GetIsPiloting())
 		{
-			ProcessFlight(m_frameTime);
+			ResetImpulseCounter();
+			FlightComputerManager();
 		}
 	}
 	break;
@@ -82,6 +83,10 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 	break;
 	}
 }
+
+///////////////////////////////////////////////////////////////////////////
+// PARAMETERS AND INPUT INITIALIZATION
+///////////////////////////////////////////////////////////////////////////
 
 void CFlightController::InitializeJerkParams()
 {
@@ -127,6 +132,7 @@ void CFlightController::InitializeAccelParamsVectors()
 		{"yaw", radYawAccel},
 		{"pitch", radPitchAccel}
 	};
+
 }
 
 float CFlightController::DegreesToRadian(float degrees)
@@ -153,7 +159,6 @@ float CFlightController::AxisGetter(const string& axisName)
 Vec3 CFlightController::ImpulseWorldToLocal(const Vec3& localDirection)
 {
 	Quat worldRotation = m_pEntity->GetWorldRotation();
-
 	Vec3 worldDirection = worldRotation * localDirection;
 
 	return worldDirection;
@@ -168,7 +173,10 @@ float CFlightController::ClampInput(float inputValue, bool isMouse) const
 	return CLAMP(inputValue, m_MIN_INPUT_VALUE, m_MAX_INPUT_VALUE);
 }
 
-Vec3 CFlightController::ScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelParams>>& axisAccelParamsList)
+///////////////////////////////////////////////////////////////////////////
+// FLIGHT CALCULATIONS
+///////////////////////////////////////////////////////////////////////////
+Vec3 CFlightController::NewtonianScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelParams>>& axisAccelParamsList)
 {
 	// Initializing vectors for acceleration direction and desired acceleration
 	Vec3 m_accelDirection = Vec3(ZERO);	 // Vector to accumulate the direction of applied accelerations
@@ -239,7 +247,6 @@ Vec3 CFlightController::ScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelP
 			m_localDirection = ImpulseWorldToLocal(m_localDirection); // Convert to local space
 			m_accelDirection += m_localDirection * normalizeInputValue; // Accumulate axis direction with magnitude in local space, scaling by the normalized input
 			m_requestedAccel += m_localDirection * accelParams.AccelAmount * normalizeInputValue; // Accumulate desired acceleration based on thrust amount and input value, combining for multiple axes
-
 		}
 
 		if (m_accelDirection.GetLength() > 1.f) // Normalize accelDirection to mitigate excessive accelerations when combining inputs
@@ -263,11 +270,23 @@ Vec3 CFlightController::ScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelP
 		}
 
 	}
-
 	return scaledAccelDirection;   // Return the scaled acceleration direction vector
 }
 
-Vec3 CFlightController::UpdateAccelerationWithJerk(JerkAccelerationData& accelData, float deltaTime)
+void CFlightController::UpdateAccelerationState(JerkAccelerationData& accelData, const Vec3& targetAccel)
+{
+	accelData.targetJerkAccel = targetAccel;
+	if (targetAccel.IsZero())
+	{
+		accelData.state = AccelState::Decelerating;
+	}
+	else
+	{
+		accelData.state = AccelState::Accelerating;
+	}
+}
+
+Vec3 CFlightController::UpdateAccelerationWithJerk(JerkAccelerationData& accelData, float frameTime)
 {
 	// Calculate the difference between current and target acceleration
 	Vec3 deltaAccel = accelData.targetJerkAccel - accelData.currentJerkAccel;
@@ -283,38 +302,18 @@ Vec3 CFlightController::UpdateAccelerationWithJerk(JerkAccelerationData& accelDa
 		case AccelState::Accelerating:
 		{
 			float scale = powf(fabs(deltaAccel.GetLength()), 0.25f); // Root jerk: Calculates the scaling factor based on the square root of the magnitude of deltaAccel
-			jerk = deltaAccel * scale * accelData.jerk * deltaTime; // Calculate jerk: normalized deltaAccel scaled by scale, jerkRate, and deltaTime
+			jerk = deltaAccel * scale * accelData.jerk * frameTime; // Calculate jerk: normalized deltaAccel scaled by scale, jerkRate, and deltaTime
 			break;
 		}
 		case AccelState::Decelerating:
 		{
-			jerk = deltaAccel * accelData.jerkDecelRate * deltaTime;
+			jerk = deltaAccel * accelData.jerkDecelRate * frameTime;
 			break;
 		}
 	}
 	Vec3 newAccel = accelData.currentJerkAccel + jerk; // Calculate new acceleration by adding jerk to current acceleration
 
 	return newAccel; // Return the updated acceleration
-}
-
-
-/* This function is instrumental for the correct execution of UpdateAccelerationWithJerk()
-*  This function is called by each axis group independently (Pitch / Yaw; Roll; Linear)
-*  Obtains the target acceleration from the JerkAccelerationData struct and updates the struct with the current state.
-*  targetAccel is upated according to the player input (-1; 1). Any value different than zero means the player wants to move.
-*  Simply sets the acceleration state if the target Accel is zero. 
-*/
-void CFlightController::UpdateAccelerationState(JerkAccelerationData& accelData, const Vec3& targetAccel)
-{
-	accelData.targetJerkAccel = targetAccel;
-	if (targetAccel.IsZero())
-	{
-		accelData.state = AccelState::Decelerating;
-	}
-	else
-	{
-		accelData.state = AccelState::Accelerating;
-	}
 }
 
 Vec3 CFlightController::AccelToImpulse(Vec3 desiredAccel, float frameTime)
@@ -326,24 +325,44 @@ Vec3 CFlightController::AccelToImpulse(Vec3 desiredAccel, float frameTime)
 		if (physEntity->GetStatus(&dynamics))
 		{
 			Vec3 impulse = Vec3(ZERO);
-			impulse = desiredAccel * dynamics.mass * frameTime; // Calculates our final impulse based on the entity's mass.
+			impulse = desiredAccel * dynamics.mass * frameTime; // Calculates our final impulse based on the entity's mass
 			m_totalImpulse += impulse.GetLength();
-			CryLog("impulse: %f", impulse.GetLength());
 			return impulse;
 		}
 	}
 	return Vec3(ZERO);
 }
 
-void CFlightController::ResetImpulseCounter()
+bool CFlightController::ApplyImpulse(Vec3 linearImpulse, Vec3 rollImpulse, Vec3 pitchYawImpulse)
 {
-	m_totalImpulse = 0.f;
-}
+	IPhysicalEntity* pPhysicalEntity = GetEntity()->GetPhysics();
+	if (pPhysicalEntity)
+	{
+		// Apply linear impulse
+		pe_action_impulse actionImpulse;
+		actionImpulse.impulse = linearImpulse;
+		pPhysicalEntity->Action(&actionImpulse);
 
+		// Apply angular impulse
+		actionImpulse.impulse = Vec3(ZERO);
+		actionImpulse.angImpulse = rollImpulse + pitchYawImpulse;
+		pPhysicalEntity->Action(&actionImpulse);
+
+		// Update our impulse tracking variables to send over to the server
+		m_linearImpulse = linearImpulse;
+		m_angularImpulse = rollImpulse + pitchYawImpulse;
+	}
+	return true;
+}
 
 float CFlightController::GetImpulse() const
 {
 	return m_totalImpulse;
+}
+
+void CFlightController::ResetImpulseCounter()
+{
+	m_totalImpulse = 0.f;
 }
 
 Vec3 CFlightController::GetVelocity()
@@ -362,45 +381,36 @@ Vec3 CFlightController::GetVelocity()
 
 float CFlightController::GetAcceleration(float frameTime)
 {
+	float acceleration = 0.f;
 	m_shipVelocity.currentVelocity = GetVelocity().GetLength();
 	float deltaV = m_shipVelocity.currentVelocity - m_shipVelocity.previousVelocity;
-
-	if (deltaV < FLT_EPSILON)
-	{
-		return 0.f;
-	}
-
-	float acceleration = deltaV / frameTime;
 	m_shipVelocity.previousVelocity = m_shipVelocity.currentVelocity;
-	if (acceleration < 0.f)
-		acceleration *= -1.f;
 
-   	CryLog("acceleration: %f", acceleration);
-	CryLog("m_shipVelocity.currentVelocity: %f", m_shipVelocity.currentVelocity);
-	CryLog("m_shipVelocity.previousVelocity: %f", m_shipVelocity.previousVelocity);
+	if (fabs(frameTime) > FLT_EPSILON)
+	{
+		acceleration = deltaV / frameTime;
+		if (acceleration < 0)
+		{
+			acceleration = -acceleration;
+		}
+	}
 
 	return acceleration;
 }
 
-/* Puts the flight calculations in order, segmented by axis group, to produce motion.
-*  Starts by resetting the impulse counter, a variable used to track how much total impulse we are generating. 
-*  Step 1. Call ScaleAccel to create a desired acceleration, with a local space direction, scaled by the magnitude of the input.
-*  Step 2. Infuse jerk into the result of step 1
-*  Step 3. Convert the result of step 2 into a force and apply that force. 
-*  Repeat step 1 to 3 for other axis.
-*/
-void CFlightController::ProcessFlight(float frameTime)
-{
-	ResetImpulseCounter();
+///////////////////////////////////////////////////////////////////////////
+// FLIGHT MODES 
+///////////////////////////////////////////////////////////////////////////
 
-	m_linearAccelData.targetJerkAccel = ScaleAccel(m_linearAxisParamsMap); // Scale and set the target acceleration for linear movement
+void CFlightController::NewtonianFM(float frameTime)
+{
+	m_linearAccelData.targetJerkAccel = NewtonianScaleAccel(m_linearAxisParamsMap); // Scale and set the target acceleration for linear movement
 	m_linearAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_linearAccelData, frameTime); 	// Infuse the acceleration value with the current jerk coeficient
 
-	m_rollAccelData.targetJerkAccel = ScaleAccel(m_rollAxisParamsMap);
+	m_rollAccelData.targetJerkAccel = NewtonianScaleAccel(m_rollAxisParamsMap);
 	m_rollAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_rollAccelData, frameTime);
 
-
-	m_pitchYawAccelData.targetJerkAccel = ScaleAccel(m_pitchYawAxisParamsMap);
+	m_pitchYawAccelData.targetJerkAccel = NewtonianScaleAccel(m_pitchYawAxisParamsMap);
 	m_pitchYawAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_pitchYawAccelData, frameTime);
 
 	
@@ -424,6 +434,93 @@ void CFlightController::ProcessFlight(float frameTime)
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 120, 2, m_debugColor, false, "total impulse: %.3f", GetImpulse());
 }
 
+void CFlightController::CoupledFM(float frameTime)
+{
+	// Code Stuff
+}
+
+///////////////////////////////////////////////////////////////////////////
+// FLIGHT ASSISTS
+///////////////////////////////////////////////////////////////////////////
+
+void CFlightController::GravityAssist(float frameTime)
+{
+	// Code stuff
+}
+
+void CFlightController::ComstabAssist(float frameTime)
+{
+	// Code stuff
+}
+
+void CFlightController::FlightComputerManager()
+{
+	KeyState("toggle_fm") ?
+		FlightModeHandler(FlightMode::Coupled) : FlightModeHandler(FlightMode::Newtonian);
+
+	// Probably overdid this thing... but I just love how cool it looks :P 
+	m_AssistsStateMap = {
+		{FlightAssists::Comstab, {KeyState("toggle_comstab")}},
+		{FlightAssists::Gravity, {KeyState("toggle_gravity")}}
+	};
+
+	AssistHandler(m_AssistsStateMap);
+	
+}
+
+
+void CFlightController::FlightModeHandler(FlightMode fm)
+{
+	switch (fm)
+	{
+	case FlightMode::Newtonian:
+	{
+		NewtonianFM(m_frameTime);
+		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 30, 2, m_debugColor, false, "Newtonian");
+	}
+	break;
+	case FlightMode::Coupled:
+	{
+		CoupledFM(m_frameTime);
+		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 30, 2, m_debugColor, false, "Coupled");
+	}
+	break;
+	}
+}
+
+void CFlightController::AssistHandler(std::unordered_map<FlightAssists, AssistActState > m_AssistsStateMap)
+{
+	for (const auto& pair : m_AssistsStateMap)	// Iterating over the list of axis and their input values
+	{
+		FlightAssists assist = pair.first;
+		const AssistActState& state = pair.second;
+
+		if (assist == FlightAssists::Comstab)
+		{
+			if (state.keyState)
+			{
+				ComstabAssist(m_frameTime);
+				gEnv->pAuxGeomRenderer->Draw2dLabel(50, 150, 2, m_debugColor, false, "Comstab: ON");
+			}
+			else 
+				gEnv->pAuxGeomRenderer->Draw2dLabel(50, 150, 2, m_debugColor, false, "Comstab: OFF");
+		}
+		else if (assist == FlightAssists::Gravity)
+		{
+			if (state.keyState)
+			{
+				GravityAssist(m_frameTime);
+				gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "GravityAssist: ON");
+			}
+			else
+				gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "GravityAssist: OFF");
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////
+// NETWORKING
+///////////////////////////////////////////////////////////////////////////
 bool CFlightController::ServerRequestImpulse(SerializeImpulseData&& data, INetChannel*)
 {
 	IPhysicalEntity* pPhysicalEntity = GetEntity()->GetPhysics();
@@ -448,28 +545,6 @@ bool CFlightController::ClientRequestImpulse(SerializeImpulseData&& data, INetCh
 	{
 		ApplyImpulse(data.linearImpulse, data.rollImpulse, data.pitchYawImpulse);
 		NetMarkAspectsDirty(kVehicleAspect);
-	}
-	return true;
-}
-
-bool CFlightController::ApplyImpulse(Vec3 linearImpulse, Vec3 rollImpulse, Vec3 pitchYawImpulse)
-{
-	IPhysicalEntity* pPhysicalEntity = GetEntity()->GetPhysics();
-	if (pPhysicalEntity)
-	{
-		// Apply linear impulse
-		pe_action_impulse actionImpulse;
-		actionImpulse.impulse = linearImpulse;
-		pPhysicalEntity->Action(&actionImpulse);
-
-		// Apply angular impulse
-		actionImpulse.impulse = Vec3(ZERO);
-		actionImpulse.angImpulse = rollImpulse + pitchYawImpulse;
-		pPhysicalEntity->Action(&actionImpulse);
-
-		// Update our impulse tracking variables to send over to the server
-		m_linearImpulse = linearImpulse;
-		m_angularImpulse = rollImpulse + pitchYawImpulse;
 	}
 	return true;
 }

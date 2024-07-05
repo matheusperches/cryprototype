@@ -82,7 +82,7 @@ bool CVehicleComponent::GetIsPiloting()
 	return false;
 }
 
-IEntity* CVehicleComponent::GetPlayerComponent()
+IEntity* CVehicleComponent::GetPlayerComponent() const
 {
 	return m_pPlayerComponent;
 }
