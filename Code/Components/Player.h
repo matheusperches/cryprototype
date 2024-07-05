@@ -7,6 +7,10 @@
 #include <ICryMannequin.h>
 #include <CryMath/Cry_Camera.h>
 
+#include <Components/FlightModifiers.h>
+
+
+class CVehicleComponent;
 
 namespace Cry::DefaultComponents
 {
@@ -202,7 +206,7 @@ public:
 	void OnReadyForGameplayOnServer();
 	bool IsLocalClient() const { return (m_pEntity->GetFlags() & ENTITY_FLAG_LOCAL_PLAYER) != 0; }
 
-	int IsKeyPressed(const string& actionName);
+	FlightModifierBitFlag GetFlightModifierState() const;
 	float GetAxisValue(const string& axisName);
 
 protected: 
@@ -265,13 +269,20 @@ private:
 	Vec2 m_movementDelta = ZERO;
 	Vec2 m_mouseDeltaRotation = ZERO;
 
+	// Get CVar value
+	bool GetIsPiloting();
+
+	// Raycasting for interactions
+	IEntity* RayCast(Vec3 origin, Quat dir, IEntity& pSkipEntity) const;
+
 	// Ship variables
 	Vec3 m_position = ZERO;
 	Quat m_rotation = ZERO;
 
-	//Input maps
+	//Input maps flags
 	VectorMap<string, float> m_axisValues;
-	VectorMap<string, int> m_keyStates;
+	//VectorMap<string, int> m_keyStates;
+	FlightModifierBitFlag m_FlightModifierFlag;
 
 	const float m_cameraPitchMax = 1.5f; 
 	const float m_cameraPitchMin = -1.2f;
@@ -296,10 +307,4 @@ private:
 	MovingAverage<float, 10> m_averagedHorizontalAngularVelocity;
 
 	const float m_rotationSpeed = 0.002f;
-
-	// Get CVar value
-	bool GetIsPiloting();
-
-	// Raycasting for interactions
-	IEntity* RayCast(Vec3 origin, Quat dir, IEntity& pSkipEntity) const;
 };

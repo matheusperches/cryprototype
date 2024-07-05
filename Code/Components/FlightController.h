@@ -1,5 +1,7 @@
 // Copyright 2017-2021 Crytek GmbH / Crytek Group. All rights reserved.
 #pragma once
+#include <Components/FlightModifiers.h>
+
 
 class CShipThrusterComponent;
 class CVehicleComponent;
@@ -64,6 +66,13 @@ public:
 	// Physical Entity reference
 	IPhysicalEntity* physEntity = nullptr;
 
+	enum class EAccelState
+	{
+		Idle,
+		Accelerating,
+		Decelerating
+	};
+
 protected:
 private:
 
@@ -107,31 +116,6 @@ private:
 		}
 	};
 
-	enum class FlightMode
-	{
-		Coupled,
-		Newtonian,
-	};
-
-	enum class FlightAssists
-	{
-		Gravity,
-		Comstab, 
-	};
-
-	struct AssistActState {
-		int keyState;
-	};
-
-	std::unordered_map<FlightAssists,AssistActState > m_AssistsStateMap;
-
-	enum class AccelState
-	{
-		Idle,
-		Accelerating,
-		Decelerating
-	};
-
 	// Accel data structures. Jerk values for each are set in Initialize(), retrieved from AddMember listings above.
 	struct JerkAccelerationData
 	{
@@ -139,9 +123,9 @@ private:
 		float jerkDecelRate;
 		Vec3 currentJerkAccel;
 		Vec3 targetJerkAccel;
-		AccelState state;
+		EAccelState state;
 
-		JerkAccelerationData() : jerk(0.f), jerkDecelRate(0.f), currentJerkAccel(0.f), targetJerkAccel(0.f), state(AccelState::Idle) {}
+		JerkAccelerationData() : jerk(0.f), jerkDecelRate(0.f), currentJerkAccel(0.f), targetJerkAccel(0.f), state(EAccelState::Idle) {}
 	};
 
 	JerkAccelerationData m_linearAccelData = {};
@@ -177,7 +161,7 @@ private:
 	VelocityData m_shipVelocity = {};
 
 	// Getting the key states from the Vehicle
-	int KeyState(const string& actionName);
+	FlightModifierBitFlag GetFlightModifierState();
 
 	// Getting the Axis values from the Vehicle
 	float AxisGetter(const string& axisName);
@@ -222,14 +206,8 @@ private:
 	*/
 	void ComstabAssist(float frameTime);
 
-	// Signals selection changes to the handlers
-	void FlightComputerManager();
-
 	// toggle between the flight modes on a key press
-	void FlightModeHandler(FlightMode fm);
-
-	// Toggle assists on a key press
-	void AssistHandler(std::unordered_map<FlightAssists, AssistActState > m_AssistsStateMap);
+	void FlightModifierHandler(FlightModifierBitFlag bitFlag);
 
 	// Impulse generator
 	bool ServerRequestImpulse(SerializeImpulseData&& data, INetChannel*);

@@ -13,6 +13,7 @@
 #include <CryNetwork/Rmi.h>
 
 #include <Components/VehicleComponent.h>
+#include <Components/FlightModifiers.h>
 
 // Forward declaration
 #include <DefaultComponents/Cameras/CameraComponent.h>
@@ -268,7 +269,6 @@ void CPlayerComponent::InitializeShipInput()
 					SRmi<RMI_WRAP(&CPlayerComponent::ServerExitVehicle)>::InvokeOnServer(this, NoParams{});
 					// Activate the player's camera
 					GetEntity()->GetComponent<Cry::DefaultComponents::CCameraComponent>()->Activate();
-					CryLog("Leave vehicle triggered!");
 				}
 			}
 		});
@@ -280,39 +280,38 @@ void CPlayerComponent::InitializeShipInput()
 
 			if (activationMode & eAAM_OnPress)
 			{
-				m_keyStates["boost"] = 1;
+				m_FlightModifierFlag.SetFlag(EFlightModifierFlag::Boost);
 			}
 			else if (activationMode & eAAM_OnRelease)
 			{
-				m_keyStates["boost"] = 0;
+				m_FlightModifierFlag.UnsetFlag(EFlightModifierFlag::Boost);
 			}
 		});
 	m_pInputComponent->BindAction("ship", "boost", eAID_KeyboardMouse, eKI_LShift);
 
-	m_pInputComponent->RegisterAction("ship", "toggle_fm", [this](int activationMode, float value) {
-		
-		if (activationMode & eAAM_OnPress && m_keyStates["toggle_fm"] == 0)
-			m_keyStates["toggle_fm"] = 1;
+	m_pInputComponent->RegisterAction("ship", "toggle_flightmode", [this](int activationMode, float value) {
+
+		if (activationMode & eAAM_OnPress && value == 0)
+			m_FlightModifierFlag.ToggleFlag(EFlightModifierFlag::Coupled);
 		else if (activationMode & eAAM_OnPress)
-			m_keyStates["toggle_fm"] = 0;
-		});
-	m_pInputComponent->BindAction("ship", "toggle_fm", eAID_KeyboardMouse, eKI_V);
+			m_FlightModifierFlag.ToggleFlag(EFlightModifierFlag::Newtonian);
+	});
+
+	m_pInputComponent->BindAction("ship", "toggle_flightmode", eAID_KeyboardMouse, eKI_V);
 
 	m_pInputComponent->RegisterAction("ship", "toggle_gravity", [this](int activationMode, float value) {
 
-		if (activationMode & eAAM_OnPress && m_keyStates["toggle_gravity"] == 0)
-			m_keyStates["toggle_gravity"] = 1;
-		else if (activationMode & eAAM_OnPress)
-			m_keyStates["toggle_gravity"] = 0;
-		});
+		if (activationMode & eAAM_OnPress)
+		{
+			m_FlightModifierFlag.ToggleFlag(EFlightModifierFlag::Gravity);
+		}
+	});
 	m_pInputComponent->BindAction("ship", "toggle_gravity", eAID_KeyboardMouse, eKI_G);
 
 	m_pInputComponent->RegisterAction("ship", "toggle_comstab", [this](int activationMode, float value) {
 
-		if (activationMode & eAAM_OnPress && m_keyStates["toggle_comstab"] == 0)
-			m_keyStates["toggle_comstab"] = 1;
-		else if (activationMode & eAAM_OnPress)
-			m_keyStates["toggle_comstab"] = 0;
+		if (activationMode & eAAM_OnPress)
+			m_FlightModifierFlag.ToggleFlag(EFlightModifierFlag::Comstab);
 		});
 	m_pInputComponent->BindAction("ship", "toggle_comstab", eAID_KeyboardMouse, eKI_C);
 }
@@ -347,9 +346,9 @@ void CPlayerComponent::Interact(int activationMode)
 	}
 }
 
-int CPlayerComponent::IsKeyPressed(const string& actionName)
+FlightModifierBitFlag CPlayerComponent::GetFlightModifierState() const
 {
-	return m_keyStates[actionName];
+	return m_FlightModifierFlag;
 }
 
 float CPlayerComponent::GetAxisValue(const string& axisName)
@@ -395,7 +394,6 @@ void CPlayerComponent::UpdatePlayerMovementRequest(float frameTime)
 	{
 		Interact(m_interactActivationMode);
 	}
-
 	m_pCharacterController->AddVelocity(GetEntity()->GetWorldRotation() * velocity);
 }
 
@@ -541,7 +539,10 @@ IEntity* CPlayerComponent::RayCast(Vec3 origin, Quat dir, IEntity& pSkipSelf) co
 
 bool CPlayerComponent::GetIsPiloting()
 {
-	return m_pEntity->GetParent() ? true : false;
+	if (!m_pEntity || !m_pEntity->GetParent())
+		return false;
+
+	return m_pEntity->GetParent()->GetComponent<CVehicleComponent>() ? true : false;
 }
 
 void CPlayerComponent::OnReadyForGameplayOnServer()

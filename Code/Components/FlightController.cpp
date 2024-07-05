@@ -3,7 +3,6 @@
 #include "StdAfx.h"
 #include "FlightController.h"
 #include "ShipThrusterComponent.h"
-#include "ThrusterParams.h"
 
 #include <CryRenderer/IRenderAuxGeom.h>
 #include <CrySchematyc/Env/Elements/EnvComponent.h>
@@ -72,7 +71,7 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 		if (m_pVehicleComponent->GetIsPiloting())
 		{
 			ResetImpulseCounter();
-			FlightComputerManager();
+			FlightModifierHandler(GetFlightModifierState());
 		}
 	}
 	break;
@@ -140,12 +139,9 @@ float CFlightController::DegreesToRadian(float degrees)
 	return degrees * (gf_PI / 180.f);
 }
 
-int CFlightController::KeyState(const string& actionName)
+FlightModifierBitFlag CFlightController::GetFlightModifierState()
 {
-	if (m_pVehicleComponent->m_pPlayerComponent)
-		return m_pVehicleComponent->m_pPlayerComponent->GetComponent<CPlayerComponent>()->IsKeyPressed(actionName);
-	else
-		return 0;
+	return m_pVehicleComponent->m_pPlayerComponent->GetComponent<CPlayerComponent>()->GetFlightModifierState();
 }
 
 float CFlightController::AxisGetter(const string& axisName)
@@ -268,7 +264,6 @@ Vec3 CFlightController::NewtonianScaleAccel(const VectorMap<AxisType, DynArray<A
 		{
 			UpdateAccelerationState(m_pitchYawAccelData, scaledAccelDirection);
 		}
-
 	}
 	return scaledAccelDirection;   // Return the scaled acceleration direction vector
 }
@@ -278,11 +273,11 @@ void CFlightController::UpdateAccelerationState(JerkAccelerationData& accelData,
 	accelData.targetJerkAccel = targetAccel;
 	if (targetAccel.IsZero())
 	{
-		accelData.state = AccelState::Decelerating;
+		accelData.state = EAccelState::Decelerating;
 	}
 	else
 	{
-		accelData.state = AccelState::Accelerating;
+		accelData.state = EAccelState::Accelerating;
 	}
 }
 
@@ -294,18 +289,18 @@ Vec3 CFlightController::UpdateAccelerationWithJerk(JerkAccelerationData& accelDa
 
 	switch (accelData.state)
 	{
-		case AccelState::Idle:
+		case EAccelState::Idle:
 		{
 			jerk = Vec3(ZERO);
 			break;
 		}
-		case AccelState::Accelerating:
+		case EAccelState::Accelerating:
 		{
 			float scale = powf(fabs(deltaAccel.GetLength()), 0.25f); // Root jerk: Calculates the scaling factor based on the square root of the magnitude of deltaAccel
 			jerk = deltaAccel * scale * accelData.jerk * frameTime; // Calculate jerk: normalized deltaAccel scaled by scale, jerkRate, and deltaTime
 			break;
 		}
-		case AccelState::Decelerating:
+		case EAccelState::Decelerating:
 		{
 			jerk = deltaAccel * accelData.jerkDecelRate * frameTime;
 			break;
@@ -453,69 +448,36 @@ void CFlightController::ComstabAssist(float frameTime)
 	// Code stuff
 }
 
-void CFlightController::FlightComputerManager()
+void CFlightController::FlightModifierHandler(FlightModifierBitFlag bitFlag)
 {
-	KeyState("toggle_fm") ?
-		FlightModeHandler(FlightMode::Coupled) : FlightModeHandler(FlightMode::Newtonian);
-
-	// Probably overdid this thing... but I just love how cool it looks :P 
-	m_AssistsStateMap = {
-		{FlightAssists::Comstab, {KeyState("toggle_comstab")}},
-		{FlightAssists::Gravity, {KeyState("toggle_gravity")}}
-	};
-
-	AssistHandler(m_AssistsStateMap);
-	
-}
-
-
-void CFlightController::FlightModeHandler(FlightMode fm)
-{
-	switch (fm)
-	{
-	case FlightMode::Newtonian:
+	if (bitFlag.HasFlag(EFlightModifierFlag::Newtonian))
 	{
 		NewtonianFM(m_frameTime);
 		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 30, 2, m_debugColor, false, "Newtonian");
 	}
-	break;
-	case FlightMode::Coupled:
+	if (bitFlag.HasFlag(EFlightModifierFlag::Coupled))
 	{
 		CoupledFM(m_frameTime);
 		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 30, 2, m_debugColor, false, "Coupled");
 	}
-	break;
-	}
-}
-
-void CFlightController::AssistHandler(std::unordered_map<FlightAssists, AssistActState > m_AssistsStateMap)
-{
-	for (const auto& pair : m_AssistsStateMap)	// Iterating over the list of axis and their input values
+	if (bitFlag.HasFlag(EFlightModifierFlag::Boost))
 	{
-		FlightAssists assist = pair.first;
-		const AssistActState& state = pair.second;
-
-		if (assist == FlightAssists::Comstab)
-		{
-			if (state.keyState)
-			{
-				ComstabAssist(m_frameTime);
-				gEnv->pAuxGeomRenderer->Draw2dLabel(50, 150, 2, m_debugColor, false, "Comstab: ON");
-			}
-			else 
-				gEnv->pAuxGeomRenderer->Draw2dLabel(50, 150, 2, m_debugColor, false, "Comstab: OFF");
-		}
-		else if (assist == FlightAssists::Gravity)
-		{
-			if (state.keyState)
-			{
-				GravityAssist(m_frameTime);
-				gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "GravityAssist: ON");
-			}
-			else
-				gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "GravityAssist: OFF");
-		}
+		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 150, 2, m_debugColor, false, "Boost: ON");
 	}
+	else 
+		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 150, 2, m_debugColor, false, "Boost: OFF");
+	if (bitFlag.HasFlag(EFlightModifierFlag::Gravity))
+	{
+		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "Gravity assist: ON");
+	}
+	else
+		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "Gravity assist: OFF");
+	if (bitFlag.HasFlag(EFlightModifierFlag::Comstab))
+	{
+		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 210, 2, m_debugColor, false, "Comstab: ON");
+	}
+	else
+		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 210, 2, m_debugColor, false, "Comstab: OFF");
 }
 
 ///////////////////////////////////////////////////////////////////////////

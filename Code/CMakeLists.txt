@@ -37,7 +37,7 @@ add_sources("Components_uber.cpp"
 		"Components/PlayerManager.h"
 		"Components/ShipThrusterComponent.h"
 		"Components/SpawnPoint.h"
-		"Components/ThrusterParams.h"
+		"Components/FlightModifiers.h"
 		"Components/VehicleComponent.h"
 )
 
