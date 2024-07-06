@@ -260,12 +260,12 @@ private:
 	bool ClientRequestImpulse(SerializeImpulseData&& data, INetChannel*);
 
 	// Converts the accel target (after jerk) which contains both direction and magnitude, into thrust values.
-	Vec3 AccelToImpulse(Vec3 desiredAccel, float frameTime, bool countTotal = true);
+	Vec3 AccelToImpulse(Vec3 linearAccel, Vec3 rollAccel, Vec3 pitchYawAccel, float frameTime, bool mathOnly = false);
 	float GetImpulse() const;
 	void ResetImpulseCounter();
 
 	// Applies an impulse, with optional parameters. roll and pitch / yaw (angular axes) will be combined.
-	bool ApplyImpulse();
+	void ApplyImpulse(Vec3 linearImpulse, Vec3 angImpulse, bool countTotal = true);
 
 	// Calculate current vel / accel
 	Vec3 GetVelocity();

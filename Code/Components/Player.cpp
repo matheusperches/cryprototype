@@ -406,7 +406,8 @@ void CPlayerComponent::UpdateCamera(float frameTime)
 	const float rotationLimitsMinPitch = -0.84f;
 	const float rotationLimitsMaxPitch = 1.5f;
 
-	// TODO: Perform soft clamp here instead of hard wall, should reduce rot speed in this direction when close to limit.
+	// TODO: Perform soft 
+	// here instead of hard wall, should reduce rot speed in this direction when close to limit.
 	ypr.y = CLAMP(ypr.y + m_mouseDeltaRotation.y * m_rotationSpeed, rotationLimitsMinPitch, rotationLimitsMaxPitch);
 	// Skip roll
 	ypr.z = 0;

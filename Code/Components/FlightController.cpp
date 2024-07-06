@@ -130,17 +130,6 @@ void CFlightController::InitializeAccelParamsVectors()
 		{"yaw", radYawAccel, Vec3(0.f, 0.f, -1.f)},
 		{"pitch", radPitchAccel, Vec3(-1.f, 0.f, 0.f)}
 	};
-
-	// Setting the maximum impulse we can generate per axis.
-	/*
-	m_axisImpulseTracker.maxForward = m_fwdAccel;
-	m_axisImpulseTracker.maxBackward = m_bwdAccel;
-	m_axisImpulseTracker.maxLeftRight = m_leftRightAccel;
-	m_axisImpulseTracker.maxUpDown = m_upDownAccel;
-	m_axisImpulseTracker.maxRoll = m_rollAccel;
-	m_axisImpulseTracker.maxPitch = m_maxPitch;
-	m_axisImpulseTracker.maxYaw = m_maxYaw;
-	*/
 }
 
 float CFlightController::DegreesToRadian(float degrees)
@@ -282,48 +271,60 @@ Vec3 CFlightController::UpdateAccelerationWithJerk(JerkAccelerationData& accelDa
 	return newAccel; // Return the updated acceleration
 }
 
-Vec3 CFlightController::AccelToImpulse(Vec3 desiredAccel, float frameTime, bool countTotal)
+Vec3 CFlightController::AccelToImpulse(Vec3 linearAccel, Vec3 rollAccel, Vec3 pitchYawAccel, float frameTime, bool mathOnly)
 {
 	if (physEntity)
 	{
+		m_axisImpulseTracker.linearAxisCurrentThrust = linearAccel;
+		m_axisImpulseTracker.rollAxisCurrentThrust = rollAccel;
+		m_axisImpulseTracker.pitchYawCurrentThrust = pitchYawAccel;
+
 		// Retrieving the dynamics of our entity
 		pe_status_dynamics dynamics;
 		if (physEntity->GetStatus(&dynamics))
 		{
-			Vec3 impulse = Vec3(ZERO);
-			impulse = desiredAccel * dynamics.mass * frameTime; // Calculates our final impulse based on the entity's mass
-			if (countTotal)
-				m_totalImpulse += impulse.GetLength();
-			return impulse;
+			Vec3 linearImpulse = Vec3(ZERO);
+			Vec3 angImpulse = Vec3(ZERO);
+			linearImpulse = linearAccel * dynamics.mass * frameTime; // Calculates our final impulse independent from the entity's mass
+			angImpulse = (rollAccel + pitchYawAccel) * dynamics.mass * frameTime;
+			if (!mathOnly)
+				ApplyImpulse(linearImpulse, angImpulse);
+			return linearImpulse + angImpulse;
 		}
 	}
 	return Vec3(ZERO);
 }
 
-bool CFlightController::ApplyImpulse()
+void CFlightController::ApplyImpulse(Vec3 linearImpulse, Vec3 angImpulse, bool countTotal)
 {
-	CryLog("CurrentLinearImpulse: x= %f, y=%f, z=%f", m_axisImpulseTracker.linearAxisCurrentThrust.x, m_axisImpulseTracker.linearAxisCurrentThrust.y, m_axisImpulseTracker.linearAxisCurrentThrust.z);
-	//CryLog("MaxLinearImpulse Positive: x= %f, y=%f, z=%f", m_axisImpulseTracker.linearAxisMaxThrustPositive.x, m_axisImpulseTracker.linearAxisMaxThrustPositive.y, m_axisImpulseTracker.linearAxisMaxThrustPositive.z);
-
 
 	IPhysicalEntity* pPhysicalEntity = GetEntity()->GetPhysics();
 	if (pPhysicalEntity)
 	{
+		Vec3 impulse = Vec3(ZERO);
+
 		// Apply linear impulse
 		pe_action_impulse actionImpulse;
-		actionImpulse.impulse = m_axisImpulseTracker.linearAxisCurrentThrust;
+		actionImpulse.impulse = linearImpulse;
 		pPhysicalEntity->Action(&actionImpulse);
 
 		// Apply angular impulse
-		actionImpulse.impulse = Vec3(ZERO);
-		actionImpulse.angImpulse = m_axisImpulseTracker.rollAxisCurrentThrust + m_axisImpulseTracker.pitchYawCurrentThrust;
+		actionImpulse.angImpulse = angImpulse;
 		pPhysicalEntity->Action(&actionImpulse);
 
 		// Update our impulse tracking variables to send over to the server
 		m_linearImpulse = m_axisImpulseTracker.linearAxisCurrentThrust;
 		m_angularImpulse = actionImpulse.angImpulse;
+
+		if (countTotal)
+		{
+			impulse += actionImpulse.impulse + actionImpulse.angImpulse;
+			m_totalImpulse += impulse.GetLength();
+		}
 	}
-	return true;
+
+	CryLog("CurrentLinearImpulse: x= %f, y=%f, z=%f", m_axisImpulseTracker.linearAxisCurrentThrust.x, m_axisImpulseTracker.linearAxisCurrentThrust.y, m_axisImpulseTracker.linearAxisCurrentThrust.z);
+
 }
 
 float CFlightController::GetImpulse() const
@@ -335,10 +336,29 @@ void CFlightController::ResetImpulseCounter()
 {
 	m_totalImpulse = 0.f;
 
-	m_axisImpulseTracker.linearAxisMaxThrustPositive = AccelToImpulse(Vec3(m_leftRightAccel, m_fwdAccel, m_upDownAccel), m_frameTime, false);
-	m_axisImpulseTracker.linearAxisMaxThrustNegative = AccelToImpulse(Vec3(m_leftRightAccel, m_bwdAccel, m_upDownAccel), m_frameTime, false);
-	m_axisImpulseTracker.rollAxisMaxThrust = AccelToImpulse(Vec3(0.f, DegreesToRadian(m_rollAccel), 0.f), m_frameTime, false);
-	m_axisImpulseTracker.pitchYawMaxThrust = AccelToImpulse(Vec3(DegreesToRadian(m_pitchAccel), 0.f, DegreesToRadian(m_yawAccel)), m_frameTime, false);
+	m_axisImpulseTracker.linearAxisMaxThrustPositive = AccelToImpulse(
+		Vec3(m_leftRightAccel, m_fwdAccel, m_upDownAccel), 
+		Vec3(ZERO), 
+		Vec3(ZERO), 
+		m_frameTime, 
+		true);
+	m_axisImpulseTracker.linearAxisMaxThrustNegative = AccelToImpulse(
+		Vec3(m_leftRightAccel, m_bwdAccel, m_upDownAccel),
+		Vec3(ZERO), 
+		Vec3(ZERO), 
+		m_frameTime, true);
+	m_axisImpulseTracker.rollAxisMaxThrust = AccelToImpulse(
+		Vec3(ZERO), 
+		Vec3(0.f, DegreesToRadian(m_rollAccel), 0.f), 
+		Vec3(ZERO), 
+		m_frameTime, 
+		true);
+	m_axisImpulseTracker.pitchYawMaxThrust = AccelToImpulse(
+		Vec3(ZERO), 
+		Vec3(ZERO), 
+		Vec3(DegreesToRadian(m_pitchAccel), 0.f, DegreesToRadian(m_yawAccel)), 
+		m_frameTime, 
+		true);
 
 }
 
@@ -386,20 +406,13 @@ void CFlightController::DirectInput(float frameTime)
 	m_linearAccelData.targetJerkAccel = ScaleAccel(m_linearAxisParamsMap); // Scale and set the target acceleration for linear movement
 	m_linearAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_linearAccelData, frameTime); 	// Infuse the acceleration value with the current jerk coeficient
 
-	m_axisImpulseTracker.linearAxisCurrentThrust = AccelToImpulse(m_linearAccelData.currentJerkAccel, frameTime);
-
 	m_rollAccelData.targetJerkAccel = ScaleAccel(m_rollAxisParamsMap);
 	m_rollAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_rollAccelData, frameTime);
-
-	m_axisImpulseTracker.rollAxisCurrentThrust = AccelToImpulse(m_rollAccelData.currentJerkAccel, frameTime);
 
 	m_pitchYawAccelData.targetJerkAccel = ScaleAccel(m_pitchYawAxisParamsMap);
 	m_pitchYawAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_pitchYawAccelData, frameTime);
 
-	m_axisImpulseTracker.pitchYawCurrentThrust = AccelToImpulse(m_pitchYawAccelData.currentJerkAccel, frameTime);
-
-
-	ApplyImpulse();
+	AccelToImpulse(m_linearAccelData.currentJerkAccel, m_rollAccelData.currentJerkAccel, m_pitchYawAccelData.currentJerkAccel, frameTime, false);
 
 	
 	// Send movement data to the server if we are connected, apply locally if not
@@ -440,41 +453,46 @@ void CFlightController::GravityAssist(float frameTime)
 	if (m_pEntity)
 	{
 		pe_status_dynamics dynamics;
+
 		if (m_pEntity->GetPhysicalEntity()->GetStatus(&dynamics))
 		{
 			// Get gravity vector
 			Vec3 gravity = gEnv->pPhysicalWorld->GetPhysVars()->gravity;
-			Vec3 normalizedGravity = gravity.Normalize();
-
-			for (const auto& axisAccelParamsPair : m_linearAxisParamsMap)	// Iterating over the list of axis and their input values
+			Vec3 antiGravityForce = -gravity * dynamics.mass;
+			Vec3 totalScaledAntiGravityForce = Vec3(ZERO);
+			pe_action_impulse impulseAction;
+			for (const auto& axisAccelParamsPair : m_linearAxisParamsMap) // Iterating over each axis within the linear set.
 			{
-				AxisType axisType = axisAccelParamsPair.first;
 				const DynArray<AxisAccelParams>& axisParamsArray = axisAccelParamsPair.second;
-
+				
 				for (const auto& accelParams : axisParamsArray)	// Iterate over the DynArray<AxisAccelParams> for the current AxisType
 				{
-					if (axisType == AxisType::Linear)
+					Vec3 localDirection = WorldToLocal(accelParams.localDirection);
+
+					localDirection.Normalize(); // Normalize to have a range of -1 to 1, which indicates their alignment (1 = perfect / -1 = anti) 
+					
+					float alignment = localDirection.Dot(gravity.GetNormalized()); // Get the alignment between localDirection and gravity, using this to scale the thrust amount
+
+					if (alignment > ZERO)
 					{
-						Vec3 localDirection = WorldToLocal(accelParams.localDirection);
-
-						// Normalize vectors to have a range of -1 to 1, which indicates their alignment (1 = perfect / -1 = anti) 
-						localDirection.Normalize();
-
-						// alignment contains the cosine of the angle between localDirection and gravity, we can use this to scale the thrust amount
-						float alignment = fabsf(localDirection.Dot(normalizedGravity));
-
-						Vec3 antiGravityForce = dynamics.mass * alignment * normalizedGravity * frameTime;
-
-						m_axisImpulseTracker.linearAxisCurrentThrust += antiGravityForce;
-
-						CryLog("axisName: %s | alignment: %f", accelParams.axisName, alignment);
-						CryLog("antiGravityForce: x= %f, y=%f, z=%f", antiGravityForce.x, antiGravityForce.y, antiGravityForce.z);
+						Vec3 scaledAntiGravityForce = antiGravityForce * alignment;
+						totalScaledAntiGravityForce += scaledAntiGravityForce; // accumulate the gravity scale per axis
 					}
 				}
 			}
+
+			// Normalize the total accumulated anti-gravity force to prevent excessive acceleration in non perfect alignments
+			if (totalScaledAntiGravityForce.GetLength() > antiGravityForce.GetLength())
+			{
+				totalScaledAntiGravityForce.Normalize();
+				totalScaledAntiGravityForce *= antiGravityForce.GetLength();
+			}
+
+			// Apply the total anti-gravity force to the entity
+			impulseAction.impulse = totalScaledAntiGravityForce * frameTime;
+			m_pEntity->GetPhysicalEntity()->Action(&impulseAction);
 		}
 	}
-
 }
 
 void CFlightController::ComstabAssist(float frameTime)
