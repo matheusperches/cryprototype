@@ -143,6 +143,7 @@ private:
 	struct AxisAccelParams {
 		string axisName;
 		float AccelAmount;
+		Vec3 localDirection;
 	};
 
 	// Vector maps to organize our axis types, names and input data together 
@@ -160,6 +161,20 @@ private:
 
 	VelocityData m_shipVelocity = {};
 
+	// Variables to track how much thrust we are generating and prevent exceeding that limit.
+	struct TotalDirectionImpulse
+	{
+		float forward = 0.f;
+		float backward = 0.f;
+		float leftRight = 0.f;
+		float upDown = 0.f;
+		float roll = 0.f;
+		float pitch = 0.0f;
+		float yaw = 0.0f;
+	};
+
+	TotalDirectionImpulse m_totalDirectionImpulse; 
+
 	// Getting the key states from the Vehicle
 	FlightModifierBitFlag GetFlightModifierState();
 
@@ -170,7 +185,7 @@ private:
 	float DegreesToRadian(float degrees);
 
 	// Convert world coordinates to local coordinates
-	Vec3 ImpulseWorldToLocal(const Vec3& localDirection);
+	Vec3 WorldToLocal(const Vec3& localDirection);
 
 	// Clamping the input between -1 and 1, as well as implementing mouse sensitivity scale for the newtonian mode.
 	float ClampInput(float inputValue, bool isMouse = false) const;
@@ -187,14 +202,14 @@ private:
 	Vec3 UpdateAccelerationWithJerk(JerkAccelerationData& accelData, float frameTime);
 
 	// Scales the acceleration asked, according to input magnitude, taking into account the inputs pressed
-	Vec3 NewtonianScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelParams>>& axisAccelParamsMap);
+	Vec3 ScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelParams>>& axisAccelParamsMap);
 
-	/* Newtonian Flight Mode: Acceleration requests on an input scale.
-	*  Step 1. For each axis group, call NewtonianScaleAccel to create a desired acceleration, with a local space direction, scaled by the magnitude of the input.
-	*  Step 2. Infuse jerk into the result of step 1
-	*  Step 3. Convert the result of step 2 into a force and apply that force.
+	/* Direct input mode: raw acceleration requests on an input scale
+	*  Step 1. For each axis group, call ScaleAccel to create a scaled direction vector by input in local space
+	*  Step 2. Jerk gets infused
+	*  Step 3. Directly convert the result of step 2 into a force and apply it
 	*/
-	void NewtonianFM(float frameTime);
+	void DirectInput(float frameTime);
 
 	void CoupledFM(float frameTime);
 
@@ -214,11 +229,14 @@ private:
 
 	bool ClientRequestImpulse(SerializeImpulseData&& data, INetChannel*);
 
+	void ImpulseTracker(Vec3 desiredAccel, const VectorMap<AxisType, DynArray<AxisAccelParams>>& axisAccelParamsList);
+
 	// Converts the accel target (after jerk) which contains both direction and magnitude, into thrust values.
-	Vec3 AccelToImpulse(Vec3 desiredAccel, float frameTime);
+	Vec3 AccelToImpulse(Vec3 desiredAccel, const VectorMap<AxisType, DynArray<AxisAccelParams>>& axisAccelParamsList, float frameTime);
 	float GetImpulse() const;
 	void ResetImpulseCounter();
 
+	// Applies an impulse, with optional parameters. roll and pitch / yaw (angular axes) will be combined.
 	bool ApplyImpulse(Vec3 linearImpulse = ZERO, Vec3 rollImpulse = ZERO, Vec3 pitchYawImpulse = ZERO);
 
 	// Calculate current vel / accel

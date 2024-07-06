@@ -5,7 +5,6 @@
 // Define the Flight Modifier Flags enum
 enum class EFlightModifierFlag : uint8_t
 {
-    Newtonian = 1 << 0,
     Coupled = 1 << 1,
     Boost = 1 << 2,
     Gravity = 1 << 3,

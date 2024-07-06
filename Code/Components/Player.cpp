@@ -291,10 +291,8 @@ void CPlayerComponent::InitializeShipInput()
 
 	m_pInputComponent->RegisterAction("ship", "toggle_flightmode", [this](int activationMode, float value) {
 
-		if (activationMode & eAAM_OnPress && value == 0)
+		if (activationMode & eAAM_OnPress)
 			m_FlightModifierFlag.ToggleFlag(EFlightModifierFlag::Coupled);
-		else if (activationMode & eAAM_OnPress)
-			m_FlightModifierFlag.ToggleFlag(EFlightModifierFlag::Newtonian);
 	});
 
 	m_pInputComponent->BindAction("ship", "toggle_flightmode", eAID_KeyboardMouse, eKI_V);
