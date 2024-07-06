@@ -57,9 +57,9 @@ void CVehicleComponent::ProcessEvent(const SEntityEvent& event)
 		m_hasGameStarted = true;
 
 		m_pFlightController->ResetJerkParams();
-		m_pFlightController->InitializeAccelParamsVectors();
 		m_pFlightController->InitializeJerkParams();
 		m_pFlightController->physEntity = m_pEntity->GetPhysicalEntity();
+		m_pFlightController->InitializeAccelParamsVectors();
 	}
 	break;
 	}
