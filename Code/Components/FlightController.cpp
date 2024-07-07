@@ -275,9 +275,6 @@ Vec3 CFlightController::AccelToImpulse(Vec3 linearAccel, Vec3 rollAccel, Vec3 pi
 {
 	if (physEntity)
 	{
-		m_axisImpulseTracker.linearAxisCurrentThrust = linearAccel;
-		m_axisImpulseTracker.rollAxisCurrentThrust = rollAccel;
-		m_axisImpulseTracker.pitchYawCurrentThrust = pitchYawAccel;
 
 		// Retrieving the dynamics of our entity
 		pe_status_dynamics dynamics;
@@ -285,8 +282,8 @@ Vec3 CFlightController::AccelToImpulse(Vec3 linearAccel, Vec3 rollAccel, Vec3 pi
 		{
 			Vec3 linearImpulse = Vec3(ZERO);
 			Vec3 angImpulse = Vec3(ZERO);
-			linearImpulse = m_axisImpulseTracker.linearAxisCurrentThrust * dynamics.mass * frameTime; // Calculates our final impulse independent from the entity's mass
-			angImpulse = (m_axisImpulseTracker.rollAxisCurrentThrust + m_axisImpulseTracker.pitchYawCurrentThrust) * dynamics.mass * frameTime;
+			linearImpulse = linearAccel * dynamics.mass * frameTime; // Calculates our final impulse independent from the entity's mass
+			angImpulse = (rollAccel + pitchYawAccel) * dynamics.mass * frameTime;
 			if (!mathOnly)
 				ApplyImpulse(linearImpulse, angImpulse);
 			return linearImpulse + angImpulse;
@@ -312,7 +309,7 @@ void CFlightController::ApplyImpulse(Vec3 linearImpulse, Vec3 angImpulse, bool c
 		pPhysicalEntity->Action(&actionImpulse);
 
 		// Update our impulse tracking variables to send over to the server
-		m_linearImpulse = m_axisImpulseTracker.linearAxisCurrentThrust;
+		m_linearImpulse = linearImpulse;
 		m_angularImpulse = actionImpulse.angImpulse;
 
 		if (countTotal)
@@ -331,34 +328,6 @@ float CFlightController::GetImpulse() const
 void CFlightController::ResetImpulseCounter()
 {
 	m_totalImpulse = 0.f;
-
-
-	// To be removed
-
-	m_axisImpulseTracker.linearAxisMaxThrustPositive = AccelToImpulse(
-		Vec3(m_leftRightAccel, m_fwdAccel, m_upDownAccel), 
-		Vec3(ZERO), 
-		Vec3(ZERO), 
-		m_frameTime, 
-		true);
-	m_axisImpulseTracker.linearAxisMaxThrustNegative = AccelToImpulse(
-		Vec3(m_leftRightAccel, m_bwdAccel, m_upDownAccel),
-		Vec3(ZERO), 
-		Vec3(ZERO), 
-		m_frameTime, true);
-	m_axisImpulseTracker.rollAxisMaxThrust = AccelToImpulse(
-		Vec3(ZERO), 
-		Vec3(0.f, DegreesToRadian(m_rollAccel), 0.f), 
-		Vec3(ZERO), 
-		m_frameTime, 
-		true);
-	m_axisImpulseTracker.pitchYawMaxThrust = AccelToImpulse(
-		Vec3(ZERO), 
-		Vec3(ZERO), 
-		Vec3(DegreesToRadian(m_pitchAccel), 0.f, DegreesToRadian(m_yawAccel)), 
-		m_frameTime, 
-		true);
-
 }
 
 Vec3 CFlightController::GetVelocity()
@@ -568,7 +537,6 @@ bool CFlightController::ClientRequestImpulse(SerializeImpulseData&& data, INetCh
 	IPhysicalEntity* pPhysicalEntity = GetEntity()->GetPhysics();
 	if (pPhysicalEntity)
 	{
-		//ApplyImpulse(data.linearImpulse, data.rollImpulse, data.pitchYawImpulse);
 		NetMarkAspectsDirty(kVehicleAspect);
 	}
 	return true;

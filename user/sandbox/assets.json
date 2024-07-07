@@ -5811,7 +5811,7 @@
 			"type": "Level",
 			"guid": "984fcd77-e594-2b34-fbf5-414a47e0d684",
 			"name": "example",
-			"timestamp": 1720316481,
+			"timestamp": 1720394127,
 			"files": [ "Levels/example/example.level" ],
 			"workFiles": [ ],
 			"source": "",
@@ -6120,6 +6120,7 @@
 					"usageCount": 0
 				},
 				{ "path": "libs/environmentpresets/example.env", "usageCount": 1 },
+				{ "path": "materials/bullet.mtl", "usageCount": 0 },
 				{ "path": "materials/dark_red.mtl", "usageCount": 0 },
 				{ "path": "materials/dark_specular.mtl", "usageCount": 0 },
 				{
@@ -6158,6 +6159,8 @@
 					"path": "objects/weapons/sampleweapon/defaultweapon.mtl",
 					"usageCount": 0
 				},
+				{ "path": "scripts/ai/factions.xml", "usageCount": 0 },
+				{ "path": "test.env", "usageCount": 1 },
 				{
 					"path": "textures/cubemaps/example/environmentprobe1_cm.dds",
 					"usageCount": 0
@@ -7045,7 +7048,7 @@
 			"type": "Environment",
 			"guid": "b91cd87b-05a4-5bf4-2bbb-aae7c950d6b5",
 			"name": "test",
-			"timestamp": 1720316440,
+			"timestamp": 1720394133,
 			"files": [ "test.env" ],
 			"workFiles": [ ],
 			"source": "",
@@ -7057,7 +7060,7 @@
 			"type": "Texture",
 			"guid": "d5a7c4e1-68e8-b1da-abd0-03de65322d27",
 			"name": "environmentprobe1_cm",
-			"timestamp": 1720316479,
+			"timestamp": 1720394034,
 			"files": [ "Textures/cubemaps/example/environmentprobe1_cm.dds" ],
 			"workFiles": [ ],
 			"source": "Textures/cubemaps/example/environmentprobe1_cm.tif",
@@ -7073,7 +7076,7 @@
 			"type": "Texture",
 			"guid": "97e2b217-4c3e-a6d9-56d7-97e089a8a9ce",
 			"name": "environmentprobe1_cm_diff",
-			"timestamp": 1720316480,
+			"timestamp": 1720394035,
 			"files": [ "Textures/cubemaps/example/environmentprobe1_cm_diff.dds" ],
 			"workFiles": [ ],
 			"source": "Textures/cubemaps/example/EnvironmentProbe1_cm.tif",

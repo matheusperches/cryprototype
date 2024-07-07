@@ -161,50 +161,6 @@ private:
 
 	VelocityData m_shipVelocity = {};
 
-	// Variables to track how much thrust we are generating and prevent exceeding that limit.
-
-	/*
-	struct AxisImpulseTracker
-	{
-		float forward = 0.f;
-		float maxForward = 0.f;
-
-		float backward = 0.f;
-		float maxBackward = 0.f;
-
-		float leftRight = 0.f;
-		float maxLeftRight = 0.f;
-
-		float upDown = 0.f;
-		float maxUpDown = 0.f;
-
-		float roll = 0.f;
-		float maxRoll = 0.f;
-
-		float pitch = 0.f;
-		float maxPitch = 0.f;
-
-		float yaw = 0.0f;
-		float maxYaw = 0.f;
-	};
-
-	AxisImpulseTracker m_axisImpulseTracker;
-	*/
-
-	struct AxisImpulseTracker
-	{
-		Vec3 linearAxisMaxThrustPositive = ZERO;
-		Vec3 linearAxisMaxThrustNegative = ZERO;
-		Vec3 rollAxisMaxThrust = ZERO;
-		Vec3 pitchYawMaxThrust = ZERO;
-
-		Vec3 linearAxisCurrentThrust = ZERO;
-		Vec3 rollAxisCurrentThrust = ZERO;
-		Vec3 pitchYawCurrentThrust = ZERO;
-	};
-	
-	AxisImpulseTracker m_axisImpulseTracker;
-
 	// Getting the key states from the Vehicle
 	FlightModifierBitFlag GetFlightModifierState();
 
