@@ -252,7 +252,7 @@ private:
 	void ComstabAssist(float frameTime);
 
 	// toggle between the flight modes on a key press
-	void FlightModifierHandler(FlightModifierBitFlag bitFlag);
+	void FlightModifierHandler(FlightModifierBitFlag bitFlag, float frameTime);
 
 	// Impulse generator
 	bool ServerRequestImpulse(SerializeImpulseData&& data, INetChannel*);

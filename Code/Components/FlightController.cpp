@@ -71,7 +71,7 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 		if (m_pVehicleComponent->GetIsPiloting())
 		{
 			ResetImpulseCounter();
-			FlightModifierHandler(GetFlightModifierState());
+			FlightModifierHandler(GetFlightModifierState(), m_frameTime);
 		}
 	}
 	break;
@@ -285,8 +285,8 @@ Vec3 CFlightController::AccelToImpulse(Vec3 linearAccel, Vec3 rollAccel, Vec3 pi
 		{
 			Vec3 linearImpulse = Vec3(ZERO);
 			Vec3 angImpulse = Vec3(ZERO);
-			linearImpulse = linearAccel * dynamics.mass * frameTime; // Calculates our final impulse independent from the entity's mass
-			angImpulse = (rollAccel + pitchYawAccel) * dynamics.mass * frameTime;
+			linearImpulse = m_axisImpulseTracker.linearAxisCurrentThrust * dynamics.mass * frameTime; // Calculates our final impulse independent from the entity's mass
+			angImpulse = (m_axisImpulseTracker.rollAxisCurrentThrust + m_axisImpulseTracker.pitchYawCurrentThrust) * dynamics.mass * frameTime;
 			if (!mathOnly)
 				ApplyImpulse(linearImpulse, angImpulse);
 			return linearImpulse + angImpulse;
@@ -301,7 +301,6 @@ void CFlightController::ApplyImpulse(Vec3 linearImpulse, Vec3 angImpulse, bool c
 	IPhysicalEntity* pPhysicalEntity = GetEntity()->GetPhysics();
 	if (pPhysicalEntity)
 	{
-		Vec3 impulse = Vec3(ZERO);
 
 		// Apply linear impulse
 		pe_action_impulse actionImpulse;
@@ -318,13 +317,10 @@ void CFlightController::ApplyImpulse(Vec3 linearImpulse, Vec3 angImpulse, bool c
 
 		if (countTotal)
 		{
-			impulse += actionImpulse.impulse + actionImpulse.angImpulse;
+			Vec3 impulse = (actionImpulse.impulse + actionImpulse.angImpulse) / m_frameTime; // Revert the frametime scaling to have the proper values
 			m_totalImpulse += impulse.GetLength();
 		}
 	}
-
-	CryLog("CurrentLinearImpulse: x= %f, y=%f, z=%f", m_axisImpulseTracker.linearAxisCurrentThrust.x, m_axisImpulseTracker.linearAxisCurrentThrust.y, m_axisImpulseTracker.linearAxisCurrentThrust.z);
-
 }
 
 float CFlightController::GetImpulse() const
@@ -431,10 +427,6 @@ void CFlightController::DirectInput(float frameTime)
 		ApplyImpulse(AccelToImpulse(m_linearAccelData.currentJerkAccel, frameTime), AccelToImpulse(m_rollAccelData.currentJerkAccel, frameTime), AccelToImpulse(m_pitchYawAccelData.currentJerkAccel, frameTime));
 
 	*/
-	// Debug
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 60, 2, m_debugColor, false, "Velocity: %.2f", GetVelocity().GetLength());
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 90, 2, m_debugColor, false, "acceleration: %.2f", GetAcceleration(frameTime));
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 120, 2, m_debugColor, false, "total impulse: %.3f", GetImpulse());
 }
 
 void CFlightController::CoupledFM(float frameTime)
@@ -460,6 +452,7 @@ void CFlightController::GravityAssist(float frameTime)
 			Vec3 gravity = gEnv->pPhysicalWorld->GetPhysVars()->gravity;
 			Vec3 antiGravityForce = -gravity * dynamics.mass;
 			Vec3 totalScaledAntiGravityForce = Vec3(ZERO);
+			Vec3 scaledGravAccel = Vec3(ZERO);
 			pe_action_impulse impulseAction;
 			for (const auto& axisAccelParamsPair : m_linearAxisParamsMap) // Iterating over each axis within the linear set.
 			{
@@ -472,7 +465,6 @@ void CFlightController::GravityAssist(float frameTime)
 					localDirection.Normalize(); // Normalize to have a range of -1 to 1, which indicates their alignment (1 = perfect / -1 = anti) 
 					
 					float alignment = localDirection.Dot(gravity.GetNormalized()); // Get the alignment between localDirection and gravity, using this to scale the thrust amount
-
 					if (alignment > ZERO)
 					{
 						Vec3 scaledAntiGravityForce = antiGravityForce * alignment;
@@ -491,6 +483,7 @@ void CFlightController::GravityAssist(float frameTime)
 			// Apply the total anti-gravity force to the entity
 			impulseAction.impulse = totalScaledAntiGravityForce * frameTime;
 			m_pEntity->GetPhysicalEntity()->Action(&impulseAction);
+			m_totalImpulse += totalScaledAntiGravityForce.GetLength();
 		}
 	}
 }
@@ -500,15 +493,15 @@ void CFlightController::ComstabAssist(float frameTime)
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 210, 2, m_debugColor, false, "Comstab: ON");
 }
 
-void CFlightController::FlightModifierHandler(FlightModifierBitFlag bitFlag)
+void CFlightController::FlightModifierHandler(FlightModifierBitFlag bitFlag, float frameTime)
 {
 	if (bitFlag.HasFlag(EFlightModifierFlag::Coupled))
 	{
-		CoupledFM(m_frameTime);
+		CoupledFM(frameTime);
 	}
 	else
 	{
-		DirectInput(m_frameTime);
+		DirectInput(frameTime);
 	}
 	if (bitFlag.HasFlag(EFlightModifierFlag::Boost))
 	{
@@ -518,16 +511,24 @@ void CFlightController::FlightModifierHandler(FlightModifierBitFlag bitFlag)
 		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 150, 2, m_debugColor, false, "Boost: OFF");
 	if (bitFlag.HasFlag(EFlightModifierFlag::Gravity))
 	{
-		GravityAssist(m_frameTime);
+		GravityAssist(frameTime);
 	}
 	else
 		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "Gravity assist: OFF");
 	if (bitFlag.HasFlag(EFlightModifierFlag::Comstab))
 	{
-		ComstabAssist(m_frameTime);
+		ComstabAssist(frameTime);
 	}
 	else
 		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 210, 2, m_debugColor, false, "Comstab: OFF");
+
+
+
+
+	// Debug
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 60, 2, m_debugColor, false, "Velocity: %.2f", GetVelocity().GetLength());
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 90, 2, m_debugColor, false, "acceleration: %.2f", GetAcceleration(frameTime));
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 120, 2, m_debugColor, false, "total impulse: %.3f", GetImpulse());
 }
 
 ///////////////////////////////////////////////////////////////////////////

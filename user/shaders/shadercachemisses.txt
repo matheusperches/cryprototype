@@ -37,3 +37,4 @@
 [ShaderList_PC.txt]<2>Illum@IlluminationPS(%SUBSURFACE_SCATTERING)(%_RT_ALPHATEST|%_RT_SECONDARY_VIEW|%_RT_NO_TESSELLATION)(0)(0)(0)(0)(PS)
 [ShaderList_PC.txt]<2>Illum@IlluminationPS(%SPECULAR_MAP|%SUBSURFACE_SCATTERING)(%_RT_SECONDARY_VIEW|%_RT_NO_TESSELLATION)(0)(0)(0)(0)(PS)
 [ShaderList_PC.txt]<2>DeferredShading@SSDO_Sampling_PS()(%_RT_SAMPLE1)(0)(0)(0)(0)(PS)
+[ShaderList_PC.txt]<2>PostEffectsGame@CombineColorGradingWithColorChartPS()(%_RT_SAMPLE0|%_RT_SAMPLE4)(0)(0)(0)(0)(PS)
