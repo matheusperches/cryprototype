@@ -332,6 +332,9 @@ void CFlightController::ResetImpulseCounter()
 {
 	m_totalImpulse = 0.f;
 
+
+	// To be removed
+
 	m_axisImpulseTracker.linearAxisMaxThrustPositive = AccelToImpulse(
 		Vec3(m_leftRightAccel, m_fwdAccel, m_upDownAccel), 
 		Vec3(ZERO), 
@@ -492,7 +495,6 @@ void CFlightController::GravityAssist(float frameTime)
 						totalScaledAntiGravityForce += scaledAntiGravityForce;
 						impulseAction.impulse = scaledAntiGravityForce * frameTime;
 						m_pEntity->GetPhysicalEntity()->Action(&impulseAction);
-						CryLog("axisName: %s| scaledAntiGravityForce: x= %f, y= %f, z= %f", accelParams.axisName, scaledAntiGravityForce.x, scaledAntiGravityForce.y, scaledAntiGravityForce.z);
 					}
 				}
 			}
@@ -534,9 +536,6 @@ void CFlightController::FlightModifierHandler(FlightModifierBitFlag bitFlag, flo
 	}
 	else
 		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 210, 2, m_debugColor, false, "Comstab: OFF");
-
-
-
 
 	// Debug
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 60, 2, m_debugColor, false, "Velocity: %.2f", GetVelocity().GetLength());
