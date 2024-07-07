@@ -451,9 +451,11 @@ void CFlightController::GravityAssist(float frameTime)
 			// Get gravity vector
 			Vec3 gravity = gEnv->pPhysicalWorld->GetPhysVars()->gravity;
 			Vec3 antiGravityForce = -gravity * dynamics.mass;
+			float totalAlignment = 0.0f;
 			Vec3 totalScaledAntiGravityForce = Vec3(ZERO);
-			Vec3 scaledGravAccel = Vec3(ZERO);
 			pe_action_impulse impulseAction;
+
+			// First pass: Calculate total alignment
 			for (const auto& axisAccelParamsPair : m_linearAxisParamsMap) // Iterating over each axis within the linear set.
 			{
 				const DynArray<AxisAccelParams>& axisParamsArray = axisAccelParamsPair.second;
@@ -467,22 +469,33 @@ void CFlightController::GravityAssist(float frameTime)
 					float alignment = localDirection.Dot(gravity.GetNormalized()); // Get the alignment between localDirection and gravity, using this to scale the thrust amount
 					if (alignment > ZERO)
 					{
-						Vec3 scaledAntiGravityForce = antiGravityForce * alignment;
-						totalScaledAntiGravityForce += scaledAntiGravityForce; // accumulate the gravity scale per axis
+						totalAlignment += alignment;
 					}
 				}
 			}
 
-			// Normalize the total accumulated anti-gravity force to prevent excessive acceleration in non perfect alignments
-			if (totalScaledAntiGravityForce.GetLength() > antiGravityForce.GetLength())
+			// Second pass: Apply impulses proportionally
+			for (const auto& axisAccelParamsPair : m_linearAxisParamsMap)
 			{
-				totalScaledAntiGravityForce.Normalize();
-				totalScaledAntiGravityForce *= antiGravityForce.GetLength();
-			}
+				const DynArray<AxisAccelParams>& axisParamsArray = axisAccelParamsPair.second;
 
-			// Apply the total anti-gravity force to the entity
-			impulseAction.impulse = totalScaledAntiGravityForce * frameTime;
-			m_pEntity->GetPhysicalEntity()->Action(&impulseAction);
+				for (const auto& accelParams : axisParamsArray)
+				{
+					Vec3 localDirection = WorldToLocal(accelParams.localDirection);
+					localDirection.Normalize();
+
+					float alignment = localDirection.Dot(gravity.GetNormalized());
+					if (alignment > ZERO)
+					{
+						float proportionalAlignment = alignment / totalAlignment;
+						Vec3 scaledAntiGravityForce = antiGravityForce * proportionalAlignment;
+						totalScaledAntiGravityForce += scaledAntiGravityForce;
+						impulseAction.impulse = scaledAntiGravityForce * frameTime;
+						m_pEntity->GetPhysicalEntity()->Action(&impulseAction);
+						CryLog("axisName: %s| scaledAntiGravityForce: x= %f, y= %f, z= %f", accelParams.axisName, scaledAntiGravityForce.x, scaledAntiGravityForce.y, scaledAntiGravityForce.z);
+					}
+				}
+			}
 			m_totalImpulse += totalScaledAntiGravityForce.GetLength();
 		}
 	}
