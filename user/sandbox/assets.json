@@ -5811,7 +5811,7 @@
 			"type": "Level",
 			"guid": "984fcd77-e594-2b34-fbf5-414a47e0d684",
 			"name": "example",
-			"timestamp": 1720398747,
+			"timestamp": 1720406091,
 			"files": [ "Levels/example/example.level" ],
 			"workFiles": [ ],
 			"source": "",
@@ -6161,6 +6161,14 @@
 				{ "path": "test.env", "usageCount": 1 },
 				{
 					"path": "textures/cubemaps/example/environmentprobe1_cm.dds",
+					"usageCount": 0
+				},
+				{
+					"path": "textures/cubemaps/example/environmentprobe1_cm.dds",
+					"usageCount": 0
+				},
+				{
+					"path": "textures/cubemaps/example/environmentprobe1_cm_diff.dds",
 					"usageCount": 0
 				},
 				{
@@ -7050,7 +7058,7 @@
 			"type": "Texture",
 			"guid": "d5a7c4e1-68e8-b1da-abd0-03de65322d27",
 			"name": "environmentprobe1_cm",
-			"timestamp": 1720394034,
+			"timestamp": 1720406088,
 			"files": [ "Textures/cubemaps/example/environmentprobe1_cm.dds" ],
 			"workFiles": [ ],
 			"source": "Textures/cubemaps/example/environmentprobe1_cm.tif",
@@ -7066,7 +7074,7 @@
 			"type": "Texture",
 			"guid": "97e2b217-4c3e-a6d9-56d7-97e089a8a9ce",
 			"name": "environmentprobe1_cm_diff",
-			"timestamp": 1720394035,
+			"timestamp": 1720406088,
 			"files": [ "Textures/cubemaps/example/environmentprobe1_cm_diff.dds" ],
 			"workFiles": [ ],
 			"source": "Textures/cubemaps/example/EnvironmentProbe1_cm.tif",

@@ -377,26 +377,28 @@ void CFlightController::DrawDirectionIndicator(float frameTime)
 			// Get the current velocity vector
 			Vec3 velocity = dynamics.v;
 
-			// Project the velocity vector to screen coordinates
+			// Transform the velocity vector to view
+			// Other than direction, we need a 3D position to project onto the 2D screen.
+			const CCamera& camera = gEnv->pSystem->GetViewCamera();
+			Vec3 cameraPos = camera.GetPosition();
+			Vec3 relativeVelocity = cameraPos + velocity.GetNormalized(); // Scale it for visibility
+
+			// Project the 3D position (relative to the camera) to 2D screen coordinates
 			Vec3 screenPos;
-			gEnv->pRenderer->ProjectToScreen(
-				velocity.x,
-				velocity.y,
-				velocity.z,
-				&screenPos.x,
-				&screenPos.y,
-				&screenPos.z);
+			gEnv->pRenderer->ProjectToScreen(relativeVelocity.x, relativeVelocity.y, relativeVelocity.z, &screenPos.x, &screenPos.y, &screenPos.z);
 
 			// The screenPos now contains the normalized screen coordinates (0 to 100)
 			// Convert these to actual pixel coordinates
-			float screenWidth = static_cast<float>(gEnv->pRenderer->GetWidth());
-			float screenHeight = static_cast<float>(gEnv->pRenderer->GetHeight());
+			const int screenWidth = gEnv->pRenderer->GetWidth();
+			const int screenHeight = gEnv->pRenderer->GetHeight();
 			float screenX = screenPos.x / 100.0f * screenWidth;
 			float screenY = screenPos.y / 100.0f * screenHeight;
 
-
 			// Draw the 2D label
-			gEnv->pAuxGeomRenderer->Draw2dLabel(screenX, screenY, 2.0f, m_debugColor, true, "X");
+			if (screenPos.z < 1.f)
+				gEnv->pAuxGeomRenderer->Draw2dLabel(screenX, screenY, 3.0f, m_debugColor, true, "+");
+			else
+				gEnv->pAuxGeomRenderer->Draw2dLabel(screenX, screenY, 3.0f, m_debugColor, true, "x");
 		}
 	}
 }
