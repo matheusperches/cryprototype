@@ -62,7 +62,10 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 	{
 	case EEntityEvent::GameplayStarted:
 	{
-
+		ResetJerkParams();
+		InitializeJerkParams();
+		physEntity = m_pEntity->GetPhysicalEntity();
+		InitializeAccelParamsVectors();
 	}
 	break;
 	case EEntityEvent::Update:
@@ -363,6 +366,52 @@ float CFlightController::GetAcceleration(float frameTime)
 	return acceleration;
 }
 
+void CFlightController::DrawDirectionIndicator(float frameTime)
+{
+	if (m_pEntity)
+	{
+		pe_status_dynamics dynamics;
+
+		if (m_pEntity->GetPhysicalEntity()->GetStatus(&dynamics))
+		{
+			// Get the current velocity vector
+			Vec3 velocity = dynamics.v;
+
+			// Project the velocity vector to screen coordinates
+			Vec3 screenPos;
+			gEnv->pRenderer->ProjectToScreen(
+				velocity.x,
+				velocity.y,
+				velocity.z,
+				&screenPos.x,
+				&screenPos.y,
+				&screenPos.z);
+
+			// The screenPos now contains the normalized screen coordinates (0 to 100)
+			// Convert these to actual pixel coordinates
+			float screenWidth = static_cast<float>(gEnv->pRenderer->GetWidth());
+			float screenHeight = static_cast<float>(gEnv->pRenderer->GetHeight());
+			float screenX = screenPos.x / 100.0f * screenWidth;
+			float screenY = screenPos.y / 100.0f * screenHeight;
+
+
+			// Draw the 2D label
+			gEnv->pAuxGeomRenderer->Draw2dLabel(screenX, screenY, 2.0f, m_debugColor, true, "X");
+		}
+	}
+}
+
+void CFlightController::DrawOnScreenDebugText(float frameTime)
+{
+	// Debug
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 60, 2, m_debugColor, false, "Velocity: %.2f", GetVelocity().GetLength());
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 90, 2, m_debugColor, false, "acceleration: %.2f", GetAcceleration(frameTime));
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 120, 2, m_debugColor, false, "total impulse: %.3f", GetImpulse());
+
+	DrawDirectionIndicator(frameTime);
+}
+
+
 ///////////////////////////////////////////////////////////////////////////
 // FLIGHT MODES 
 ///////////////////////////////////////////////////////////////////////////
@@ -506,10 +555,9 @@ void CFlightController::FlightModifierHandler(FlightModifierBitFlag bitFlag, flo
 	else
 		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 210, 2, m_debugColor, false, "Comstab: OFF");
 
-	// Debug
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 60, 2, m_debugColor, false, "Velocity: %.2f", GetVelocity().GetLength());
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 90, 2, m_debugColor, false, "acceleration: %.2f", GetAcceleration(frameTime));
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 120, 2, m_debugColor, false, "total impulse: %.3f", GetImpulse());
+
+	// Debug stuff
+	DrawOnScreenDebugText(frameTime);
 }
 
 ///////////////////////////////////////////////////////////////////////////

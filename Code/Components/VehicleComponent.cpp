@@ -45,7 +45,7 @@ void CVehicleComponent::Initialize()
 Cry::Entity::EventFlags CVehicleComponent::GetEventMask() const
 {
 	//Listening to the update event
-	return EEntityEvent::GameplayStarted;
+	return EEntityEvent::GameplayStarted | EEntityEvent::Reset;
 }
 
 void CVehicleComponent::ProcessEvent(const SEntityEvent& event)
@@ -55,13 +55,12 @@ void CVehicleComponent::ProcessEvent(const SEntityEvent& event)
 	case EEntityEvent::GameplayStarted:
 	{
 		m_hasGameStarted = true;
-
-		m_pFlightController->ResetJerkParams();
-		m_pFlightController->InitializeJerkParams();
-		m_pFlightController->physEntity = m_pEntity->GetPhysicalEntity();
-		m_pFlightController->InitializeAccelParamsVectors();
 	}
 	break;
+	case EEntityEvent::Reset:
+	{
+		m_hasGameStarted = false;
+	}
 	}
 }
 

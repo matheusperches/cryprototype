@@ -227,6 +227,10 @@ private:
 	Vec3 GetVelocity();
 	float GetAcceleration(float frameTime);
 
+	void DrawDirectionIndicator(float frameTime);
+
+	void DrawOnScreenDebugText(float frameTime);
+
 	// Default Components
 	CVehicleComponent* m_pVehicleComponent = nullptr;
 

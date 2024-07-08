@@ -1,4 +1,4 @@
-<AssetMetadata version="0" type="Level" guid="984fcd77-e594-2b34-fbf5-414a47e0d684" source="" timestamp="1720395955">
+<AssetMetadata version="0" type="Level" guid="984fcd77-e594-2b34-fbf5-414a47e0d684" source="" timestamp="1720406091">
  <Files>
   <File path="example/example.level"/>
  </Files>
@@ -86,7 +86,6 @@
   <Path>editor/resourcecache/textures/cubemaps/example/environmentprobe1_cm_diff.dds</Path>
   <Path>engineassets/materials/water/ocean_default.mtl</Path>
   <Path usageCount="1">libs/environmentpresets/example.env</Path>
-  <Path>libs/flownodes/substitutions.xml</Path>
   <Path>materials/dark_red.mtl</Path>
   <Path>materials/dark_specular.mtl</Path>
   <Path>objects/characters/samplecharacter/firstperson.cdf</Path>
@@ -98,9 +97,10 @@
   <Path>objects/characters/samplecharacter/skelproxy.chr</Path>
   <Path>objects/weapons/sampleweapon/defaultweapon.cgf</Path>
   <Path>objects/weapons/sampleweapon/defaultweapon.mtl</Path>
-  <Path>scripts/ai/factions.xml</Path>
   <Path usageCount="1">test.env</Path>
   <Path>textures/cubemaps/example/environmentprobe1_cm.dds</Path>
+  <Path>textures/cubemaps/example/environmentprobe1_cm.dds</Path>
+  <Path>textures/cubemaps/example/environmentprobe1_cm_diff.dds</Path>
   <Path>textures/cubemaps/example/environmentprobe1_cm_diff.dds</Path>
  </Dependencies>
 </AssetMetadata>
