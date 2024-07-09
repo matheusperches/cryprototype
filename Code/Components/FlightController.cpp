@@ -172,62 +172,36 @@ float CFlightController::ClampInput(float inputValue, bool isMouse) const
 ///////////////////////////////////////////////////////////////////////////
 // FLIGHT CALCULATIONS
 ///////////////////////////////////////////////////////////////////////////
-Vec3 CFlightController::ScaleInput(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisParamsList)
+Vec3 CFlightController::ScaleInput(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisParamsList, JerkAccelerationData& accelData)
 {
 	// Initializing vectors for acceleration direction and desired acceleration
-	Vec3 m_accelDirection(ZERO);	 // Vector to accumulate the direction of applied accelerations
-	Vec3 m_requestedAccel(ZERO);  // Vector to accumulate desired acceleration magnitudes
-	Vec3 m_localDirection(ZERO);  // Calculate local thrust direction based on input value
+	Vec3 accelDirection(ZERO); // Vector to accumulate the direction of applied accelerations
+	Vec3 m_requestedAccel(ZERO); // Vector to accumulate desired acceleration magnitudes
+	Vec3 localDirection(ZERO); // Calculate local thrust direction based on input value
 	Vec3 scaledInputDirection(ZERO); // Scaled vector, our final local direction + magnitude 
 	float normalizedInputValue(ZERO); // Normalize input values
 	
 	for (const auto& axisMotionParamsPair : axisParamsList)	// Iterating over the list of axis and their input values
 	{
-		AxisType axisType = axisMotionParamsPair.first;
 		const DynArray<AxisMotionParams>& axisMotionParamsArray = axisMotionParamsPair.second;
 
 		for (const auto& motionParams : axisMotionParamsArray)	// Iterate over the DynArray<AxisAccelParams> for the current AxisType
 		{
-			if (axisType == AxisType::Linear)
-			{
-				normalizedInputValue = ClampInput(AxisGetter(motionParams.axisName)); // Retrieve input value for the current axis and normalize to a range of -1 to 1
-				m_localDirection = motionParams.localDirection;
-			}
-			else if (axisType == AxisType::Roll)
-			{
-				normalizedInputValue = ClampInput(AxisGetter(motionParams.axisName));
-				m_localDirection = motionParams.localDirection;
-			}
-			else if (axisType == AxisType::PitchYaw)
-			{
-				normalizedInputValue = ClampInput(AxisGetter(motionParams.axisName), true);
-				m_localDirection = motionParams.localDirection;
-			}
-			m_localDirection = WorldToLocal(m_localDirection); // Convert to local space
-			m_accelDirection += m_localDirection * normalizedInputValue; // Accumulate axis direction with magnitude in local space, scaling by the normalized input
-			m_requestedAccel += m_localDirection * motionParams.AccelAmount * normalizedInputValue; // Accumulate desired acceleration based on thrust amount and input value, combining for multiple axes
+			normalizedInputValue = ClampInput(AxisGetter(motionParams.axisName)); // Retrieve input value for the current axis and normalize to a range of -1 to 1
+			localDirection = motionParams.localDirection;
+			localDirection = WorldToLocal(localDirection); // Convert to local space
+			accelDirection += localDirection * normalizedInputValue; // Accumulate axis direction with magnitude in local space, scaling by the normalized input
+			m_requestedAccel += localDirection * motionParams.AccelAmount * normalizedInputValue; // Accumulate desired acceleration based on thrust amount and input value, combining for multiple axes
 		}
-		if (m_accelDirection.GetLength() > 1.f) // Normalize accelDirection to mitigate excessive accelerations when combining inputs
+		if (accelDirection.GetLength() > 1.f) // Normalize accelDirection to mitigate excessive accelerations when combining inputs
 		{
-			m_accelDirection.Normalize();
+			accelDirection.Normalize();
 		}
-
-		scaledInputDirection = m_accelDirection * m_requestedAccel.GetLength(); // Scale the direction vector by the magnitude of requestedAccel
-		
-		if (axisType == AxisType::Linear)
-		{
-			UpdateAccelerationState(m_linearAccelData, scaledInputDirection);
-		}
-		else if (axisType == AxisType::Roll)
-		{
-			UpdateAccelerationState(m_rollAccelData, scaledInputDirection);
-		}
-		else if (axisType == AxisType::PitchYaw)
-		{
-			UpdateAccelerationState(m_pitchYawAccelData, scaledInputDirection);
-		}
+		scaledInputDirection = accelDirection * m_requestedAccel.GetLength(); // Scale the direction vector by the magnitude of requestedAccel
+		UpdateAccelerationState(accelData, scaledInputDirection); // Updates our current *requested* motion state to compute jerk accordingly (based on input, not actual ship motion!)
 	}
-	return scaledInputDirection;   // Return the scaled acceleration direction vector
+
+	return scaledInputDirection;   // Return the scaled acceleration direction vector in m/s
 }
 
 void CFlightController::UpdateAccelerationState(JerkAccelerationData& accelData, const Vec3& targetAccel)
@@ -421,13 +395,13 @@ void CFlightController::DirectInput(float frameTime)
 {
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 30, 2, m_debugColor, false, "Newtonian");
 
-	m_linearAccelData.targetJerkAccel = ScaleInput(m_linearParamsMap); // Scale and set the target acceleration for linear movement
+	m_linearAccelData.targetJerkAccel = ScaleInput(m_linearParamsMap, m_linearAccelData); // Scale and set the target acceleration for linear movement
 	m_linearAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_linearAccelData, frameTime); 	// Infuse the acceleration value with the current jerk coeficient
 
-	m_rollAccelData.targetJerkAccel = ScaleInput(m_rollParamsMap);
+	m_rollAccelData.targetJerkAccel = ScaleInput(m_rollParamsMap, m_rollAccelData);
 	m_rollAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_rollAccelData, frameTime);
 
-	m_pitchYawAccelData.targetJerkAccel = ScaleInput(m_pitchYawParamsMap);
+	m_pitchYawAccelData.targetJerkAccel = ScaleInput(m_pitchYawParamsMap, m_pitchYawAccelData);
 	m_pitchYawAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_pitchYawAccelData, frameTime);
 
 	
