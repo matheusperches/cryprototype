@@ -172,14 +172,16 @@ float CFlightController::ClampInput(float inputValue, bool isMouse) const
 ///////////////////////////////////////////////////////////////////////////
 // FLIGHT CALCULATIONS
 ///////////////////////////////////////////////////////////////////////////
-Vec3 CFlightController::ScaleInput(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisParamsList, JerkAccelerationData& accelData)
+ScaledMotion CFlightController::ScaleInput(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisParamsList, JerkAccelerationData& accelData)
 {
 	// Initializing vectors for acceleration direction and desired acceleration
 	Vec3 accelDirection(ZERO); // Vector to accumulate the direction of applied accelerations
-	Vec3 m_requestedAccel(ZERO); // Vector to accumulate desired acceleration magnitudes
+	Vec3 requestedAccel(ZERO); // Vector to accumulate desired acceleration magnitudes
 	Vec3 localDirection(ZERO); // Calculate local thrust direction based on input value
 	Vec3 scaledInputDirection(ZERO); // Scaled vector, our final local direction + magnitude 
+	Vec3 scaledVelocityDirection(ZERO);
 	float normalizedInputValue(ZERO); // Normalize input values
+	float maxSpeedMagnitude = 0.f; // Maximum speed magnitude
 	
 	for (const auto& axisMotionParamsPair : axisParamsList)	// Iterating over the list of axis and their input values
 	{
@@ -191,17 +193,33 @@ Vec3 CFlightController::ScaleInput(const VectorMap<AxisType, DynArray<AxisMotion
 			localDirection = motionParams.localDirection;
 			localDirection = WorldToLocal(localDirection); // Convert to local space
 			accelDirection += localDirection * normalizedInputValue; // Accumulate axis direction with magnitude in local space, scaling by the normalized input
-			m_requestedAccel += localDirection * motionParams.AccelAmount * normalizedInputValue; // Accumulate desired acceleration based on thrust amount and input value, combining for multiple axes
+			requestedAccel += localDirection * motionParams.AccelAmount * normalizedInputValue; // Accumulate desired acceleration based on thrust amount and input value, combining for multiple axes
+			scaledVelocityDirection += localDirection * motionParams.velocityLimit * normalizedInputValue; // Accumulate desired velocity based on thrust direction and input value
+		
+			// Calculate the speed for the current axis and update the maximum speed magnitude
+			float axisSpeed = motionParams.velocityLimit * std::fabs(normalizedInputValue); // Absolute value since we are scaling velocity, not acceleration
+			maxSpeedMagnitude = std::max(maxSpeedMagnitude, axisSpeed);
 		}
-		if (accelDirection.GetLength() > 1.f) // Normalize accelDirection to mitigate excessive accelerations when combining inputs
-		{
-			accelDirection.Normalize();
-		}
-		scaledInputDirection = accelDirection * m_requestedAccel.GetLength(); // Scale the direction vector by the magnitude of requestedAccel
-		UpdateAccelerationState(accelData, scaledInputDirection); // Updates our current *requested* motion state to compute jerk accordingly (based on input, not actual ship motion!)
 	}
 
-	return scaledInputDirection;   // Return the scaled acceleration direction vector in m/s
+	if (accelDirection.GetLength() > 1.f) // Normalize accelDirection to mitigate excessive accelerations when combining inputs
+	{
+		accelDirection.Normalize();
+	}
+	scaledInputDirection = accelDirection * requestedAccel.GetLength(); // Scale the direction vector by the magnitude of requestedAccel
+	UpdateAccelerationState(accelData, scaledInputDirection); // Updates our current *requested* motion state to compute jerk accordingly (based on input, not actual ship motion!)
+
+	// Normalize the velocity vector if necessary
+	if (scaledVelocityDirection.GetLength() > maxSpeedMagnitude)
+	{
+		scaledVelocityDirection.Normalize();
+		scaledVelocityDirection *= maxSpeedMagnitude;
+	}
+
+	// Scale the normalized velocity vector by the maximum speed magnitude
+	scaledVelocityDirection *= maxSpeedMagnitude;
+
+	return ScaledMotion(scaledInputDirection, scaledVelocityDirection);   // Return the scaled acceleration direction vector in m/s
 }
 
 void CFlightController::UpdateAccelerationState(JerkAccelerationData& accelData, const Vec3& targetAccel)
@@ -395,13 +413,13 @@ void CFlightController::DirectInput(float frameTime)
 {
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 30, 2, m_debugColor, false, "Newtonian");
 
-	m_linearAccelData.targetJerkAccel = ScaleInput(m_linearParamsMap, m_linearAccelData); // Scale and set the target acceleration for linear movement
+	m_linearAccelData.targetJerkAccel = ScaleInput(m_linearParamsMap, m_linearAccelData).GetAcceleration(); // Scale and set the target acceleration for linear movement
 	m_linearAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_linearAccelData, frameTime); 	// Infuse the acceleration value with the current jerk coeficient
 
-	m_rollAccelData.targetJerkAccel = ScaleInput(m_rollParamsMap, m_rollAccelData);
+	m_rollAccelData.targetJerkAccel = ScaleInput(m_rollParamsMap, m_rollAccelData).GetAcceleration();
 	m_rollAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_rollAccelData, frameTime);
 
-	m_pitchYawAccelData.targetJerkAccel = ScaleInput(m_pitchYawParamsMap, m_pitchYawAccelData);
+	m_pitchYawAccelData.targetJerkAccel = ScaleInput(m_pitchYawParamsMap, m_pitchYawAccelData).GetAcceleration();
 	m_pitchYawAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_pitchYawAccelData, frameTime);
 
 	
@@ -422,6 +440,15 @@ void CFlightController::DirectInput(float frameTime)
 void CFlightController::CoupledFM(float frameTime)
 {
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 30, 2, m_debugColor, false, "Coupled");
+
+
+	m_linearAccelData.targetJerkAccel = ScaleInput(m_linearParamsMap, m_linearAccelData).GetVelocity(); // Scale and set the target velocity for linear movement
+	m_linearAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_linearAccelData, frameTime); 	// Infuse the acceleration value with the current jerk coeficient
+
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 250, 2, m_debugColor, false, "m_linearAccelData.targetJerkAccel: x=%f, y=%f, z=%f",
+		m_linearAccelData.targetJerkAccel.x,
+		m_linearAccelData.targetJerkAccel.y,
+		m_linearAccelData.targetJerkAccel.z);
 
 }
 
@@ -494,6 +521,7 @@ void CFlightController::GravityAssist(float frameTime)
 void CFlightController::ComstabAssist(float frameTime)
 {
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 210, 2, m_debugColor, false, "Comstab: ON");
+
 }
 
 void CFlightController::FlightModifierHandler(FlightModifierBitFlag bitFlag, float frameTime)

@@ -11,6 +11,21 @@ namespace Cry::DefaultComponents
 	class CRigidBodyComponent;
 }
 
+class ScaledMotion
+{
+public:
+	ScaledMotion(const Vec3& scaledAccel, const Vec3& scaledVel)
+		: m_scaledAccel(scaledAccel), m_scaledVel(scaledVel) {}
+
+	Vec3 GetAcceleration() const { return m_scaledAccel; }
+	Vec3 GetVelocity() const { return m_scaledVel; }
+
+private:
+	Vec3 m_scaledAccel; // Scaled acceleration direction vector
+	Vec3 m_scaledVel;   // Scaled velocity direction vector
+};
+
+
 class CFlightController final : public IEntityComponent
 {
 	static constexpr EEntityAspects kVehicleAspect = eEA_GameClientA;
@@ -204,7 +219,7 @@ private:
 	Vec3 UpdateAccelerationWithJerk(JerkAccelerationData& accelData, float frameTime);
 
 	// Scales the acceleration asked, according to input magnitude, taking into account the inputs pressed
-	Vec3 ScaleInput(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisAccelParamsMap, JerkAccelerationData& accelData);
+	ScaledMotion ScaleInput(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisAccelParamsMap, JerkAccelerationData& accelData);
 
 	/* Direct input mode: raw acceleration requests on an input scale
 	*  Step 1. For each axis group, call ScaleAccel to create a scaled direction vector by input in local space
@@ -305,3 +320,4 @@ private:
 	Vec3 m_shipPosition = ZERO;
 	Quat m_shipOrientation = ZERO;
 };
+
