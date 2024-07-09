@@ -148,22 +148,6 @@ private:
 		}
 	};
 
-	// Accel data structures. Jerk values for each are set in Initialize(), retrieved from AddMember listings above.
-	struct JerkAccelerationData
-	{
-		float jerk;
-		float jerkDecelRate;
-		Vec3 currentJerkAccel;
-		Vec3 targetJerkAccel;
-		EAccelState state;
-
-		JerkAccelerationData() : jerk(0.f), jerkDecelRate(0.f), currentJerkAccel(0.f), targetJerkAccel(0.f), state(EAccelState::Idle) {}
-	};
-
-	JerkAccelerationData m_linearAccelData = {};
-	JerkAccelerationData m_rollAccelData = {};
-	JerkAccelerationData m_pitchYawAccelData = {};
-
 	enum class AxisType
 	{
 		Roll,
@@ -194,6 +178,36 @@ private:
 	};
 
 	VelocityData m_shipVelocity = {};
+
+	// Accel data structures. Jerk values for each are set in Initialize(), retrieved from the editor settings.
+	struct JerkAccelerationData
+	{
+		float jerk;
+		float jerkDecelRate;
+		Vec3 currentJerkAccel;
+		Vec3 targetJerkAccel;
+		EAccelState state;
+
+		JerkAccelerationData() : jerk(0.f), jerkDecelRate(0.f), currentJerkAccel(0.f), targetJerkAccel(0.f), state(EAccelState::Idle) {}
+	};
+
+	JerkAccelerationData m_linearJerkData = {};
+	JerkAccelerationData m_rollJerkData = {};
+	JerkAccelerationData m_pitchYawJerkData = {};
+
+	struct MotionData {
+		Vec3 linearAccel;
+		Vec3 rollAccel;
+		Vec3 pitchYawAccel;
+		JerkAccelerationData& linearJerkData;
+		JerkAccelerationData& rollJerkData;
+		JerkAccelerationData& pitchYawJerkData;
+
+		MotionData(Vec3 linear, Vec3 roll, Vec3 pitchYaw, JerkAccelerationData& linearJerk, JerkAccelerationData& rollJerk, JerkAccelerationData& pitchYawJerk)
+			: linearAccel(linear), rollAccel(roll), pitchYawAccel(pitchYaw), linearJerkData(linearJerk), rollJerkData(rollJerk), pitchYawJerkData(pitchYawJerk) {}
+	};
+
+
 
 	// Getting the key states from the Vehicle
 	FlightModifierBitFlag GetFlightModifierState();
@@ -250,7 +264,7 @@ private:
 	bool UpdateMovement(SerializeImpulseData&& data, INetChannel*);
 
 	// Converts the accel target (after jerk) which contains both direction and magnitude, into thrust values.
-	Vec3 AccelToImpulse(Vec3 linearAccel, Vec3 rollAccel, Vec3 pitchYawAccel, float frameTime, bool mathOnly = false);
+	Vec3 AccelToImpulse(const MotionData& motionData, float frameTime, bool mathOnly = false);
 	float GetImpulse() const;
 	void ResetImpulseCounter();
 
