@@ -8,9 +8,9 @@
 #include <CryRenderer/IRenderAuxGeom.h>
 #include <CrySchematyc/Env/Elements/EnvComponent.h>
 #include <CryCore/StaticInstanceList.h>
+#include <CryNetwork/Rmi.h>
 #include <CrySchematyc/Env/IEnvRegistrar.h>
 #include <CryEntitySystem/IEntitySystem.h>
-#include <CryNetwork/Rmi.h>
 
 #include <Components/VehicleComponent.h>
 #include <Components/FlightModifiers.h>

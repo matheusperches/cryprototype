@@ -9,9 +9,11 @@
 #include <CryCore/StaticInstanceList.h>
 #include <CrySchematyc/Env/IEnvRegistrar.h>
 #include <CryEntitySystem/IEntitySystem.h>
+
+#include <CryEntitySystem/IEntityComponent.h>
 #include <CryPhysics/physinterface.h>
-#include <CryNetwork/Rmi.h>
 #include <CryNetwork/ISerialize.h>
+#include <CryNetwork/Rmi.h>
 
 // Forward declaration
 #include <DefaultComponents/Input/InputComponent.h>
@@ -20,18 +22,18 @@
 
 
 // Registers the component to be used in the engine
-static void RegisterFlightController(Schematyc::IEnvRegistrar& registrar)
+namespace
 {
-	Schematyc::CEnvRegistrationScope scope = registrar.Scope(IEntity::GetEntityScopeGUID());
+	static void RegisterFlightController(Schematyc::IEnvRegistrar& registrar)
 	{
-		Schematyc::CEnvRegistrationScope componentScope = scope.Register(SCHEMATYC_MAKE_ENV_COMPONENT(CFlightController));
+		Schematyc::CEnvRegistrationScope scope = registrar.Scope(IEntity::GetEntityScopeGUID());
 		{
-
+			Schematyc::CEnvRegistrationScope componentScope = scope.Register(SCHEMATYC_MAKE_ENV_COMPONENT(CFlightController));
 		}
 	}
+	CRY_STATIC_AUTO_REGISTER_FUNCTION(&RegisterFlightController)
 }
 
-CRY_STATIC_AUTO_REGISTER_FUNCTION(&RegisterFlightController)
 
 void CFlightController::Initialize()
 {

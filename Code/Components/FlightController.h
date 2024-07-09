@@ -1,7 +1,9 @@
 // Copyright 2017-2021 Crytek GmbH / Crytek Group. All rights reserved.
 #pragma once
-#include <Components/FlightModifiers.h>
+#include <array>
+#include <numeric>
 
+#include <Components/FlightModifiers.h>
 
 class CShipThrusterComponent;
 class CVehicleComponent;
@@ -39,6 +41,11 @@ public:
 	virtual Cry::Entity::EventFlags GetEventMask() const override;
 
 	virtual void ProcessEvent(const SEntityEvent& event) override;
+
+
+	virtual bool NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags) override;
+
+	virtual NetworkAspectType GetNetSerializeAspectMask() const override { return kVehicleAspect; }
 
 	// Reflect type to set a unique identifier for this component
 	// and provide additional information to expose it in the sandbox
@@ -80,10 +87,6 @@ public:
 		desc.AddMember(&CFlightController::m_PitchYawJerkRate, 'pyjk', "pyjerkrate", "Pitch/Yaw Jerk", "Adjusts the force smoothing rate", ZERO);
 		desc.AddMember(&CFlightController::m_PitchYawJerkDecelRate, 'pydr', "pyjerkdecel", "Pitch/Yaw Jerk decel rate", "Adjusts the decel rate", ZERO);
 	}
-
-	virtual bool NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags) override;
-
-	virtual NetworkAspectType GetNetSerializeAspectMask() const override { return kVehicleAspect; }
 
 	// Axis Vector initializer
 	void InitializeMotionParamsVectors();
