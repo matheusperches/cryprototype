@@ -33,6 +33,11 @@ public:
 		desc.SetEditorCategory("Flight");
 		desc.SetLabel("FlightController");
 		desc.SetDescription("Executes flight calculations.");
+
+		// Mouse sensitivity
+		desc.AddMember(&CFlightController::m_mouseSenseFactor, 'msf', "mouseSensFact", "Mouse Sensitivity Factor", "Adjusts mouse sensitivity", ZERO);
+
+		// Acceleration parameters
 		desc.AddMember(&CFlightController::m_fwdAccel, 'fwdr', "forwarddir", "Forward Direction Acceleration", "Point force generator on the forward direction", ZERO);
 		desc.AddMember(&CFlightController::m_bwdAccel, 'bwdr', "backwarddir", "Backward Direction Acceleration", "Point force generator on the backward direction", ZERO);
 		desc.AddMember(&CFlightController::m_leftRightAccel, 'lrdr', "leftright", "Left/Right Acceleration", "Point force generator on the left direction", ZERO);
@@ -40,10 +45,19 @@ public:
 		desc.AddMember(&CFlightController::m_rollAccel, 'roll', "rollaccel", "Roll Acceleration", "Point force generator for rolling", ZERO);
 		desc.AddMember(&CFlightController::m_pitchAccel, 'ptch', "pitch", "Pitch Acceleration", "Point force generator for pitching", ZERO);
 		desc.AddMember(&CFlightController::m_yawAccel, 'yaw', "yaw", "Yaw Acceleration", "Point force generator for yawing", ZERO);
+		
+		// Rotational limits (degrees/sec)
 		desc.AddMember(&CFlightController::m_maxRoll, 'mxrl', "maxRoll", "Max Roll Rate", "Max roll rate in degrees / sec", ZERO);
 		desc.AddMember(&CFlightController::m_maxPitch, 'mxpt', "maxPitch", "Max Pitch Rate", "Max pitch rate in degrees / sec", ZERO);
 		desc.AddMember(&CFlightController::m_maxYaw, 'mxyw', "maxYaw", "Max Yaw Rate", "Max yaw rate in degrees / sec", ZERO);
-		desc.AddMember(&CFlightController::m_mouseSenseFactor, 'msf', "mouseSensFact", "Mouse Sensitivity Factor", "Adjusts mouse sensitivity", ZERO);
+
+		// Translational limits (m/s)
+		desc.AddMember(&CFlightController::m_maxFwdVel, 'mxfw', "maxFwd", "Max Forward Speed", "Max Forward Speed in m/s", ZERO);
+		desc.AddMember(&CFlightController::m_maxBwdVel, 'mxbw', "maxBwd", "Max Backward Speed", "Max Backward Speed in m/s", ZERO);
+		desc.AddMember(&CFlightController::m_maxLatVel, 'mxlt', "maxLT", "Max Left/Right Speed", "Max Left/Right Speed in m/s", ZERO);
+		desc.AddMember(&CFlightController::m_maxUpDownVel, 'mxud', "maxUD", "Max Up/Down Speed", "Max Up/Down Speed in m/s", ZERO);
+
+		// Jerk parameters
 		desc.AddMember(&CFlightController::m_linearJerkRate, 'lnjk', "linearjerk", "Linear Jerk", "Adjusts the force smoothing rate", ZERO);
 		desc.AddMember(&CFlightController::m_linearJerkDecelRate, 'lndr', "linearjerkdecel", "Linear Jerk decel rate", "Adjusts the decel rate", ZERO);
 		desc.AddMember(&CFlightController::m_RollJerkRate, 'rljk', "rolljerkrate", "Roll Jerk", "Adjusts the force smoothing rate", ZERO);
@@ -57,7 +71,7 @@ public:
 	virtual NetworkAspectType GetNetSerializeAspectMask() const override { return kVehicleAspect; }
 
 	// Axis Vector initializer
-	void InitializeAccelParamsVectors();
+	void InitializeMotionParamsVectors();
 	// Jerk data initializer
 	void InitializeJerkParams();
 	// Reset the jerk values 
@@ -140,16 +154,18 @@ private:
 	};
 
 	// struct to combine thruster axis and actuation
-	struct AxisAccelParams {
+	struct AxisMotionParams {
 		string axisName;
 		float AccelAmount;
+		float velocityLimit;
 		Vec3 localDirection;
 	};
 
 	// Vector maps to organize our axis types, names and input data together 
-	VectorMap<AxisType, DynArray<AxisAccelParams>> m_linearAxisParamsMap;
-	VectorMap<AxisType, DynArray<AxisAccelParams>> m_rollAxisParamsMap;
-	VectorMap<AxisType, DynArray<AxisAccelParams>> m_pitchYawAxisParamsMap;
+	VectorMap<AxisType, DynArray<AxisMotionParams>> m_linearParamsMap;
+	VectorMap<AxisType, DynArray<AxisMotionParams>> m_rollParamsMap;
+	VectorMap<AxisType, DynArray<AxisMotionParams>> m_pitchYawParamsMap;
+
 
 	struct VelocityData
 	{
@@ -188,7 +204,7 @@ private:
 	Vec3 UpdateAccelerationWithJerk(JerkAccelerationData& accelData, float frameTime);
 
 	// Scales the acceleration asked, according to input magnitude, taking into account the inputs pressed
-	Vec3 ScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelParams>>& axisAccelParamsMap);
+	Vec3 ScaleInput(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisAccelParamsMap);
 
 	/* Direct input mode: raw acceleration requests on an input scale
 	*  Step 1. For each axis group, call ScaleAccel to create a scaled direction vector by input in local space
@@ -211,9 +227,9 @@ private:
 	void FlightModifierHandler(FlightModifierBitFlag bitFlag, float frameTime);
 
 	// Impulse generator
-	bool ServerRequestImpulse(SerializeImpulseData&& data, INetChannel*);
+	bool RequestImpulseOnServer(SerializeImpulseData&& data, INetChannel*);
 
-	bool ClientRequestImpulse(SerializeImpulseData&& data, INetChannel*);
+	bool UpdateMovement(SerializeImpulseData&& data, INetChannel*);
 
 	// Converts the accel target (after jerk) which contains both direction and magnitude, into thrust values.
 	Vec3 AccelToImpulse(Vec3 linearAccel, Vec3 rollAccel, Vec3 pitchYawAccel, float frameTime, bool mathOnly = false);
@@ -247,6 +263,8 @@ private:
 	const float m_debugColor[4] = { 1, 0, 0, 1 };
 
 	// Performance variables
+	float m_mouseSenseFactor = 0.f;
+
 	float m_fwdAccel = 0.f;
 	float m_bwdAccel = 0.f;
 	float m_leftRightAccel = 0.f;
@@ -254,10 +272,17 @@ private:
 	float m_rollAccel = 0.f;
 	float m_pitchAccel = 0.f;
 	float m_yawAccel = 0.f;
+
 	float m_maxRoll = 0.f;
 	float m_maxPitch = 0.f;
 	float m_maxYaw = 0.f;
-	float m_mouseSenseFactor = 0.f;
+
+	float m_maxFwdVel = 0.f;
+	float m_maxBwdVel = 0.f;
+	float m_maxLatVel = 0.f;
+	float m_maxUpDownVel = 0.f;
+
+
 	float m_linearJerkRate = 0.f;
 	float m_linearJerkDecelRate = 0.f;
 	float m_RollJerkRate = 0.f;

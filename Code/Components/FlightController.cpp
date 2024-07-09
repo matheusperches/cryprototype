@@ -42,8 +42,8 @@ void CFlightController::Initialize()
 	GetEntity()->GetNetEntity()->EnableDelegatableAspect(eEA_GameClientA, false);
 	GetEntity()->GetNetEntity()->EnableDelegatableAspect(eEA_Physics, false);
 
-	SRmi<RMI_WRAP(&CFlightController::ServerRequestImpulse)>::Register(this, eRAT_Urgent, false, eNRT_ReliableOrdered);
-	SRmi<RMI_WRAP(&CFlightController::ClientRequestImpulse)>::Register(this, eRAT_Urgent, false, eNRT_ReliableOrdered);
+	SRmi<RMI_WRAP(&CFlightController::RequestImpulseOnServer)>::Register(this, eRAT_Urgent, false, eNRT_ReliableOrdered);
+	SRmi<RMI_WRAP(&CFlightController::UpdateMovement)>::Register(this, eRAT_Urgent, false, eNRT_ReliableOrdered);
 
 	GetEntity()->EnablePhysics(true);
 	GetEntity()->PhysicsNetSerializeEnable(true);
@@ -65,7 +65,7 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 		ResetJerkParams();
 		InitializeJerkParams();
 		physEntity = m_pEntity->GetPhysicalEntity();
-		InitializeAccelParamsVectors();
+		InitializeMotionParamsVectors();
 	}
 	break;
 	case EEntityEvent::Update:
@@ -109,29 +109,28 @@ void CFlightController::ResetJerkParams()
 	m_pitchYawAccelData.targetJerkAccel = Vec3(ZERO);
 }
 
-void CFlightController::InitializeAccelParamsVectors()
+void CFlightController::InitializeMotionParamsVectors()
 {
 	float radYawAccel = DegreesToRadian(m_yawAccel);
 	float radPitchAccel = DegreesToRadian(m_pitchAccel);
 	float radRollAccel = DegreesToRadian(m_rollAccel);
 
-	// Initializing the maps with the names of our axis and their respective accelerations
-
-	m_linearAxisParamsMap[AxisType::Linear] = {
-		{"accel_forward", m_fwdAccel,  Vec3(0.f, 1.f, 0.f)},
-		{"accel_backward", m_bwdAccel, Vec3(0.f, -1.f, 0.f)},
-		{"accel_left", m_leftRightAccel, Vec3(-1.f, 0.f, 0.f)},
-		{"accel_right", m_leftRightAccel, Vec3(1.f, 0.f, 0.f)},
-		{"accel_up", m_upDownAccel, Vec3(0.f, 0.f, 1.f)},
-		{"accel_down", m_upDownAccel, Vec3(0.f, 0.f, -1.f)}
+	// Initializing the maps of the motion profile
+	m_linearParamsMap[AxisType::Linear] = {
+		{"accel_forward", m_fwdAccel, m_maxFwdVel,  Vec3(0.f, 1.f, 0.f)},
+		{"accel_backward", m_bwdAccel, m_maxBwdVel, Vec3(0.f, -1.f, 0.f)},
+		{"accel_left", m_leftRightAccel, m_maxLatVel, Vec3(-1.f, 0.f, 0.f)},
+		{"accel_right", m_leftRightAccel, m_maxLatVel, Vec3(1.f, 0.f, 0.f)},
+		{"accel_up", m_upDownAccel, m_maxUpDownVel, Vec3(0.f, 0.f, 1.f)},
+		{"accel_down", m_upDownAccel, m_maxUpDownVel, Vec3(0.f, 0.f, -1.f)}
 	};
-	m_rollAxisParamsMap[AxisType::Roll] = {
-		{"roll_left", radRollAccel, Vec3(0.f, -1.f, 0.f)},
-		{"roll_right", radRollAccel, Vec3(0.f, 1.f, 0.f)}
+	m_rollParamsMap[AxisType::Roll] = {
+		{"roll_left", radRollAccel, m_maxRoll , Vec3(0.f, -1.f, 0.f)},
+		{"roll_right", radRollAccel, m_maxRoll, Vec3(0.f, 1.f, 0.f)}
 	};
-	m_pitchYawAxisParamsMap[AxisType::PitchYaw] = {
-		{"yaw", radYawAccel, Vec3(0.f, 0.f, -1.f)},
-		{"pitch", radPitchAccel, Vec3(-1.f, 0.f, 0.f)}
+	m_pitchYawParamsMap[AxisType::PitchYaw] = {
+		{"yaw", radYawAccel, m_maxYaw, Vec3(0.f, 0.f, -1.f)},
+		{"pitch", radPitchAccel, m_maxPitch, Vec3(-1.f, 0.f, 0.f)}
 	};
 }
 
@@ -173,62 +172,62 @@ float CFlightController::ClampInput(float inputValue, bool isMouse) const
 ///////////////////////////////////////////////////////////////////////////
 // FLIGHT CALCULATIONS
 ///////////////////////////////////////////////////////////////////////////
-Vec3 CFlightController::ScaleAccel(const VectorMap<AxisType, DynArray<AxisAccelParams>>& axisAccelParamsList)
+Vec3 CFlightController::ScaleInput(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisParamsList)
 {
 	// Initializing vectors for acceleration direction and desired acceleration
 	Vec3 m_accelDirection(ZERO);	 // Vector to accumulate the direction of applied accelerations
 	Vec3 m_requestedAccel(ZERO);  // Vector to accumulate desired acceleration magnitudes
 	Vec3 m_localDirection(ZERO);  // Calculate local thrust direction based on input value
-	Vec3 scaledAccelDirection(ZERO); // Scaled vector, our final local direction + magnitude 
+	Vec3 scaledInputDirection(ZERO); // Scaled vector, our final local direction + magnitude 
 	float normalizedInputValue(ZERO); // Normalize input values
 	
-	for (const auto& axisAccelParamsPair : axisAccelParamsList)	// Iterating over the list of axis and their input values
+	for (const auto& axisMotionParamsPair : axisParamsList)	// Iterating over the list of axis and their input values
 	{
-		AxisType axisType = axisAccelParamsPair.first;
-		const DynArray<AxisAccelParams>& axisParamsArray = axisAccelParamsPair.second;
+		AxisType axisType = axisMotionParamsPair.first;
+		const DynArray<AxisMotionParams>& axisMotionParamsArray = axisMotionParamsPair.second;
 
-		for (const auto& accelParams : axisParamsArray)	// Iterate over the DynArray<AxisAccelParams> for the current AxisType
+		for (const auto& motionParams : axisMotionParamsArray)	// Iterate over the DynArray<AxisAccelParams> for the current AxisType
 		{
 			if (axisType == AxisType::Linear)
 			{
-				normalizedInputValue = ClampInput(AxisGetter(accelParams.axisName)); // Retrieve input value for the current axis and normalize to a range of -1 to 1
-				m_localDirection = accelParams.localDirection;
+				normalizedInputValue = ClampInput(AxisGetter(motionParams.axisName)); // Retrieve input value for the current axis and normalize to a range of -1 to 1
+				m_localDirection = motionParams.localDirection;
 			}
 			else if (axisType == AxisType::Roll)
 			{
-				normalizedInputValue = ClampInput(AxisGetter(accelParams.axisName));
-				m_localDirection = accelParams.localDirection;
+				normalizedInputValue = ClampInput(AxisGetter(motionParams.axisName));
+				m_localDirection = motionParams.localDirection;
 			}
 			else if (axisType == AxisType::PitchYaw)
 			{
-				normalizedInputValue = ClampInput(AxisGetter(accelParams.axisName), true);
-				m_localDirection = accelParams.localDirection;
+				normalizedInputValue = ClampInput(AxisGetter(motionParams.axisName), true);
+				m_localDirection = motionParams.localDirection;
 			}
 			m_localDirection = WorldToLocal(m_localDirection); // Convert to local space
 			m_accelDirection += m_localDirection * normalizedInputValue; // Accumulate axis direction with magnitude in local space, scaling by the normalized input
-			m_requestedAccel += m_localDirection * accelParams.AccelAmount * normalizedInputValue; // Accumulate desired acceleration based on thrust amount and input value, combining for multiple axes
+			m_requestedAccel += m_localDirection * motionParams.AccelAmount * normalizedInputValue; // Accumulate desired acceleration based on thrust amount and input value, combining for multiple axes
 		}
 		if (m_accelDirection.GetLength() > 1.f) // Normalize accelDirection to mitigate excessive accelerations when combining inputs
 		{
 			m_accelDirection.Normalize();
 		}
 
-		scaledAccelDirection = m_accelDirection * m_requestedAccel.GetLength(); // Scale the direction vector by the magnitude of requestedAccel
+		scaledInputDirection = m_accelDirection * m_requestedAccel.GetLength(); // Scale the direction vector by the magnitude of requestedAccel
 		
 		if (axisType == AxisType::Linear)
 		{
-			UpdateAccelerationState(m_linearAccelData, scaledAccelDirection);
+			UpdateAccelerationState(m_linearAccelData, scaledInputDirection);
 		}
 		else if (axisType == AxisType::Roll)
 		{
-			UpdateAccelerationState(m_rollAccelData, scaledAccelDirection);
+			UpdateAccelerationState(m_rollAccelData, scaledInputDirection);
 		}
 		else if (axisType == AxisType::PitchYaw)
 		{
-			UpdateAccelerationState(m_pitchYawAccelData, scaledAccelDirection);
+			UpdateAccelerationState(m_pitchYawAccelData, scaledInputDirection);
 		}
 	}
-	return scaledAccelDirection;   // Return the scaled acceleration direction vector
+	return scaledInputDirection;   // Return the scaled acceleration direction vector
 }
 
 void CFlightController::UpdateAccelerationState(JerkAccelerationData& accelData, const Vec3& targetAccel)
@@ -422,39 +421,34 @@ void CFlightController::DirectInput(float frameTime)
 {
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 30, 2, m_debugColor, false, "Newtonian");
 
-	m_linearAccelData.targetJerkAccel = ScaleAccel(m_linearAxisParamsMap); // Scale and set the target acceleration for linear movement
+	m_linearAccelData.targetJerkAccel = ScaleInput(m_linearParamsMap); // Scale and set the target acceleration for linear movement
 	m_linearAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_linearAccelData, frameTime); 	// Infuse the acceleration value with the current jerk coeficient
 
-	m_rollAccelData.targetJerkAccel = ScaleAccel(m_rollAxisParamsMap);
+	m_rollAccelData.targetJerkAccel = ScaleInput(m_rollParamsMap);
 	m_rollAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_rollAccelData, frameTime);
 
-	m_pitchYawAccelData.targetJerkAccel = ScaleAccel(m_pitchYawAxisParamsMap);
+	m_pitchYawAccelData.targetJerkAccel = ScaleInput(m_pitchYawParamsMap);
 	m_pitchYawAccelData.currentJerkAccel = UpdateAccelerationWithJerk(m_pitchYawAccelData, frameTime);
-
-	AccelToImpulse(m_linearAccelData.currentJerkAccel, m_rollAccelData.currentJerkAccel, m_pitchYawAccelData.currentJerkAccel, frameTime, false);
 
 	
 	// Send movement data to the server if we are connected, apply locally if not
-	/*
 	if (!gEnv->bServer)
 	{
-		SRmi<RMI_WRAP(&CFlightController::ServerRequestImpulse)>::InvokeOnServer(this, SerializeImpulseData{
+		SRmi<RMI_WRAP(&CFlightController::RequestImpulseOnServer)>::InvokeOnServer(this, SerializeImpulseData{
 		Vec3(ZERO),
 		Quat(ZERO),
-		AccelToImpulse(m_linearAccelData.currentJerkAccel, frameTime),
-		AccelToImpulse(m_rollAccelData.currentJerkAccel,frameTime),
-		AccelToImpulse(m_pitchYawAccelData.currentJerkAccel, frameTime)
-			});
+		m_linearAccelData.currentJerkAccel,
+		m_rollAccelData.currentJerkAccel,
+		m_pitchYawAccelData.currentJerkAccel });
 	}
 	else 
-		ApplyImpulse(AccelToImpulse(m_linearAccelData.currentJerkAccel, frameTime), AccelToImpulse(m_rollAccelData.currentJerkAccel, frameTime), AccelToImpulse(m_pitchYawAccelData.currentJerkAccel, frameTime));
-
-	*/
+		AccelToImpulse(m_linearAccelData.currentJerkAccel, m_rollAccelData.currentJerkAccel, m_pitchYawAccelData.currentJerkAccel, frameTime, false);
 }
 
 void CFlightController::CoupledFM(float frameTime)
 {
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 30, 2, m_debugColor, false, "Coupled");
+
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -479,9 +473,9 @@ void CFlightController::GravityAssist(float frameTime)
 			pe_action_impulse impulseAction;
 
 			// First pass: Calculate total alignment
-			for (const auto& axisAccelParamsPair : m_linearAxisParamsMap) // Iterating over each axis within the linear set.
+			for (const auto& axisAccelParamsPair : m_linearParamsMap) // Iterating over each axis within the linear set.
 			{
-				const DynArray<AxisAccelParams>& axisParamsArray = axisAccelParamsPair.second;
+				const DynArray<AxisMotionParams>& axisParamsArray = axisAccelParamsPair.second;
 				
 				for (const auto& accelParams : axisParamsArray)	// Iterate over the DynArray<AxisAccelParams> for the current AxisType
 				{
@@ -498,9 +492,9 @@ void CFlightController::GravityAssist(float frameTime)
 			}
 
 			// Second pass: Apply impulses proportionally
-			for (const auto& axisAccelParamsPair : m_linearAxisParamsMap)
+			for (const auto& axisAccelParamsPair : m_linearParamsMap)
 			{
-				const DynArray<AxisAccelParams>& axisParamsArray = axisAccelParamsPair.second;
+				const DynArray<AxisMotionParams>& axisParamsArray = axisAccelParamsPair.second;
 
 				for (const auto& accelParams : axisParamsArray)
 				{
@@ -565,13 +559,14 @@ void CFlightController::FlightModifierHandler(FlightModifierBitFlag bitFlag, flo
 ///////////////////////////////////////////////////////////////////////////
 // NETWORKING
 ///////////////////////////////////////////////////////////////////////////
-bool CFlightController::ServerRequestImpulse(SerializeImpulseData&& data, INetChannel*)
+bool CFlightController::RequestImpulseOnServer(SerializeImpulseData&& data, INetChannel*)
 {
 	IPhysicalEntity* pPhysicalEntity = GetEntity()->GetPhysics();
 
 	if (pPhysicalEntity)
 	{
-		SRmi<RMI_WRAP(&CFlightController::ClientRequestImpulse)>::InvokeOnAllClients(this, std::move(data));
+		AccelToImpulse(data.linearImpulse,data.rollImpulse, data.pitchYawImpulse, m_frameTime, false);
+		SRmi<RMI_WRAP(&CFlightController::UpdateMovement)>::InvokeOnAllClients(this, std::move(data));
 
 		// Update position and orientation serialization variables
 		m_shipPosition = GetEntity()->GetWorldPos();
@@ -582,7 +577,7 @@ bool CFlightController::ServerRequestImpulse(SerializeImpulseData&& data, INetCh
 	return true;
 }
 
-bool CFlightController::ClientRequestImpulse(SerializeImpulseData&& data, INetChannel*)
+bool CFlightController::UpdateMovement(SerializeImpulseData&& data, INetChannel*)
 {
 	IPhysicalEntity* pPhysicalEntity = GetEntity()->GetPhysics();
 	if (pPhysicalEntity)
