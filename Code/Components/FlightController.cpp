@@ -174,7 +174,7 @@ float CFlightController::ClampInput(float inputValue, bool isMouse) const
 ///////////////////////////////////////////////////////////////////////////
 // FLIGHT CALCULATIONS
 ///////////////////////////////////////////////////////////////////////////
-ScaledMotion CFlightController::ScaleInput(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisParamsList, JerkAccelerationData& accelData)
+ScaledMotion CFlightController::ScaleInput(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisParamsList)
 {
 	// Initializing vectors for acceleration direction and desired acceleration
 	Vec3 accelDirection(ZERO); // Vector to accumulate the direction of applied accelerations
@@ -209,7 +209,6 @@ ScaledMotion CFlightController::ScaleInput(const VectorMap<AxisType, DynArray<Ax
 		accelDirection.Normalize();
 	}
 	scaledInputDirection = accelDirection * requestedAccel.GetLength(); // Scale the direction vector by the magnitude of requestedAccel
-	UpdateAccelerationState(accelData, scaledInputDirection); // Updates our current *requested* motion state to compute jerk accordingly (based on input, not actual ship motion!)
 
 	// Normalize the velocity vector if necessary
 	if (scaledVelocityDirection.GetLength() > maxSpeedMagnitude)
@@ -371,39 +370,35 @@ float CFlightController::GetAcceleration(float frameTime)
 
 void CFlightController::DrawDirectionIndicator(float frameTime)
 {
-	if (m_pEntity)
+	pe_status_dynamics dynamics;
+	if (!m_pEntity || !m_pEntity->GetPhysicalEntity()->GetStatus(&dynamics))
 	{
-		pe_status_dynamics dynamics;
-
-		if (m_pEntity->GetPhysicalEntity()->GetStatus(&dynamics))
-		{
-			// Get the current velocity vector
-			Vec3 velocity = dynamics.v;
-
-			// Transform the velocity vector to view
-			// Other than direction, we need a 3D position to project onto the 2D screen.
-			const CCamera& camera = gEnv->pSystem->GetViewCamera();
-			Vec3 cameraPos = camera.GetPosition();
-			Vec3 relativeVelocity = cameraPos + velocity.GetNormalized(); // Scale it for visibility
-
-			// Project the 3D position (relative to the camera) to 2D screen coordinates
-			Vec3 screenPos;
-			gEnv->pRenderer->ProjectToScreen(relativeVelocity.x, relativeVelocity.y, relativeVelocity.z, &screenPos.x, &screenPos.y, &screenPos.z);
-
-			// The screenPos now contains the normalized screen coordinates (0 to 100)
-			// Convert these to actual pixel coordinates
-			const int screenWidth = gEnv->pRenderer->GetWidth();
-			const int screenHeight = gEnv->pRenderer->GetHeight();
-			float screenX = screenPos.x / 100.0f * screenWidth;
-			float screenY = screenPos.y / 100.0f * screenHeight;
-
-			// Draw the 2D label
-			if (screenPos.z < 1.f)
-				gEnv->pAuxGeomRenderer->Draw2dLabel(screenX, screenY, 3.0f, m_debugColor, true, "+");
-			else
-				gEnv->pAuxGeomRenderer->Draw2dLabel(screenX, screenY, 3.0f, m_debugColor, true, "x");
-		}
+		return; // Return early if we have a problem getting that data. 
 	}
+
+	Vec3 velocity = dynamics.v;
+
+	// Transform the velocity vector to view
+	// Other than direction, we need a 3D position to project onto the 2D screen.
+	const CCamera& camera = gEnv->pSystem->GetViewCamera();
+	Vec3 cameraPos = camera.GetPosition();
+	Vec3 relativeVelocity = cameraPos + velocity.GetNormalized();
+
+	// Project the 3D position (relative to the camera) to 2D screen coordinates
+	Vec3 screenPos;
+	gEnv->pRenderer->ProjectToScreen(relativeVelocity.x, relativeVelocity.y, relativeVelocity.z, &screenPos.x, &screenPos.y, &screenPos.z);
+
+	// Converting to pixel coordinates
+	const int screenWidth = gEnv->pRenderer->GetWidth();
+	const int screenHeight = gEnv->pRenderer->GetHeight();
+	float screenX = screenPos.x / 100.0f * screenWidth;
+	float screenY = screenPos.y / 100.0f * screenHeight;
+
+	// Draw the 2D label
+	if (screenPos.z < 1.f)
+		gEnv->pAuxGeomRenderer->Draw2dLabel(screenX, screenY, 3.0f, m_debugColor, true, "+");
+	else
+		gEnv->pAuxGeomRenderer->Draw2dLabel(screenX, screenY, 3.0f, m_debugColor, true, "x");
 }
 
 void CFlightController::DrawOnScreenDebugText(float frameTime)
@@ -426,12 +421,18 @@ void CFlightController::DirectInput(float frameTime)
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 30, 2, m_debugColor, false, "Newtonian");
 
 
-	Vec3 scaledLinear = ScaleInput(m_linearParamsMap, m_linearJerkData).GetAcceleration();
-	Vec3 scaledRoll = ScaleInput(m_rollParamsMap, m_rollJerkData).GetAcceleration();
-	Vec3 scaledPitchYaw = ScaleInput(m_pitchYawParamsMap, m_pitchYawJerkData).GetAcceleration();
+	Vec3 linearAccelMagnitude = ScaleInput(m_linearParamsMap).GetAcceleration();
+	Vec3 rollAccelMagnitude = ScaleInput(m_rollParamsMap).GetAcceleration();
+	Vec3 pitchYawMagnitude = ScaleInput(m_pitchYawParamsMap).GetAcceleration();
 
-	MotionData motionData(scaledLinear, scaledRoll,
-		scaledPitchYaw, m_linearJerkData, m_rollJerkData, m_pitchYawJerkData);
+
+	// Updates our current requested motion state to compute jerk accordingly (based on input, not ship motion!)
+	UpdateAccelerationState(m_linearJerkData, linearAccelMagnitude);
+	UpdateAccelerationState(m_rollJerkData, rollAccelMagnitude);
+	UpdateAccelerationState(m_pitchYawJerkData, pitchYawMagnitude);
+
+	MotionData motionData(linearAccelMagnitude, rollAccelMagnitude,
+		pitchYawMagnitude, m_linearJerkData, m_rollJerkData, m_pitchYawJerkData);
 
 	// Send movement data to the server if we are connected, apply locally if not
 	if (!gEnv->bServer)
@@ -439,36 +440,82 @@ void CFlightController::DirectInput(float frameTime)
 		SRmi<RMI_WRAP(&CFlightController::RequestImpulseOnServer)>::InvokeOnServer(this, SerializeImpulseData{
 		Vec3(ZERO),
 		Quat(ZERO),
-		scaledLinear,
-		scaledRoll,
-		scaledPitchYaw });
+		linearAccelMagnitude,
+		rollAccelMagnitude,
+		pitchYawMagnitude });
 	}
 	else 
 		AccelToImpulse(motionData, frameTime, false);
+}
+
+Vec3 CFlightController::CounterImpulseDirection(Vec3 requestedDirection)
+{
+	pe_status_dynamics dynamics;
+	if (!m_pEntity || !m_pEntity->GetPhysicalEntity()->GetStatus(&dynamics))
+	{
+		return Vec3(ZERO);
+	}
+
+	// Transform the velocity vector to local coordinates 
+	Vec3 velocity = WorldToLocal(dynamics.v);
+
+	return requestedDirection.cross(velocity);
+}
+
+void CFlightController::AxisRelativeVelocity(Vec3 desiredVelocity, const VectorMap<AxisType, DynArray<AxisMotionParams>> axisParamsMap, float frameTime)
+{
+	pe_status_dynamics dynamics;
+	if (!m_pEntity || !m_pEntity->GetPhysicalEntity()->GetStatus(&dynamics))
+	{
+		return; // Return early if we have a problem getting that data. 
+	}
+	for (const auto& axisAccelParamsPair : m_linearParamsMap) // Iterating over each axis within the linear set.
+	{
+		const DynArray<AxisMotionParams>& axisParamsArray = axisAccelParamsPair.second;
+
+		for (const auto& accelParams : axisParamsArray)	// Iterate over the DynArray<AxisAccelParams> for the current AxisType
+		{
+			float currentVelocity = WorldToLocal(dynamics.v).dot(accelParams.localDirection);
+			CryLog("currentVelocity:%f", currentVelocity);
+		}
+	}
 }
 
 void CFlightController::CoupledFM(float frameTime)
 {
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 30, 2, m_debugColor, false, "Coupled");
 
+	Vec3 linearVelMagnitude = ScaleInput(m_linearParamsMap).GetVelocity(); // Scale and set the target velocity for linear movement
+	Vec3 rollVelMagnitude = ScaleInput(m_rollParamsMap).GetVelocity();
+	Vec3 pitchYawVelMagnitude = ScaleInput(m_pitchYawParamsMap).GetVelocity();
 
-	m_linearJerkData.targetJerkAccel = ScaleInput(m_linearParamsMap, m_linearJerkData).GetVelocity(); // Scale and set the target velocity for linear movement
-	m_linearJerkData.currentJerkAccel = UpdateAccelerationWithJerk(m_linearJerkData, frameTime); 	// Infuse the acceleration value with the current jerk coeficient
+	// Updates our current requested motion state to compute jerk accordingly (based on input, not ship motion!)
+	UpdateAccelerationState(m_linearJerkData, linearVelMagnitude);
+	UpdateAccelerationState(m_rollJerkData, rollVelMagnitude);
+	UpdateAccelerationState(m_pitchYawJerkData, pitchYawVelMagnitude);
 
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 250, 2, m_debugColor, false, "m_linearAccelData.targetJerkAccel: x=%f, y=%f, z=%f",
-		m_linearJerkData.targetJerkAccel.x,
-		m_linearJerkData.targetJerkAccel.y,
-		m_linearJerkData.targetJerkAccel.z);
+	Vec3 velCrossProduct = CounterImpulseDirection(linearVelMagnitude);
 
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 240, 2, m_debugColor, false, "velCrossProduct: x=%f, y=%f, z=%f", velCrossProduct.x, velCrossProduct.y, velCrossProduct.z);
+
+	AxisRelativeVelocity(linearVelMagnitude, m_linearParamsMap, frameTime);
+
+
+	/*
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 250, 2, m_debugColor, false, "linearVelMagnitude: x=%f, y=%f, z=%f",
+		linearVelMagnitude.x,
+		linearVelMagnitude.y,
+		linearVelMagnitude.z);
+		*/
 }
 
 ///////////////////////////////////////////////////////////////////////////
 // FLIGHT MODIFIERS
 ///////////////////////////////////////////////////////////////////////////
 
-void CFlightController::GravityAssist(float frameTime)
+void CFlightController::AntiGravity(float frameTime)
 {
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "Gravity assist: ON");
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "Anti-Gravity: ON");
 
 	if (m_pEntity)
 	{
@@ -552,17 +599,16 @@ void CFlightController::FlightModifierHandler(FlightModifierBitFlag bitFlag, flo
 		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 150, 2, m_debugColor, false, "Boost: OFF");
 	if (bitFlag.HasFlag(EFlightModifierFlag::Gravity))
 	{
-		GravityAssist(frameTime);
+		AntiGravity(frameTime);
 	}
 	else
-		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "Gravity assist: OFF");
+		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "Anti-Gravity: OFF");
 	if (bitFlag.HasFlag(EFlightModifierFlag::Comstab))
 	{
 		ComstabAssist(frameTime);
 	}
 	else
 		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 210, 2, m_debugColor, false, "Comstab: OFF");
-
 
 	// Debug stuff
 	DrawOnScreenDebugText(frameTime);

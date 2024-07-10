@@ -236,7 +236,11 @@ private:
 	Vec3 UpdateAccelerationWithJerk(JerkAccelerationData& accelData, float frameTime);
 
 	// Scales the acceleration asked, according to input magnitude, taking into account the inputs pressed
-	ScaledMotion ScaleInput(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisAccelParamsMap, JerkAccelerationData& accelData);
+	ScaledMotion ScaleInput(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisAccelParamsMap);
+
+	Vec3 CounterImpulseDirection(Vec3 requestedDirection);
+
+	void AxisRelativeVelocity(Vec3 desiredVelocity, const VectorMap<AxisType, DynArray<AxisMotionParams>> axisParamsMap, float frameTime);
 
 	/* Direct input mode: raw acceleration requests on an input scale
 	*  Step 1. For each axis group, call ScaleAccel to create a scaled direction vector by input in local space
@@ -248,7 +252,7 @@ private:
 	void CoupledFM(float frameTime);
 
 	// Compensates for the gravity pull
-	void GravityAssist(float frameTime);
+	void AntiGravity(float frameTime);
 
 	/* Avoids drift by reducing the linear velocity in proportion to the alignment to your forward direction vector.
 	*  Cannot be used in decoupled mode
@@ -257,11 +261,6 @@ private:
 
 	// toggle between the flight modes on a key press
 	void FlightModifierHandler(FlightModifierBitFlag bitFlag, float frameTime);
-
-	// Impulse generator
-	bool RequestImpulseOnServer(SerializeImpulseData&& data, INetChannel*);
-
-	bool UpdateMovement(SerializeImpulseData&& data, INetChannel*);
 
 	// Converts the accel target (after jerk) which contains both direction and magnitude, into thrust values.
 	Vec3 AccelToImpulse(const MotionData& motionData, float frameTime, bool mathOnly = false);
@@ -275,9 +274,17 @@ private:
 	Vec3 GetVelocity();
 	float GetAcceleration(float frameTime);
 
+	// TVI
+
 	void DrawDirectionIndicator(float frameTime);
 
+	// Debug
 	void DrawOnScreenDebugText(float frameTime);
+
+	// Networking
+	bool RequestImpulseOnServer(SerializeImpulseData&& data, INetChannel*);
+
+	bool UpdateMovement(SerializeImpulseData&& data, INetChannel*);
 
 	// Default Components
 	CVehicleComponent* m_pVehicleComponent = nullptr;
