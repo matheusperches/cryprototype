@@ -33,11 +33,11 @@ add_sources("Components_uber.cpp"
 		"Components/VehicleComponent.cpp"
 		"Components/Bullet.h"
 		"Components/FlightController.h"
+		"Components/FlightModifiers.h"
 		"Components/Player.h"
 		"Components/PlayerManager.h"
 		"Components/ShipThrusterComponent.h"
 		"Components/SpawnPoint.h"
-		"Components/FlightModifiers.h"
 		"Components/VehicleComponent.h"
 )
 

@@ -238,10 +238,6 @@ private:
 	// Scales the acceleration asked, according to input magnitude, taking into account the inputs pressed
 	ScaledMotion ScaleInput(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisAccelParamsMap);
 
-	Vec3 CounterImpulseDirection(Vec3 requestedDirection);
-
-	void AxisRelativeVelocity(Vec3 desiredVelocity, const VectorMap<AxisType, DynArray<AxisMotionParams>> axisParamsMap, float frameTime);
-
 	/* Direct input mode: raw acceleration requests on an input scale
 	*  Step 1. For each axis group, call ScaleAccel to create a scaled direction vector by input in local space
 	*  Step 2. Jerk gets infused
@@ -250,6 +246,10 @@ private:
 	void DirectInput(float frameTime);
 
 	void CoupledFM(float frameTime);
+
+	Vec3 VelocityDiscrepancy(Vec3 desiredLinearVelocity, float frameTime);
+
+	Vec3 CalculateCorrection(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisParamsList, Vec3 velocityDiscrepancy, float frameTime);
 
 	// Compensates for the gravity pull
 	void AntiGravity(float frameTime);

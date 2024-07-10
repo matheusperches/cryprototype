@@ -177,50 +177,28 @@ float CFlightController::ClampInput(float inputValue, bool isMouse) const
 ScaledMotion CFlightController::ScaleInput(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisParamsList)
 {
 	// Initializing vectors for acceleration direction and desired acceleration
-	Vec3 accelDirection(ZERO); // Vector to accumulate the direction of applied accelerations
-	Vec3 requestedAccel(ZERO); // Vector to accumulate desired acceleration magnitudes
 	Vec3 localDirection(ZERO); // Calculate local thrust direction based on input value
-	Vec3 scaledInputDirection(ZERO); // Scaled vector, our final local direction + magnitude 
-	Vec3 scaledVelocityDirection(ZERO);
 	float normalizedInputValue(ZERO); // Normalize input values
-	float maxSpeedMagnitude = 0.f; // Maximum speed magnitude
+
+	// Vectors to accumulate the directions of the requested accelerations and velocities by the input magnitude.
+	Vec3 requestedAccelDirection(ZERO), requestedVelDirection(ZERO);
 	
 	for (const auto& axisMotionParamsPair : axisParamsList)	// Iterating over the list of axis and their input values
 	{
 		const DynArray<AxisMotionParams>& axisMotionParamsArray = axisMotionParamsPair.second;
 
-		for (const auto& motionParams : axisMotionParamsArray)	// Iterate over the DynArray<AxisAccelParams> for the current AxisType
+		for (const auto& motionParams : axisMotionParamsArray)	// Iterate over the DynArray<AxisAccelParams> for the current Axis
 		{
-			normalizedInputValue = ClampInput(AxisGetter(motionParams.axisName)); // Retrieve input value for the current axis and normalize to a range of -1 to 1
-			localDirection = motionParams.localDirection;
-			localDirection = WorldToLocal(localDirection); // Convert to local space
-			accelDirection += localDirection * normalizedInputValue; // Accumulate axis direction with magnitude in local space, scaling by the normalized input
-			requestedAccel += localDirection * motionParams.AccelAmount * normalizedInputValue; // Accumulate desired acceleration based on thrust amount and input value, combining for multiple axes
-			scaledVelocityDirection += localDirection * motionParams.velocityLimit * normalizedInputValue; // Accumulate desired velocity based on thrust direction and input value
-		
-			// Calculate the speed for the current axis and update the maximum speed magnitude
-			float axisSpeed = motionParams.velocityLimit * std::fabs(normalizedInputValue); // Absolute value since we are scaling velocity, not acceleration
-			maxSpeedMagnitude = std::max(maxSpeedMagnitude, axisSpeed);
+			normalizedInputValue = ClampInput(AxisGetter(motionParams.axisName)); // Retrieve input value for the current axis and clamp to a range of -1 to 1
+			
+			localDirection = WorldToLocal(motionParams.localDirection); // Convert to local space
+			
+			requestedAccelDirection += localDirection * motionParams.AccelAmount * normalizedInputValue; // Accumulate axis direction, scaling each by its input magnitude in local space
+			
+			requestedVelDirection += localDirection * motionParams.velocityLimit * std::fabs(normalizedInputValue); // Accumulate desired velocity based on thrust direction and input value
 		}
 	}
-
-	if (accelDirection.GetLength() > 1.f) // Normalize accelDirection to mitigate excessive accelerations when combining inputs
-	{
-		accelDirection.Normalize();
-	}
-	scaledInputDirection = accelDirection * requestedAccel.GetLength(); // Scale the direction vector by the magnitude of requestedAccel
-
-	// Normalize the velocity vector if necessary
-	if (scaledVelocityDirection.GetLength() > maxSpeedMagnitude)
-	{
-		scaledVelocityDirection.Normalize();
-		scaledVelocityDirection *= maxSpeedMagnitude;
-	}
-
-	// Scale the normalized velocity vector by the maximum speed magnitude
-	scaledVelocityDirection *= maxSpeedMagnitude;
-
-	return ScaledMotion(scaledInputDirection, scaledVelocityDirection);   // Return the scaled acceleration direction vector in m/s
+	return ScaledMotion(requestedAccelDirection, requestedVelDirection);   // Return the scaled acceleration direction vector in m/s
 }
 
 void CFlightController::UpdateAccelerationState(JerkAccelerationData& accelData, const Vec3& targetAccel)
@@ -277,11 +255,9 @@ Vec3 CFlightController::AccelToImpulse(const MotionData& motionData, float frame
 	Vec3 linearImpulse = Vec3(ZERO);
 	Vec3 angImpulse = Vec3(ZERO);
 
-	linearImpulse = motionData.linearAccel * dynamics.mass * frameTime; // Calculates our final impulse independent from the entity's mass
-	angImpulse = (motionData.rollAccel + motionData.pitchYawAccel) * dynamics.mass * frameTime;
-
-	motionData.linearJerkData.targetJerkAccel = linearImpulse;
-	motionData.linearJerkData.currentJerkAccel = UpdateAccelerationWithJerk(motionData.linearJerkData, frameTime); 	// Infuse the acceleration value with the current jerk coeficient
+	// Infuse the acceleration value with the current jerk coeficient
+	motionData.linearJerkData.targetJerkAccel = motionData.linearAccel;
+	motionData.linearJerkData.currentJerkAccel = UpdateAccelerationWithJerk(motionData.linearJerkData, frameTime); 	
 
 	motionData.rollJerkData.targetJerkAccel = motionData.rollAccel;
 	motionData.rollJerkData.currentJerkAccel = UpdateAccelerationWithJerk(motionData.rollJerkData, frameTime);
@@ -289,10 +265,12 @@ Vec3 CFlightController::AccelToImpulse(const MotionData& motionData, float frame
 	motionData.pitchYawJerkData.targetJerkAccel = motionData.pitchYawAccel;
 	motionData.pitchYawJerkData.currentJerkAccel = UpdateAccelerationWithJerk(motionData.pitchYawJerkData, frameTime);
 
+	linearImpulse = motionData.linearJerkData.currentJerkAccel * dynamics.mass * frameTime; // Calculates our final impulse independent from the entity's mass
+	angImpulse = (motionData.rollJerkData.currentJerkAccel + motionData.pitchYawJerkData.currentJerkAccel) * dynamics.mass * frameTime;
 
 	if (!mathOnly)
 	{
-		ApplyImpulse(motionData.linearJerkData.currentJerkAccel, motionData.rollJerkData.currentJerkAccel + motionData.pitchYawJerkData.currentJerkAccel);
+		ApplyImpulse(linearImpulse, angImpulse);
 	}
 	return linearImpulse + angImpulse;
 }
@@ -375,11 +353,9 @@ void CFlightController::DrawDirectionIndicator(float frameTime)
 	{
 		return; // Return early if we have a problem getting that data. 
 	}
-
 	Vec3 velocity = dynamics.v;
 
-	// Transform the velocity vector to view
-	// Other than direction, we need a 3D position to project onto the 2D screen.
+	// Transform the velocity vector to view | Other than direction, we need a 3D position to project onto the 2D screen.
 	const CCamera& camera = gEnv->pSystem->GetViewCamera();
 	Vec3 cameraPos = camera.GetPosition();
 	Vec3 relativeVelocity = cameraPos + velocity.GetNormalized();
@@ -445,40 +421,7 @@ void CFlightController::DirectInput(float frameTime)
 		pitchYawMagnitude });
 	}
 	else 
-		AccelToImpulse(motionData, frameTime, false);
-}
-
-Vec3 CFlightController::CounterImpulseDirection(Vec3 requestedDirection)
-{
-	pe_status_dynamics dynamics;
-	if (!m_pEntity || !m_pEntity->GetPhysicalEntity()->GetStatus(&dynamics))
-	{
-		return Vec3(ZERO);
-	}
-
-	// Transform the velocity vector to local coordinates 
-	Vec3 velocity = WorldToLocal(dynamics.v);
-
-	return requestedDirection.cross(velocity);
-}
-
-void CFlightController::AxisRelativeVelocity(Vec3 desiredVelocity, const VectorMap<AxisType, DynArray<AxisMotionParams>> axisParamsMap, float frameTime)
-{
-	pe_status_dynamics dynamics;
-	if (!m_pEntity || !m_pEntity->GetPhysicalEntity()->GetStatus(&dynamics))
-	{
-		return; // Return early if we have a problem getting that data. 
-	}
-	for (const auto& axisAccelParamsPair : m_linearParamsMap) // Iterating over each axis within the linear set.
-	{
-		const DynArray<AxisMotionParams>& axisParamsArray = axisAccelParamsPair.second;
-
-		for (const auto& accelParams : axisParamsArray)	// Iterate over the DynArray<AxisAccelParams> for the current AxisType
-		{
-			float currentVelocity = WorldToLocal(dynamics.v).dot(accelParams.localDirection);
-			CryLog("currentVelocity:%f", currentVelocity);
-		}
-	}
+		AccelToImpulse(motionData, frameTime);
 }
 
 void CFlightController::CoupledFM(float frameTime)
@@ -491,22 +434,92 @@ void CFlightController::CoupledFM(float frameTime)
 
 	// Updates our current requested motion state to compute jerk accordingly (based on input, not ship motion!)
 	UpdateAccelerationState(m_linearJerkData, linearVelMagnitude);
-	UpdateAccelerationState(m_rollJerkData, rollVelMagnitude);
-	UpdateAccelerationState(m_pitchYawJerkData, pitchYawVelMagnitude);
 
-	Vec3 velCrossProduct = CounterImpulseDirection(linearVelMagnitude);
+	Vec3 velDiscrepancy = VelocityDiscrepancy(linearVelMagnitude, frameTime);
 
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 240, 2, m_debugColor, false, "velCrossProduct: x=%f, y=%f, z=%f", velCrossProduct.x, velCrossProduct.y, velCrossProduct.z);
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 250, 2, m_debugColor, false, "velDiscrepancy: x=%f, y=%f, z=%f",
+		velDiscrepancy.x,
+		velDiscrepancy.y,
+		velDiscrepancy.z);
 
-	AxisRelativeVelocity(linearVelMagnitude, m_linearParamsMap, frameTime);
+	Vec3 velCorrection = CalculateCorrection(m_linearParamsMap, velDiscrepancy, frameTime);
+
+	MotionData motionData(velCorrection, Vec3(ZERO),
+		Vec3(ZERO), m_linearJerkData, m_rollJerkData, m_pitchYawJerkData);
+
+	AccelToImpulse(motionData, frameTime);
+
+}
+
+Vec3 CFlightController::VelocityDiscrepancy(Vec3 desiredLinearVelocity, float frameTime)
+{
+	pe_status_dynamics dynamics;
+	if (!m_pEntity || !m_pEntity->GetPhysicalEntity()->GetStatus(&dynamics))
+	{
+		return Vec3(ZERO);
+	}
+
+	// Compute the discrepancy for each axis
+	return desiredLinearVelocity - dynamics.v;
+}
+
+Vec3 CFlightController::CalculateCorrection(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisParamsList, Vec3 velocityDiscrepancy, float frameTime)
+{
+	pe_status_dynamics dynamics;
+	if (!m_pEntity || !m_pEntity->GetPhysicalEntity()->GetStatus(&dynamics))
+	{
+		return Vec3(ZERO);
+	}
+
+	float totalAlignment = 0.f;
+
+	Vec3 totalCorrectiveAccel = Vec3(ZERO);
+
+	// First pass: Calculate axis alignment
+	for (const auto& axisAccelParamsPair : m_linearParamsMap) // Iterating over each axis within the linear set.
+	{
+		const DynArray<AxisMotionParams>& axisParamsArray = axisAccelParamsPair.second;
 
 
-	/*
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 250, 2, m_debugColor, false, "linearVelMagnitude: x=%f, y=%f, z=%f",
-		linearVelMagnitude.x,
-		linearVelMagnitude.y,
-		linearVelMagnitude.z);
-		*/
+		for (const auto& accelParams : axisParamsArray)	// Iterate over the DynArray<AxisAccelParams> for the current AxisType
+		{
+			Vec3 localDirection = WorldToLocal(accelParams.localDirection).GetNormalized(); // Normalize to have a range of -1 to 1, which indicates their alignment (1 = perfect / -1 = anti) 
+
+			float alignment = localDirection.Dot(velocityDiscrepancy.GetNormalized()); // Get the alignment between localDirection and gravity, using this to scale the impulse amount
+
+			if (alignment > ZERO)
+			{
+				totalAlignment += alignment;
+			}
+		}
+	}
+
+	// Second pass: Apply impulses proportionally
+	for (const auto& axisAccelParamsPair : m_linearParamsMap)
+	{
+		const DynArray<AxisMotionParams>& axisParamsArray = axisAccelParamsPair.second;
+
+		for (const auto& accelParams : axisParamsArray)
+		{
+			Vec3 localDirection = WorldToLocal(accelParams.localDirection).GetNormalized(); // Normalize to have a range of -1 to 1, which indicates their alignment (1 = perfect / -1 = anti) 
+
+			float alignment = localDirection.Dot(velocityDiscrepancy.GetNormalized()); // Get the alignment between localDirection and gravity, using this to scale the impulse amount
+
+			if (alignment > ZERO)
+			{
+				float proportionalAlignment = alignment / totalAlignment;
+				Vec3 scaledCorrectiveAccel = accelParams.AccelAmount * localDirection * proportionalAlignment;
+				totalCorrectiveAccel += scaledCorrectiveAccel;
+			}
+		}
+	}
+
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 280, 2, m_debugColor, false, "totalCorrectiveAccel: x=%f, y=%f, z=%f",
+		totalCorrectiveAccel.x,
+		totalCorrectiveAccel.y,
+		totalCorrectiveAccel.z);
+
+	return totalCorrectiveAccel;
 }
 
 ///////////////////////////////////////////////////////////////////////////
