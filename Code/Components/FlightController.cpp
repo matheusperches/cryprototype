@@ -196,7 +196,7 @@ ScaledMotion CFlightController::ScaleInput(const VectorMap<AxisType, DynArray<Ax
 			
 			requestedAccelDirection += localDirection * motionParams.AccelAmount * normalizedInputValue; // Accumulate axis direction, scaling each by its input magnitude in local space
 			
-			requestedVelDirection += localDirection * motionParams.velocityLimit * normalizedInputValue; // Accumulate desired velocity based on thrust direction and input value
+			requestedVelDirection += localDirection * motionParams.velocityLimit * std::fabs(normalizedInputValue); // Accumulate desired velocity based on thrust direction and input value
 		}
 	}
 	return ScaledMotion(requestedAccelDirection, requestedVelDirection);   // Return the scaled acceleration direction vector in m/s
@@ -347,84 +347,47 @@ float CFlightController::GetAcceleration(float frameTime)
 	return acceleration;
 }
 
-
-VelocityDiscrepancy CFlightController::CalculateDiscrepancy(Vec3 desiredVelocity)
+void CFlightController::DrawDirectionIndicator(float frameTime)
 {
 	pe_status_dynamics dynamics;
 	if (!m_pEntity || !m_pEntity->GetPhysicalEntity()->GetStatus(&dynamics))
 	{
-		return VelocityDiscrepancy(ZERO, ZERO);
+		return; // Return early if we have a problem getting that data. 
 	}
+	Vec3 velocity = dynamics.v;
 
-	Vec3 linearDiscrepancy = desiredVelocity - dynamics.v;
-	Vec3 angularDiscrepancy = desiredVelocity - dynamics.w;
+	// Transform the velocity vector to view | Other than direction, we need a 3D position to project onto the 2D screen.
+	const CCamera& camera = gEnv->pSystem->GetViewCamera();
+	Vec3 cameraPos = camera.GetPosition();
+	Vec3 relativeVelocity = cameraPos + velocity.GetNormalized();
 
-	// Compute the discrepancy for each axis
-	return VelocityDiscrepancy(linearDiscrepancy, angularDiscrepancy);
+	// Project the 3D position (relative to the camera) to 2D screen coordinates
+	Vec3 screenPos;
+	gEnv->pRenderer->ProjectToScreen(relativeVelocity.x, relativeVelocity.y, relativeVelocity.z, &screenPos.x, &screenPos.y, &screenPos.z);
+
+	// Converting to pixel coordinates
+	const int screenWidth = gEnv->pRenderer->GetWidth();
+	const int screenHeight = gEnv->pRenderer->GetHeight();
+	float screenX = screenPos.x / 100.0f * screenWidth;
+	float screenY = screenPos.y / 100.0f * screenHeight;
+
+	// Draw the 2D label
+	if (screenPos.z < 1.f)
+		gEnv->pAuxGeomRenderer->Draw2dLabel(screenX, screenY, 3.0f, m_debugColor, true, "+");
+	else
+		gEnv->pAuxGeomRenderer->Draw2dLabel(screenX, screenY, 3.0f, m_debugColor, true, "x");
 }
 
-Vec3 CFlightController::CalculateCorrection(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisAccelParamsMap, Vec3 velDiscrepancy, float frameTime)
+void CFlightController::DrawOnScreenDebugText(float frameTime)
 {
-	pe_status_dynamics dynamics;
-	if (!m_pEntity || !m_pEntity->GetPhysicalEntity()->GetStatus(&dynamics))
-	{
-		return Vec3(ZERO);
-	}
+	// Debug
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 60, 2, m_debugColor, false, "Velocity: %.2f", GetVelocity().GetLength());
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 90, 2, m_debugColor, false, "acceleration: %.2f", GetAcceleration(frameTime));
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 120, 2, m_debugColor, false, "total impulse: %.3f", GetImpulse());
 
-	float totalAlignment = 0.f;
-
-	Vec3 totalCorrectiveAccel = Vec3(ZERO);
-
-	// First pass: Calculate axis alignment
-	for (const auto& axisAccelParamsPair : axisAccelParamsMap) // Iterating over each axis within the linear set.
-	{
-		const DynArray<AxisMotionParams>& axisParamsArray = axisAccelParamsPair.second;
-
-		for (const auto& accelParams : axisParamsArray)	// Iterate over the DynArray<AxisAccelParams> for the current AxisType
-		{
-			Vec3 localDirection = WorldToLocal(accelParams.localDirection).GetNormalized(); // Normalize to have a range of -1 to 1, which indicates their alignment (1 = perfect / -1 = anti) 
-
-			float alignment = localDirection.Dot(velDiscrepancy.GetNormalized()); // Get the alignment between localDirection and gravity, using this to scale the impulse amount
-
-			if (alignment > ZERO)
-			{
-				totalAlignment += alignment;
-			}
-		}
-	}
-
-	// Second pass: Apply impulses proportionally
-	for (const auto& axisAccelParamsPair : axisAccelParamsMap)
-	{
-		const DynArray<AxisMotionParams>& axisParamsArray = axisAccelParamsPair.second;
-
-		for (const auto& accelParams : axisParamsArray)
-		{
-			Vec3 localDirection = WorldToLocal(accelParams.localDirection).GetNormalized(); // Normalize to have a range of -1 to 1, which indicates their alignment (1 = perfect / -1 = anti) 
-
-			float alignment = localDirection.Dot(velDiscrepancy.GetNormalized()); // Get the alignment between localDirection and gravity, using this to scale the impulse amount
-
-			if (alignment > ZERO)
-			{
-				float proportionalAlignment = alignment / totalAlignment;
-				Vec3 scaledCorrectiveAccel = accelParams.AccelAmount * localDirection * proportionalAlignment;
-				totalCorrectiveAccel += scaledCorrectiveAccel;
-			}
-		}
-	}
-
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 280, 2, m_debugColor, false, "totalCorrectiveAccel: x=%f, y=%f, z=%f",
-		totalCorrectiveAccel.x,
-		totalCorrectiveAccel.y,
-		totalCorrectiveAccel.z);
-
-	return totalCorrectiveAccel;
+	DrawDirectionIndicator(frameTime);
 }
 
-Vec3 CFlightController::RotationalStability(Vec3 angularDiscrepancy, float frameTime)
-{
-	return Vec3(ZERO);
-}
 
 ///////////////////////////////////////////////////////////////////////////
 // FLIGHT MODES 
@@ -473,72 +436,106 @@ void CFlightController::CoupledFM(float frameTime)
 	// Updates our current requested motion state to compute jerk accordingly (based on input, not ship motion!)
 	UpdateAccelerationState(m_linearJerkData, linearVelMagnitude);
 
+<<<<<<< HEAD
 	Vec3 linearDiscrepancy = CalculateDiscrepancy(linearVelMagnitude).GetLinearDiscrepancy();
 	Vec3 rollDiscrepancy = CalculateDiscrepancy(rollVelMagnitude).GetAngularDiscrepancy();
 	Vec3 pitchYawDiscrepancy = CalculateDiscrepancy(pitchYawVelMagnitude).GetAngularDiscrepancy();
+=======
+	Vec3 velDiscrepancy = VelocityDiscrepancy(linearVelMagnitude, frameTime);
+>>>>>>> parent of 33e77fb (Implementing coupled rotation)
 
-	/*
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 250, 2, m_debugColor, false, "linearDiscrepancy: x=%f, y=%f, z=%f",
-		linearDiscrepancy.x,
-		linearDiscrepancy.y,
-		linearDiscrepancy.z);
-	*/
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 250, 2, m_debugColor, false, "velDiscrepancy: x=%f, y=%f, z=%f",
+		velDiscrepancy.x,
+		velDiscrepancy.y,
+		velDiscrepancy.z);
 
+	Vec3 velCorrection = CalculateCorrection(m_linearParamsMap, velDiscrepancy, frameTime);
 
+<<<<<<< HEAD
 	Vec3 linearCorrection = CalculateCorrection(m_linearParamsMap, linearDiscrepancy, frameTime);
 	Vec3 rollCorrection = CalculateCorrection(m_rollParamsMap, rollDiscrepancy, frameTime);
 	Vec3 pitchYawCorrection = CalculateCorrection(m_pitchYawParamsMap, pitchYawDiscrepancy, frameTime);
 
 	MotionData motionData(linearCorrection, rollCorrection,
 		pitchYawDiscrepancy, m_linearJerkData, m_rollJerkData, m_pitchYawJerkData);
+=======
+	MotionData motionData(velCorrection, Vec3(ZERO),
+		Vec3(ZERO), m_linearJerkData, m_rollJerkData, m_pitchYawJerkData);
+>>>>>>> parent of 33e77fb (Implementing coupled rotation)
 
 	AccelToImpulse(motionData, frameTime);
 
 }
 
-///////////////////////////////////////////////////////////////////////////
-// DEBUG
-///////////////////////////////////////////////////////////////////////////
-
-void CFlightController::DrawDirectionIndicator(float frameTime)
+Vec3 CFlightController::VelocityDiscrepancy(Vec3 desiredLinearVelocity, float frameTime)
 {
 	pe_status_dynamics dynamics;
 	if (!m_pEntity || !m_pEntity->GetPhysicalEntity()->GetStatus(&dynamics))
 	{
-		return; // Return early if we have a problem getting that data. 
+		return Vec3(ZERO);
 	}
-	Vec3 velocity = dynamics.v;
 
-	// Transform the velocity vector to view | Other than direction, we need a 3D position to project onto the 2D screen.
-	const CCamera& camera = gEnv->pSystem->GetViewCamera();
-	Vec3 cameraPos = camera.GetPosition();
-	Vec3 relativeVelocity = cameraPos + velocity.GetNormalized();
-
-	// Project the 3D position (relative to the camera) to 2D screen coordinates
-	Vec3 screenPos;
-	gEnv->pRenderer->ProjectToScreen(relativeVelocity.x, relativeVelocity.y, relativeVelocity.z, &screenPos.x, &screenPos.y, &screenPos.z);
-
-	// Converting to pixel coordinates
-	const int screenWidth = gEnv->pRenderer->GetWidth();
-	const int screenHeight = gEnv->pRenderer->GetHeight();
-	float screenX = screenPos.x / 100.0f * screenWidth;
-	float screenY = screenPos.y / 100.0f * screenHeight;
-
-	// Draw the 2D label
-	if (screenPos.z < 1.f)
-		gEnv->pAuxGeomRenderer->Draw2dLabel(screenX, screenY, 3.0f, m_debugColor, true, "+");
-	else
-		gEnv->pAuxGeomRenderer->Draw2dLabel(screenX, screenY, 3.0f, m_debugColor, true, "x");
+	// Compute the discrepancy for each axis
+	return desiredLinearVelocity - dynamics.v;
 }
 
-void CFlightController::DrawOnScreenDebugText(float frameTime)
+Vec3 CFlightController::CalculateCorrection(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisParamsList, Vec3 velocityDiscrepancy, float frameTime)
 {
-	// Debug
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 60, 2, m_debugColor, false, "Velocity: %.2f", GetVelocity().GetLength());
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 90, 2, m_debugColor, false, "acceleration: %.2f", GetAcceleration(frameTime));
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 120, 2, m_debugColor, false, "total impulse: %.3f", GetImpulse());
+	pe_status_dynamics dynamics;
+	if (!m_pEntity || !m_pEntity->GetPhysicalEntity()->GetStatus(&dynamics))
+	{
+		return Vec3(ZERO);
+	}
 
-	DrawDirectionIndicator(frameTime);
+	float totalAlignment = 0.f;
+
+	Vec3 totalCorrectiveAccel = Vec3(ZERO);
+
+	// First pass: Calculate axis alignment
+	for (const auto& axisAccelParamsPair : m_linearParamsMap) // Iterating over each axis within the linear set.
+	{
+		const DynArray<AxisMotionParams>& axisParamsArray = axisAccelParamsPair.second;
+
+
+		for (const auto& accelParams : axisParamsArray)	// Iterate over the DynArray<AxisAccelParams> for the current AxisType
+		{
+			Vec3 localDirection = WorldToLocal(accelParams.localDirection).GetNormalized(); // Normalize to have a range of -1 to 1, which indicates their alignment (1 = perfect / -1 = anti) 
+
+			float alignment = localDirection.Dot(velocityDiscrepancy.GetNormalized()); // Get the alignment between localDirection and gravity, using this to scale the impulse amount
+
+			if (alignment > ZERO)
+			{
+				totalAlignment += alignment;
+			}
+		}
+	}
+
+	// Second pass: Apply impulses proportionally
+	for (const auto& axisAccelParamsPair : m_linearParamsMap)
+	{
+		const DynArray<AxisMotionParams>& axisParamsArray = axisAccelParamsPair.second;
+
+		for (const auto& accelParams : axisParamsArray)
+		{
+			Vec3 localDirection = WorldToLocal(accelParams.localDirection).GetNormalized(); // Normalize to have a range of -1 to 1, which indicates their alignment (1 = perfect / -1 = anti) 
+
+			float alignment = localDirection.Dot(velocityDiscrepancy.GetNormalized()); // Get the alignment between localDirection and gravity, using this to scale the impulse amount
+
+			if (alignment > ZERO)
+			{
+				float proportionalAlignment = alignment / totalAlignment;
+				Vec3 scaledCorrectiveAccel = accelParams.AccelAmount * localDirection * proportionalAlignment;
+				totalCorrectiveAccel += scaledCorrectiveAccel;
+			}
+		}
+	}
+
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 280, 2, m_debugColor, false, "totalCorrectiveAccel: x=%f, y=%f, z=%f",
+		totalCorrectiveAccel.x,
+		totalCorrectiveAccel.y,
+		totalCorrectiveAccel.z);
+
+	return totalCorrectiveAccel;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -607,7 +604,7 @@ void CFlightController::AntiGravity(float frameTime)
 	}
 }
 
-void CFlightController::Comstab(float frameTime)
+void CFlightController::ComstabAssist(float frameTime)
 {
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 210, 2, m_debugColor, false, "Comstab: ON");
 
@@ -637,7 +634,7 @@ void CFlightController::FlightModifierHandler(FlightModifierBitFlag bitFlag, flo
 		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "Anti-Gravity: OFF");
 	if (bitFlag.HasFlag(EFlightModifierFlag::Comstab))
 	{
-		Comstab(frameTime);
+		ComstabAssist(frameTime);
 	}
 	else
 		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 210, 2, m_debugColor, false, "Comstab: OFF");
