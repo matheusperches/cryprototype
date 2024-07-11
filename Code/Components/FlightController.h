@@ -27,6 +27,20 @@ private:
 	Vec3 m_scaledVel;   // Scaled velocity direction vector
 };
 
+class VelocityDiscrepancy
+{
+public:
+	VelocityDiscrepancy(const Vec3& linearDiscrepancy, const Vec3& angularDiscrepancy)
+		: m_linearDiscrepancy(linearDiscrepancy), m_angularDiscrepancy(angularDiscrepancy) {}
+
+	Vec3 GetLinearDiscrepancy() const { return m_linearDiscrepancy; }
+	Vec3 GetAngularDiscrepancy() const { return m_angularDiscrepancy; }
+
+private:
+	Vec3 m_linearDiscrepancy; // Scaled acceleration direction vector
+	Vec3 m_angularDiscrepancy;   // Scaled velocity direction vector
+};
+
 
 class CFlightController final : public IEntityComponent
 {
@@ -238,6 +252,12 @@ private:
 	// Scales the acceleration asked, according to input magnitude, taking into account the inputs pressed
 	ScaledMotion ScaleInput(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisAccelParamsMap);
 
+	VelocityDiscrepancy CalculateDiscrepancy(Vec3 desiredLinearVelocity);
+
+	Vec3 CalculateCorrection(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisAccelParamsMap, Vec3 linearDiscrepancy, float frameTime);
+
+	Vec3 RotationalStability(Vec3 angularDiscrepancy, float frameTime);
+
 	/* Direct input mode: raw acceleration requests on an input scale
 	*  Step 1. For each axis group, call ScaleAccel to create a scaled direction vector by input in local space
 	*  Step 2. Jerk gets infused
@@ -247,17 +267,13 @@ private:
 
 	void CoupledFM(float frameTime);
 
-	Vec3 VelocityDiscrepancy(Vec3 desiredLinearVelocity, float frameTime);
-
-	Vec3 CalculateCorrection(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisParamsList, Vec3 velocityDiscrepancy, float frameTime);
-
 	// Compensates for the gravity pull
 	void AntiGravity(float frameTime);
 
 	/* Avoids drift by reducing the linear velocity in proportion to the alignment to your forward direction vector.
 	*  Cannot be used in decoupled mode
 	*/
-	void ComstabAssist(float frameTime);
+	void Comstab(float frameTime);
 
 	// toggle between the flight modes on a key press
 	void FlightModifierHandler(FlightModifierBitFlag bitFlag, float frameTime);
