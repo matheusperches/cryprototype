@@ -2,15 +2,14 @@
 #pragma once
 #include "StdAfx.h"
 #include "FlightController.h"
-#include "ShipThrusterComponent.h"
 
-#include <CryRenderer/IRenderAuxGeom.h>
 #include <CrySchematyc/Env/Elements/EnvComponent.h>
 #include <CryCore/StaticInstanceList.h>
 #include <CrySchematyc/Env/IEnvRegistrar.h>
 #include <CryEntitySystem/IEntitySystem.h>
-
 #include <CryEntitySystem/IEntityComponent.h>
+#include <CryRenderer/IRenderAuxGeom.h>
+
 #include <CryPhysics/physinterface.h>
 #include <CryNetwork/ISerialize.h>
 #include <CryNetwork/Rmi.h>
@@ -19,6 +18,7 @@
 #include <DefaultComponents/Input/InputComponent.h>
 #include <Components/VehicleComponent.h>
 #include <Components/Player.h>
+#include <Components/ShipThrusterComponent.h>
 
 
 // Registers the component to be used in the engine
@@ -34,12 +34,13 @@ namespace
 	CRY_STATIC_AUTO_REGISTER_FUNCTION(&RegisterFlightController)
 }
 
-
 void CFlightController::Initialize()
 {
 	// Initialize stuff
 	m_pShipThrusterComponent = m_pEntity->GetOrCreateComponent<CShipThrusterComponent>();
 	m_pVehicleComponent = m_pEntity->GetOrCreateComponent<CVehicleComponent>();
+
+	m_pEntity->RemoveComponent(m_pShipThrusterComponent);
 
 	GetEntity()->GetNetEntity()->EnableDelegatableAspect(eEA_GameClientA, false);
 	GetEntity()->GetNetEntity()->EnableDelegatableAspect(eEA_Physics, false);
@@ -56,7 +57,7 @@ Cry::Entity::EventFlags CFlightController::GetEventMask() const
 {
 	//Listening to the update event
 	return EEntityEvent::Update | EEntityEvent::GameplayStarted;
-}
+} 
 
 void CFlightController::ProcessEvent(const SEntityEvent& event)
 {
@@ -473,6 +474,7 @@ void CFlightController::CoupledFM(float frameTime)
 	UpdateAccelerationState(m_linearJerkData, linearVelMagnitude);
 
 	Vec3 linearDiscrepancy = CalculateDiscrepancy(linearVelMagnitude).GetLinearDiscrepancy();
+	Vec3 rollDiscrepancy = CalculateDiscrepancy(rollVelMagnitude).GetAngularDiscrepancy();
 	Vec3 pitchYawDiscrepancy = CalculateDiscrepancy(pitchYawVelMagnitude).GetAngularDiscrepancy();
 
 	/*
@@ -484,9 +486,10 @@ void CFlightController::CoupledFM(float frameTime)
 
 
 	Vec3 linearCorrection = CalculateCorrection(m_linearParamsMap, linearDiscrepancy, frameTime);
+	Vec3 rollCorrection = CalculateCorrection(m_rollParamsMap, rollDiscrepancy, frameTime);
 	Vec3 pitchYawCorrection = CalculateCorrection(m_pitchYawParamsMap, pitchYawDiscrepancy, frameTime);
 
-	MotionData motionData(linearCorrection, Vec3(ZERO),
+	MotionData motionData(linearCorrection, rollCorrection,
 		pitchYawDiscrepancy, m_linearJerkData, m_rollJerkData, m_pitchYawJerkData);
 
 	AccelToImpulse(motionData, frameTime);

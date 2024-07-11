@@ -5,8 +5,8 @@
 
 #include <Components/FlightModifiers.h>
 
-class CShipThrusterComponent;
 class CVehicleComponent;
+class CShipThrusterComponent;
 
 namespace Cry::DefaultComponents
 {
@@ -55,7 +55,6 @@ public:
 	virtual Cry::Entity::EventFlags GetEventMask() const override;
 
 	virtual void ProcessEvent(const SEntityEvent& event) override;
-
 
 	virtual bool NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags) override;
 
@@ -305,9 +304,6 @@ private:
 	// Default Components
 	CVehicleComponent* m_pVehicleComponent = nullptr;
 
-	// Custom Components
-	CShipThrusterComponent* m_pShipThrusterComponent = nullptr;
-
 	// tracking frametime
 	float m_frameTime = 0.f;
 
@@ -359,5 +355,9 @@ private:
 	// Tracking ship position and orientation
 	Vec3 m_shipPosition = ZERO;
 	Quat m_shipOrientation = ZERO;
+
+
+	// Custom Components
+	CShipThrusterComponent* m_pShipThrusterComponent = nullptr;
 };
 

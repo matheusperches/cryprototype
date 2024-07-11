@@ -3,13 +3,16 @@
 #include "VehicleComponent.h"
 #include "GamePlugin.h"
 
-#include <CryRenderer/IRenderAuxGeom.h>
 #include <CrySchematyc/Env/Elements/EnvComponent.h>
 #include <CryCore/StaticInstanceList.h>
 #include <CrySchematyc/Env/IEnvRegistrar.h>
 #include <CryEntitySystem/IEntitySystem.h>
-#include <CryNetwork/Rmi.h>
+#include <CryEntitySystem/IEntityComponent.h>
+#include <CryRenderer/IRenderAuxGeom.h>
+
+#include <CryPhysics/physinterface.h>
 #include <CryNetwork/ISerialize.h>
+#include <CryNetwork/Rmi.h>
 
 // Forward declaration
 #include <DefaultComponents/Cameras/CameraComponent.h>
@@ -18,18 +21,22 @@
 #include <Components/FlightController.h>
 
 // Registers the component to be used in the engine
-static void RegisterVehicleComponent(Schematyc::IEnvRegistrar& registrar)
-{
-	Schematyc::CEnvRegistrationScope scope = registrar.Scope(IEntity::GetEntityScopeGUID());
-	{
-		Schematyc::CEnvRegistrationScope componentScope = scope.Register(SCHEMATYC_MAKE_ENV_COMPONENT(CVehicleComponent));
-		{
 
+namespace
+{
+	static void RegisterVehicleComponent(Schematyc::IEnvRegistrar& registrar)
+	{
+		Schematyc::CEnvRegistrationScope scope = registrar.Scope(IEntity::GetEntityScopeGUID());
+		{
+			Schematyc::CEnvRegistrationScope componentScope = scope.Register(SCHEMATYC_MAKE_ENV_COMPONENT(CVehicleComponent));
+			{
+
+			}
 		}
+		CRY_STATIC_AUTO_REGISTER_FUNCTION(&RegisterVehicleComponent)
 	}
 }
 
-CRY_STATIC_AUTO_REGISTER_FUNCTION(&RegisterVehicleComponent)
 
 void CVehicleComponent::Initialize()
 {
@@ -66,14 +73,13 @@ void CVehicleComponent::ProcessEvent(const SEntityEvent& event)
 
 bool CVehicleComponent::GetIsPiloting()
 {
-	// Iterates over the child entities, trying to find the player component 
-	// If one is found, return true.
+
 	for (uint32 i = 0; i < GetEntity()->GetChildCount(); ++i)
 	{
 		IEntity* pChildEntity = GetEntity()->GetChild(i);
 		if (pChildEntity && pChildEntity->GetComponent<CPlayerComponent>())
 		{
-			pilotID = pChildEntity->GetId();
+			m_pilotID = pChildEntity->GetId();
 			m_pPlayerComponent = pChildEntity;
 			return true;
 		}
