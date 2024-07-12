@@ -301,17 +301,11 @@ void CPlayerComponent::InitializeShipInput()
 
 		if (activationMode & eAAM_OnPress)
 		{
-			m_FlightModifierFlag.ToggleFlag(EFlightModifierFlag::Gravity);
+			if (!m_FlightModifierFlag.HasFlag(EFlightModifierFlag::Coupled))
+				m_FlightModifierFlag.ToggleFlag(EFlightModifierFlag::Gravity);
 		}
 	});
 	m_pInputComponent->BindAction("ship", "toggle_gravity", eAID_KeyboardMouse, eKI_G);
-
-	m_pInputComponent->RegisterAction("ship", "toggle_comstab", [this](int activationMode, float value) {
-
-		if (activationMode & eAAM_OnPress)
-			m_FlightModifierFlag.ToggleFlag(EFlightModifierFlag::Comstab);
-		});
-	m_pInputComponent->BindAction("ship", "toggle_comstab", eAID_KeyboardMouse, eKI_C);
 }
 
 void CPlayerComponent::Interact(int activationMode)

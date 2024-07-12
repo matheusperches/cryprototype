@@ -234,11 +234,6 @@ Vec3 CFlightController::UpdateAccelerationWithJerk(JerkAccelerationData& accelDa
 
 	switch (accelData.state)
 	{
-		case EAccelState::Idle:
-		{
-			jerk = Vec3(ZERO);
-			break;
-		}
 		case EAccelState::Accelerating:
 		{
 			float scale = powf(fabs(deltaAccel.GetLength()), 0.15f); // Root jerk: Calculates the scaling factor based on the square root of the magnitude of deltaAccel
@@ -363,7 +358,18 @@ VelocityDiscrepancy CFlightController::CalculateDiscrepancy(Vec3 desiredVelocity
 	return VelocityDiscrepancy(linearDiscrepancy, angularDiscrepancy);
 }
 
-Vec3 CFlightController::CalculateCorrection(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisAccelParamsMap, Vec3 velDiscrepancy, float frameTime)
+float CFlightController::LogScale(float discrepancyMagnitude, float maxDiscrepancy, float base = 2.0f)
+{
+	if (discrepancyMagnitude == 0.0f)
+		return 0.0f;
+
+	float logDiscrepancy = std::log(discrepancyMagnitude + 1.0f) / std::log(base);
+	float logMaxDiscrepancy = std::log(maxDiscrepancy + 1.0f) / std::log(base);
+
+	return logDiscrepancy / logMaxDiscrepancy;
+}
+
+Vec3 CFlightController::CalculateCorrection(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisAccelParamsMap, Vec3 velDiscrepancy)
 {
 	pe_status_dynamics dynamics;
 	if (!m_pEntity || !m_pEntity->GetPhysicalEntity()->GetStatus(&dynamics))
@@ -371,6 +377,18 @@ Vec3 CFlightController::CalculateCorrection(const VectorMap<AxisType, DynArray<A
 		return Vec3(ZERO);
 	}
 	Vec3 totalCorrectiveAccel = Vec3(ZERO);
+
+	// Calculate the magnitude of the velocity discrepancy
+	float discrepancyMagnitude = velDiscrepancy.GetLength();
+
+	const float maxDiscrepancy = m_logMaxDiscrepancy;
+	const float base = m_logBase;
+
+	// Calculate the scaling factor using logarithmic scaling
+	float scalingFactor = LogScale(discrepancyMagnitude, maxDiscrepancy, base);
+
+	// Ensure the scaling factor does not exceed 1.0
+	scalingFactor = std::min(scalingFactor, 1.0f);
 
 	// Handle Linear Correction
 	for (const auto& axisAccelParamsPair : axisAccelParamsMap)
@@ -380,17 +398,13 @@ Vec3 CFlightController::CalculateCorrection(const VectorMap<AxisType, DynArray<A
 		{
 			Vec3 localDirection = WorldToLocal(accelParams.localDirection).GetNormalized();
 			float alignment = localDirection.Dot(velDiscrepancy.GetNormalized());
-			Vec3 correction = accelParams.AccelAmount * localDirection * alignment;
+
+			Vec3 correction = accelParams.AccelAmount * localDirection * alignment * scalingFactor;
 			totalCorrectiveAccel += correction;
-			CryLog("%s totalCorrectiveAccel: x= %f, y=%f, z=%f", accelParams.axisName, totalCorrectiveAccel.x, totalCorrectiveAccel.y, totalCorrectiveAccel.z);
 		}
 	}
-	return totalCorrectiveAccel;
-}
 
-Vec3 CFlightController::RotationalStability(Vec3 angularDiscrepancy, float frameTime)
-{
-	return Vec3(ZERO);
+	return totalCorrectiveAccel;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -447,16 +461,14 @@ void CFlightController::CoupledFM(float frameTime)
 	Vec3 rollDiscrepancy = CalculateDiscrepancy(rollVelMagnitude).GetAngularDiscrepancy();
 	Vec3 pitchYawDiscrepancy = CalculateDiscrepancy(pitchYawVelMagnitude).GetAngularDiscrepancy();
 
-	Vec3 linearCorrection = CalculateCorrection(m_linearParamsMap, linearDiscrepancy, frameTime);
-	Vec3 rollCorrection = CalculateCorrection(m_rollParamsMap, rollDiscrepancy, frameTime);
-	Vec3 pitchYawCorrection = CalculateCorrection(m_pitchYawParamsMap, pitchYawDiscrepancy, frameTime);
-
+	Vec3 linearCorrection = CalculateCorrection(m_linearParamsMap, linearDiscrepancy);
+	Vec3 rollCorrection = CalculateCorrection(m_rollParamsMap, rollDiscrepancy);
+	Vec3 pitchYawCorrection = CalculateCorrection(m_pitchYawParamsMap, pitchYawDiscrepancy);
 
 	MotionData motionData(linearCorrection, rollCorrection,
 		pitchYawCorrection, m_linearJerkData, m_rollJerkData, m_pitchYawJerkData);
 
 	AccelToImpulse(motionData, frameTime);
-
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -570,10 +582,11 @@ void CFlightController::AntiGravity(float frameTime)
 	}
 }
 
-void CFlightController::Comstab(float frameTime)
+void CFlightController::Boost(float frameTime)
 {
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 210, 2, m_debugColor, false, "Comstab: ON");
-
+	// TODO
+	// Limit boost usage somehow 
+	// Adds a multiplier to the jerk values to enhance the ship's responsiveness 
 }
 
 void CFlightController::FlightModifierHandler(FlightModifierBitFlag bitFlag, float frameTime)
@@ -581,6 +594,7 @@ void CFlightController::FlightModifierHandler(FlightModifierBitFlag bitFlag, flo
 	if (bitFlag.HasFlag(EFlightModifierFlag::Coupled))
 	{
 		CoupledFM(frameTime);
+		bitFlag.SetFlag(EFlightModifierFlag::Gravity); // Enforcing gravity assist in coupled mode
 	}
 	else
 	{
@@ -598,12 +612,6 @@ void CFlightController::FlightModifierHandler(FlightModifierBitFlag bitFlag, flo
 	}
 	else
 		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "Anti-Gravity: OFF");
-	if (bitFlag.HasFlag(EFlightModifierFlag::Comstab))
-	{
-		Comstab(frameTime);
-	}
-	else
-		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 210, 2, m_debugColor, false, "Comstab: OFF");
 
 	// Debug stuff
 	DrawOnScreenDebugText(frameTime);

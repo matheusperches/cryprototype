@@ -94,6 +94,10 @@ public:
 		desc.AddMember(&CFlightController::m_rollAccel, 'roll', "rollaccel", "Roll Acceleration", "Point force generator for rolling", ZERO);
 		desc.AddMember(&CFlightController::m_pitchAccel, 'ptch', "pitch", "Pitch Acceleration", "Point force generator for pitching", ZERO);
 		desc.AddMember(&CFlightController::m_yawAccel, 'yaw', "yaw", "Yaw Acceleration", "Point force generator for yawing", ZERO);
+
+		// Boost parameters
+		desc.AddMember(&CFlightController::m_linearBoost, 'lbst', "linearboost", "Linear boost multiplier", "multiplier for linear boost", ZERO);
+		desc.AddMember(&CFlightController::m_angularBoost, 'abst', "angularboost", "Angular boost multiplier", "multiplier for angular boost", ZERO);
 		
 		// Rotational limits (degrees/sec)
 		desc.AddMember(&CFlightController::m_maxRoll, 'mxrl', "maxroll", "Max Roll Rate", "Max roll rate in degrees / sec", ZERO);
@@ -113,6 +117,10 @@ public:
 		desc.AddMember(&CFlightController::m_RollJerkDecelRate, 'rldr', "rolljerkdecel", "Roll Jerk decel rate", "Adjusts the decel rate", ZERO);
 		desc.AddMember(&CFlightController::m_PitchYawJerkRate, 'pyjk', "pyjerkrate", "Pitch/Yaw Jerk", "Adjusts the force smoothing rate", ZERO);
 		desc.AddMember(&CFlightController::m_PitchYawJerkDecelRate, 'pydr', "pyjerkdecel", "Pitch/Yaw Jerk decel rate", "Adjusts the decel rate", ZERO);
+
+		// Coupled mode log scaling for velocity
+		desc.AddMember(&CFlightController::m_logBase, 'lgbs', "logbase", "(Coupled Vel Scaling) Log base", "More aggressive scaling for smaller values if < 1", ZERO);
+		desc.AddMember(&CFlightController::m_logMaxDiscrepancy, 'mxds', "logmaxdiscrepancy", "(Coupled Vel Scaling) Max discrepancy", "Adjusts the maximum discrepancy taken into account", ZERO);
 	}
 
 	// Axis Vector initializer
@@ -264,9 +272,9 @@ private:
 
 	VelocityDiscrepancy CalculateDiscrepancy(Vec3 desiredLinearVelocity);
 
-	Vec3 CalculateCorrection(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisAccelParamsMap, Vec3 linearDiscrepancy, float frameTime);
+	float LogScale(float discrepancyMagnitude, float maxDiscrepancy, float base);
 
-	Vec3 RotationalStability(Vec3 angularDiscrepancy, float frameTime);
+	Vec3 CalculateCorrection(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisAccelParamsMap, Vec3 linearDiscrepancy);
 
 	/* Direct input mode: raw acceleration requests on an input scale
 	*  Step 1. For each axis group, call ScaleAccel to create a scaled direction vector by input in local space
@@ -280,10 +288,7 @@ private:
 	// Compensates for the gravity pull
 	void AntiGravity(float frameTime);
 
-	/* Avoids drift by reducing the linear velocity in proportion to the alignment to your forward direction vector.
-	*  Cannot be used in decoupled mode
-	*/
-	void Comstab(float frameTime);
+	void Boost(float frameTime);
 
 	// toggle between the flight modes on a key press
 	void FlightModifierHandler(FlightModifierBitFlag bitFlag, float frameTime);
@@ -335,6 +340,9 @@ private:
 	float m_pitchAccel = 0.f;
 	float m_yawAccel = 0.f;
 
+	float m_linearBoost = 0.f;
+	float m_angularBoost = 0.f;
+
 	float m_maxRoll = 0.f;
 	float m_maxPitch = 0.f;
 	float m_maxYaw = 0.f;
@@ -351,6 +359,8 @@ private:
 	float m_RollJerkDecelRate = 0.f;
 	float m_PitchYawJerkRate = 0.f;
 	float m_PitchYawJerkDecelRate = 0.f;
+	float m_logBase = 0.f;
+	float m_logMaxDiscrepancy = 0.f;
 
 	// Tracking the impulses generated
 	float m_totalImpulse = 0.f;
