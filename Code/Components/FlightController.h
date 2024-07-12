@@ -40,6 +40,20 @@ private:
 	Vec3 m_angularDiscrepancy;   // Scaled velocity direction vector
 };
 
+class ImpulseResult
+{
+public:
+
+	ImpulseResult() : m_linearImpulse(Vec3(ZERO)), m_angularImpulse(Vec3(ZERO)) {}
+	ImpulseResult(const Vec3& lin, const Vec3& ang) : m_linearImpulse(lin), m_angularImpulse(ang) {}
+
+	Vec3 GetLinearImpulse() const { return m_linearImpulse; };
+	Vec3 GetAngularImpulse() const { return m_angularImpulse; };
+private:
+	Vec3 m_linearImpulse;
+	Vec3 m_angularImpulse;
+};
+
 
 class CFlightController final : public IEntityComponent
 {
@@ -228,12 +242,6 @@ private:
 	// Getting the Axis values from the Vehicle
 	float AxisGetter(const string& axisName);
 
-	// Utility functions
-	float DegreesToRadian(float degrees);
-	Vec3 DegreesToRadian(Vec3 degrees);
-
-	float AngularSpeedDegreesPerSec(float rawValue);
-
 	// Convert world coordinates to local coordinates
 	Vec3 WorldToLocal(const Vec3& localDirection);
 
@@ -281,12 +289,12 @@ private:
 	void FlightModifierHandler(FlightModifierBitFlag bitFlag, float frameTime);
 
 	// Converts the accel target (after jerk) which contains both direction and magnitude, into thrust values.
-	Vec3 AccelToImpulse(const MotionData& motionData, float frameTime, bool mathOnly = false);
+	ImpulseResult AccelToImpulse(const MotionData& motionData, float frameTime);
 	float GetImpulse() const;
 	void ResetImpulseCounter();
 
 	// Applies an impulse, with optional parameters. roll and pitch / yaw (angular axes) will be combined.
-	void ApplyImpulse(Vec3 linearImpulse, Vec3 angImpulse, bool countTotal = true);
+	void ApplyImpulse(Vec3 linearImpulse, Vec3 angImpulse);
 
 	// Calculate current vel / accel
 	Vec3 GetVelocity();
