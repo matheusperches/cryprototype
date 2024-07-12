@@ -74,5 +74,5 @@ private:
 	Quat m_shipLookOrientation = ZERO;
 
 	// Get the pilot entity ID
-	EntityId m_pilotID = NULL;
+	EntityId pilotID = NULL;
 };

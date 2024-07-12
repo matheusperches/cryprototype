@@ -6,7 +6,6 @@
 #include <Components/FlightModifiers.h>
 
 class CVehicleComponent;
-class CShipThrusterComponent;
 
 namespace Cry::DefaultComponents
 {
@@ -56,6 +55,7 @@ public:
 
 	virtual void ProcessEvent(const SEntityEvent& event) override;
 
+
 	virtual bool NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags) override;
 
 	virtual NetworkAspectType GetNetSerializeAspectMask() const override { return kVehicleAspect; }
@@ -82,15 +82,15 @@ public:
 		desc.AddMember(&CFlightController::m_yawAccel, 'yaw', "yaw", "Yaw Acceleration", "Point force generator for yawing", ZERO);
 		
 		// Rotational limits (degrees/sec)
-		desc.AddMember(&CFlightController::m_maxRoll, 'mxrl', "maxRoll", "Max Roll Rate", "Max roll rate in degrees / sec", ZERO);
-		desc.AddMember(&CFlightController::m_maxPitch, 'mxpt', "maxPitch", "Max Pitch Rate", "Max pitch rate in degrees / sec", ZERO);
-		desc.AddMember(&CFlightController::m_maxYaw, 'mxyw', "maxYaw", "Max Yaw Rate", "Max yaw rate in degrees / sec", ZERO);
+		desc.AddMember(&CFlightController::m_maxRoll, 'mxrl', "maxroll", "Max Roll Rate", "Max roll rate in degrees / sec", ZERO);
+		desc.AddMember(&CFlightController::m_maxPitch, 'mxpt', "maxritch", "Max Pitch Rate", "Max pitch rate in degrees / sec", ZERO);
+		desc.AddMember(&CFlightController::m_maxYaw, 'mxyw', "maxyaw", "Max Yaw Rate", "Max yaw rate in degrees / sec", ZERO);
 
 		// Translational limits (m/s)
-		desc.AddMember(&CFlightController::m_maxFwdVel, 'mxfw', "maxFwd", "Max Forward Speed", "Max Forward Speed in m/s", ZERO);
-		desc.AddMember(&CFlightController::m_maxBwdVel, 'mxbw', "maxBwd", "Max Backward Speed", "Max Backward Speed in m/s", ZERO);
-		desc.AddMember(&CFlightController::m_maxLatVel, 'mxlt', "maxLT", "Max Left/Right Speed", "Max Left/Right Speed in m/s", ZERO);
-		desc.AddMember(&CFlightController::m_maxUpDownVel, 'mxud', "maxUD", "Max Up/Down Speed", "Max Up/Down Speed in m/s", ZERO);
+		desc.AddMember(&CFlightController::m_maxFwdVel, 'mxfw', "maxfwd", "Max Forward Speed", "Max Forward Speed in m/s", ZERO);
+		desc.AddMember(&CFlightController::m_maxBwdVel, 'mxbw', "maxbwd", "Max Backward Speed", "Max Backward Speed in m/s", ZERO);
+		desc.AddMember(&CFlightController::m_maxLatVel, 'mxlt', "maxlt", "Max Left/Right Speed", "Max Left/Right Speed in m/s", ZERO);
+		desc.AddMember(&CFlightController::m_maxUpDownVel, 'mxud', "maxud", "Max Up/Down Speed", "Max Up/Down Speed in m/s", ZERO);
 
 		// Jerk parameters
 		desc.AddMember(&CFlightController::m_linearJerkRate, 'lnjk', "linearjerk", "Linear Jerk", "Adjusts the force smoothing rate", ZERO);
@@ -230,12 +230,15 @@ private:
 
 	// Utility functions
 	float DegreesToRadian(float degrees);
+	Vec3 DegreesToRadian(Vec3 degrees);
+
+	float AngularSpeedDegreesPerSec(float rawValue);
 
 	// Convert world coordinates to local coordinates
 	Vec3 WorldToLocal(const Vec3& localDirection);
 
 	// Clamping the input between -1 and 1, as well as implementing mouse sensitivity scale for the newtonian mode.
-	float ClampInput(float inputValue, bool isMouse = false) const;
+	float ClampInput(float inputValue, float maxAxisAccel = 1.f, bool isMouse = false) const;
 
 	/* This function is instrumental for the correct execution of UpdateAccelerationWithJerk()
 	*  This function is called by each axis group independently (Pitch / Yaw; Roll; Linear)
@@ -301,7 +304,7 @@ private:
 
 	bool UpdateMovement(SerializeImpulseData&& data, INetChannel*);
 
-	// Default Components
+	// Components
 	CVehicleComponent* m_pVehicleComponent = nullptr;
 
 	// tracking frametime
@@ -355,9 +358,5 @@ private:
 	// Tracking ship position and orientation
 	Vec3 m_shipPosition = ZERO;
 	Quat m_shipOrientation = ZERO;
-
-
-	// Custom Components
-	CShipThrusterComponent* m_pShipThrusterComponent = nullptr;
 };
 
