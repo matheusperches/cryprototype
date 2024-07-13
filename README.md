@@ -424,7 +424,7 @@ Vec3 CFlightController::CalculateCorrection(const VectorMap<AxisType, DynArray<A
 }
 ```
 ### Anti-Gravity logic 
-```
+```c++
 void CFlightController::AntiGravity(float frameTime)
 {
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "(G) Anti-Gravity: ON");
