@@ -22,12 +22,16 @@ Make sure you have Visual Studio 2022 installed with the C++ game development ad
 10. To launch the editor and customize parameters -> Switch startup project to "Editor" -> F5 -> File - Open - Level -"Example"
 
 ## Controls 
-WASD - Linear movement 
+WASD - Linear movement
+
 Q/E - Roll
+
 Mouse X/Y - Pitch & Yaw
 
 V - Netwonian toggle 
+
 G - Gravity Assist 
+
 Shift - Boost
 
 ## Features
