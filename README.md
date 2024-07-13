@@ -312,7 +312,7 @@ void CFlightController::CoupledFM(float frameTime)
 ```
 
 ### For coupled mode, calculating the speed correctio while accounting for potential overshoot
-## Implementing a logarithmic scaling for speed, so we are not requesting 100% acceleration throughout the speed range, for both linear and angular velocities.
+- Implementing a logarithmic scaling for speed, so we are not requesting 100% acceleration throughout the speed range, for both linear and angular velocities.
 
 ```c++
 float CFlightController::LogScale(float discrepancyMagnitude, float maxDiscrepancy, float base)
@@ -555,6 +555,39 @@ void CFlightController::ApplyImpulse(Vec3 linearImpulse, Vec3 angImpulse, bool m
 	}
 }
 ```
+### Finally, handling mode changes. This gets called in the engine update cycle every frame.
+```c++
+void CFlightController::FlightModifierHandler(FlightModifierBitFlag bitFlag, float frameTime)
+{
+	if (bitFlag.HasFlag(EFlightModifierFlag::Coupled))
+	{
+		CoupledFM(frameTime);
+		bitFlag.SetFlag(EFlightModifierFlag::Gravity); // Enforcing gravity assist in coupled mode
+	}
+	else
+	{
+		DirectInput(frameTime);
+	}
+	if (bitFlag.HasFlag(EFlightModifierFlag::Boost))
+	{
+		BoostManager(true, frameTime);
+	}
+	else
+	{
+		BoostManager(false, frameTime);
+	}
+	if (bitFlag.HasFlag(EFlightModifierFlag::Gravity))
+	{
+		AntiGravity(frameTime);
+	}
+	else
+		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "(G) Anti-Gravity: OFF");
+
+	// Debug stuff - Includes 2d velocity vector display
+	DrawOnScreenDebugText(frameTime);
+}
+```
+- Full code available in the files.
 
 # Things I'm proud of 
 - This flight controller is a much enhanced version of my original design in UE4, for the following reasons:
