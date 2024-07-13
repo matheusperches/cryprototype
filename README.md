@@ -10,15 +10,16 @@
 ## Build instructions
 Make sure you have Visual Studio 2022 installed with the C++ game development add ons. 
 
--1. Click on Code -> Download ZIP.
--2. Extract the file in a folder.
--3. Click on game.cryproject 
--4. Choose "build solution"
--5. Navigate to solutions -> Win64 -> Game.sln and open it in VS2022. 
--6. Build the project with CTRL + Shift + B.
--7. Inside Visual Studio on the side bar "Solution Explorer", right click "Game" and select "Set as startup project"
--8. Press F5 to launch the project 
--9. 
+1. Click on Code -> Download ZIP.
+2. Extract the file in a folder.
+3. Click on game.cryproject 
+4. Choose "build solution"
+5. Navigate to solutions -> Win64 -> Game.sln and open it in VS2022. 
+6. Build the project with CTRL + Shift + B.
+7. Inside Visual Studio on the side bar "Solution Explorer", right click "Game" and select "Set as startup project"
+8. Press F5 to launch the project
+9. Play.
+10. To launch the editor and customize parameters -> Switch startup project to "Editor" -> F5 -> File - Open - Level -"Example"
 
 ## Controls 
 WASD - Linear movement 
