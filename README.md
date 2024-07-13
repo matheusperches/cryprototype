@@ -7,6 +7,28 @@
 
 #### A small CryEngine project with the goal to get experience using its tools and APIs.
 
+## Build instructions
+Make sure you have Visual Studio 2022 installed with the C++ game development add ons. 
+
+-1. Click on Code -> Download ZIP.
+-2. Extract the file in a folder.
+-3. Click on game.cryproject 
+-4. Choose "build solution"
+-5. Navigate to solutions -> Win64 -> Game.sln and open it in VS2022. 
+-6. Build the project with CTRL + Shift + B.
+-7. Inside Visual Studio on the side bar "Solution Explorer", right click "Game" and select "Set as startup project"
+-8. Press F5 to launch the project 
+-9. 
+
+## Controls 
+WASD - Linear movement 
+Q/E - Roll
+Mouse X/Y - Pitch & Yaw
+
+V - Netwonian toggle 
+G - Gravity Assist 
+Shift - Boost
+
 ## Features
  - First person character with a raycast system for entering the vehicle
  - A fully customizable flyable entity with six degrees of freedom control
@@ -17,12 +39,6 @@
  - Gravity assist: Can be toggled ON or OFF, and it is enforced in Coupled mode. Compensates for gravity by generating a proprotional counter force against gravity pull. 
  - Boost: a simple acceleration multiplier, applied at the generator of impulse (last stage of calculations)
 
-## Media
+## Code 
 
-- The ship in action
-
-![Demo gif]()
-
-- Input controller overview
-
-![Flight Controller diagram](https://raw.githubusercontent.com/matheusperches/PlaygroundProj/main/Info/sfcs.jpg)
+- To be added - 
