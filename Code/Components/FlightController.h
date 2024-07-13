@@ -135,7 +135,6 @@ public:
 
 	enum class EAccelState
 	{
-		Idle,
 		Accelerating,
 		Decelerating
 	};
@@ -223,7 +222,7 @@ private:
 		Vec3 targetJerkAccel;
 		EAccelState state;
 
-		JerkAccelerationData() : jerk(0.f), jerkDecelRate(0.f), currentJerkAccel(0.f), targetJerkAccel(0.f), state(EAccelState::Idle) {}
+		JerkAccelerationData() : jerk(0.f), jerkDecelRate(0.f), currentJerkAccel(0.f), targetJerkAccel(0.f), state(EAccelState::Decelerating) {}
 	};
 
 	JerkAccelerationData m_linearJerkData = {};
@@ -265,16 +264,16 @@ private:
 	void UpdateAccelerationState(JerkAccelerationData& accelData, const Vec3& targetAccel);
 
 	// Compares the current vs target accel, and calculates the jerk
-	Vec3 UpdateAccelerationWithJerk(JerkAccelerationData& accelData, float frameTime);
+	Vec3 UpdateAccelerationWithJerk(AxisType axisType, JerkAccelerationData& accelData, float frameTime) const;
 
 	// Scales the acceleration asked, according to input magnitude, taking into account the inputs pressed
 	ScaledMotion ScaleInput(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisAccelParamsMap);
 
 	VelocityDiscrepancy CalculateDiscrepancy(Vec3 desiredLinearVelocity);
-
+	// Compute logarithmic scaling in the corrective calculation (Coupled mode) to provide a smoother flying experience.
 	float LogScale(float discrepancyMagnitude, float maxDiscrepancy, float base);
 
-	Vec3 CalculateCorrection(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisAccelParamsMap, Vec3 linearDiscrepancy);
+	Vec3 CalculateCorrection(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisAccelParamsMap, Vec3 requestedVelocity, Vec3 linearDiscrepancy);
 
 	/* Direct input mode: raw acceleration requests on an input scale
 	*  Step 1. For each axis group, call ScaleAccel to create a scaled direction vector by input in local space
@@ -288,18 +287,18 @@ private:
 	// Compensates for the gravity pull
 	void AntiGravity(float frameTime);
 
-	void Boost(float frameTime);
+	void BoostManager(bool isBoosting, float frameTime);
 
 	// toggle between the flight modes on a key press
 	void FlightModifierHandler(FlightModifierBitFlag bitFlag, float frameTime);
 
 	// Converts the accel target (after jerk) which contains both direction and magnitude, into thrust values.
-	ImpulseResult AccelToImpulse(const MotionData& motionData, float frameTime);
+	ImpulseResult AccelToImpulse(const MotionData& motionData, float frameTime, bool mathOnly = false);
 	float GetImpulse() const;
 	void ResetImpulseCounter();
 
 	// Applies an impulse, with optional parameters. roll and pitch / yaw (angular axes) will be combined.
-	void ApplyImpulse(Vec3 linearImpulse, Vec3 angImpulse);
+	void ApplyImpulse(Vec3 linearImpulse, Vec3 angImpulse, bool mathOnly = false);
 
 	// Calculate current vel / accel
 	Vec3 GetVelocity();
@@ -367,6 +366,9 @@ private:
 	float m_totalAngularImpulse = 0.f;
 	Vec3 m_linearImpulse = ZERO;
 	Vec3 m_angularImpulse = ZERO;
+
+	// Tracking boost state
+	bool m_isBoosting = false;
 
 	// Watching the target accelerations (before jerk is applied) to track the ship state
 	Vec3 targetLinearAccel = ZERO;
