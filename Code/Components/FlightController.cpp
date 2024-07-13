@@ -407,7 +407,7 @@ Vec3 CFlightController::CalculateCorrection(const VectorMap<AxisType, DynArray<A
 	const float maxDiscrepancy = m_linearLogMaxDiscrepancy;
 	const float base = m_linearLogBase;
 
-	// Calculate the scaling factor using logarithmic scaling
+	// Calculate the velocity scaling factor using logarithmic scaling
 	float scalingFactor = LogScale(discrepancyMagnitude, maxDiscrepancy, base);
 
 	// Ensure the scaling factor does not exceed 1.0
@@ -459,7 +459,6 @@ Vec3 CFlightController::CalculateCorrection(const VectorMap<AxisType, DynArray<A
 				// Predict future velocity based on current acceleration and jerk
 				predictedVelocity = dynamics.w + simulatedAccel;
 			}
-
 		}
 	}
 
