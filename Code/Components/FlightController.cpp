@@ -10,7 +10,6 @@
 #include <CryEntitySystem/IEntitySystem.h>
 
 #include <CryEntitySystem/IEntityComponent.h>
-#include <CryPhysics/physinterface.h>
 #include <CryNetwork/ISerialize.h>
 #include <CryNetwork/Rmi.h>
 
@@ -130,6 +129,20 @@ void CFlightController::InitializeMotionParamsVectors()
 	};
 }
 
+pe_status_dynamics CFlightController::GetDynamics()
+{
+	pe_status_dynamics dynamics;
+
+	// Check if the physical entity is valid and retrieve its status
+	if (physEntity && physEntity->GetStatus(&dynamics))
+	{
+		return dynamics; // Return the retrieved dynamics if successful
+	}
+
+	// Return a default-constructed dynamics if the entity is invalid or status retrieval failed
+	return pe_status_dynamics(); // Ensure a valid return type
+}
+
 FlightModifierBitFlag CFlightController::GetFlightModifierState()
 {
 	return m_pVehicleComponent->m_pPlayerComponent->GetComponent<CPlayerComponent>()->GetFlightModifierState();
@@ -203,8 +216,6 @@ ScaledMotion CFlightController::ScaleInput(const VectorMap<AxisType, DynArray<Ax
 			else
 				clampedInput = ClampInput(AxisGetter(motionParams.axisName), motionParams.AccelAmount);
 
-			CryLog("%s axisvalue: %f", motionParams.axisName, clampedInput);
-
 			localDirection = WorldToLocal(motionParams.localDirection); // Convert to local space
 			
 			requestedAccelDirection += localDirection * motionParams.AccelAmount * clampedInput; // Accumulate axis direction, scaling each by its input magnitude in local space
@@ -239,23 +250,13 @@ Vec3 CFlightController::UpdateAccelerationWithJerk(AxisType axisType, JerkAccele
 	{
 	case EAccelState::Accelerating:
 	{
-		float tempJerk = accelData.jerk;
-		if (m_isBoosting)
-		{
-			tempJerk *= (axisType == AxisType::Linear) ? m_linearBoost : m_angularBoost;
-		}
-		float scale = powf(fabs(deltaAccel.GetLength()), 0.15f);
-		finalJerk = deltaAccel * scale * tempJerk * frameTime;
+		float scale = powf(fabs(deltaAccel.GetLength()), 0.3f);
+		finalJerk = deltaAccel * scale * accelData.jerk * frameTime;
 		break;
 	}
 	case EAccelState::Decelerating:
 	{
-		float tempJerkDecel = accelData.jerkDecelRate;
-		if (m_isBoosting)
-		{
-			tempJerkDecel *= (axisType == AxisType::Linear) ? m_linearBoost : m_angularBoost;
-		}
-		finalJerk = deltaAccel * tempJerkDecel * frameTime;
+		finalJerk = deltaAccel * accelData.jerkDecelRate * frameTime;
 		break;
 	}
 	}
@@ -268,11 +269,7 @@ Vec3 CFlightController::UpdateAccelerationWithJerk(AxisType axisType, JerkAccele
 
 ImpulseResult CFlightController::AccelToImpulse(const MotionData& motionData, float frameTime, bool mathOnly)
 {
-	pe_status_dynamics dynamics;
-	if (!physEntity || !physEntity->GetStatus(&dynamics))
-	{
-		return ImpulseResult(Vec3(ZERO), Vec3(ZERO)); // return early if we cannot obtain the dynamics status
-	}
+	pe_status_dynamics dynamics = GetDynamics();
 
 	Vec3 linearImpulse = Vec3(ZERO);
 	Vec3 angImpulse = Vec3(ZERO);
@@ -285,6 +282,7 @@ ImpulseResult CFlightController::AccelToImpulse(const MotionData& motionData, fl
 	{
 		// Create a copy of motionData to work with if mathOnly is true
 		simulatedMotionData = motionData;
+		// pMotionData will point to the copy if we are simulating an impulse, not affecting the proper data.
 		pMotionData = &simulatedMotionData;
 	}
 
@@ -316,6 +314,11 @@ void CFlightController::ApplyImpulse(Vec3 linearImpulse, Vec3 angImpulse, bool m
 	{
 		pe_action_impulse actionImpulse;
 
+		if (m_isBoosting)
+		{
+			linearImpulse *= m_linearBoost;
+			angImpulse *= m_angularBoost;
+		}
 		actionImpulse.impulse = linearImpulse;
 		actionImpulse.angImpulse = angImpulse;
 
@@ -347,12 +350,8 @@ void CFlightController::ResetImpulseCounter()
 
 Vec3 CFlightController::GetVelocity()
 {
-	pe_status_dynamics dynamics;
-	if (!physEntity || !physEntity->GetStatus(&dynamics))
-	{
-		CryLog("Error: physEntity is null or failed to get dynamics status");
-		return Vec3(ZERO);
-	}
+	pe_status_dynamics dynamics = GetDynamics();
+
 	Vec3 velocity = dynamics.v; // In world space 
 	Matrix34 worldToLocalMatrix = m_pEntity->GetWorldTM().GetInverted();
 
@@ -373,11 +372,7 @@ float CFlightController::GetAcceleration(float frameTime)
 
 VelocityDiscrepancy CFlightController::CalculateDiscrepancy(Vec3 desiredVelocity)
 {
-	pe_status_dynamics dynamics;
-	if (!m_pEntity || !m_pEntity->GetPhysicalEntity()->GetStatus(&dynamics))
-	{
-		return VelocityDiscrepancy(ZERO, ZERO);
-	}
+	pe_status_dynamics dynamics = GetDynamics();
 
 	Vec3 linearDiscrepancy = desiredVelocity - dynamics.v;
 	Vec3 angularDiscrepancy = desiredVelocity - dynamics.w;
@@ -386,7 +381,7 @@ VelocityDiscrepancy CFlightController::CalculateDiscrepancy(Vec3 desiredVelocity
 	return VelocityDiscrepancy(linearDiscrepancy, angularDiscrepancy);
 }
 
-float CFlightController::LogScale(float discrepancyMagnitude, float maxDiscrepancy, float base = 2.0f)
+float CFlightController::LogScale(float discrepancyMagnitude, float maxDiscrepancy, float base)
 {
 	if (discrepancyMagnitude == 0.0f)
 		return 0.0f;
@@ -400,11 +395,8 @@ float CFlightController::LogScale(float discrepancyMagnitude, float maxDiscrepan
 // TODO: fix ship slowing moving when sitting still.
 Vec3 CFlightController::CalculateCorrection(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisAccelParamsMap, Vec3 requestedVelocity, Vec3 velDiscrepancy)
 {
-	pe_status_dynamics dynamics;
-	if (!m_pEntity || !m_pEntity->GetPhysicalEntity()->GetStatus(&dynamics))
-	{
-		return Vec3(ZERO);
-	}
+	pe_status_dynamics dynamics = GetDynamics();
+
 	Vec3 totalCorrectiveAccel = Vec3(ZERO);
 	Vec3 predictedVelocity = Vec3(ZERO);
 	float overshootFactor = 1.f;
@@ -412,15 +404,14 @@ Vec3 CFlightController::CalculateCorrection(const VectorMap<AxisType, DynArray<A
 	// Calculate the magnitude of the velocity discrepancy
 	float discrepancyMagnitude = velDiscrepancy.GetLength();
 
-	const float maxDiscrepancy = m_logMaxDiscrepancy;
-	const float base = m_logBase;
+	const float maxDiscrepancy = m_linearLogMaxDiscrepancy;
+	const float base = m_linearLogBase;
 
 	// Calculate the scaling factor using logarithmic scaling
 	float scalingFactor = LogScale(discrepancyMagnitude, maxDiscrepancy, base);
 
 	// Ensure the scaling factor does not exceed 1.0
 	scalingFactor = std::min(scalingFactor, 1.0f);
-
 
 	// Initializing motionData for simulated calculation
 	MotionData motionData(
@@ -440,13 +431,13 @@ Vec3 CFlightController::CalculateCorrection(const VectorMap<AxisType, DynArray<A
 		const DynArray<AxisMotionParams>& axisParamsArray = axisAccelParamsPair.second;
 		for (const auto& accelParams : axisParamsArray)
 		{
-
 			Vec3 localDirection = WorldToLocal(accelParams.localDirection).GetNormalized();
 			float alignment = localDirection.Dot(velDiscrepancy.GetNormalized());
 
 			Vec3 correction = accelParams.AccelAmount * localDirection * alignment * scalingFactor;
 			totalCorrectiveAccel += correction;
 
+			// Predicting velocity to account for overshoot and calculating logarithmic velocity scaling for smoother motion
 			if (axisType == AxisType::Linear)
 			{
 				motionData.linearAccel = totalCorrectiveAccel;
@@ -454,13 +445,21 @@ Vec3 CFlightController::CalculateCorrection(const VectorMap<AxisType, DynArray<A
 				// Predict future velocity based on current acceleration and jerk
 				predictedVelocity = dynamics.v + simulatedAccel; // Use the current acceleration for prediction
 			}
-			else
+			else if (axisType == AxisType::Roll)
 			{
 				motionData.rollAccel = totalCorrectiveAccel;
 				Vec3 simulatedAccel = AccelToImpulse(motionData, m_frameTime, true).GetAngularImpulse();
 				// Predict future velocity based on current acceleration and jerk
 				predictedVelocity = dynamics.w + simulatedAccel;
 			}
+			else if (axisType == AxisType::PitchYaw)
+			{
+				motionData.pitchYawAccel = totalCorrectiveAccel;
+				Vec3 simulatedAccel = AccelToImpulse(motionData, m_frameTime, true).GetAngularImpulse();
+				// Predict future velocity based on current acceleration and jerk
+				predictedVelocity = dynamics.w + simulatedAccel;
+			}
+
 		}
 	}
 
@@ -548,11 +547,8 @@ void CFlightController::CoupledFM(float frameTime)
 
 void CFlightController::DrawDirectionIndicator(float frameTime)
 {
-	pe_status_dynamics dynamics;
-	if (!m_pEntity || !m_pEntity->GetPhysicalEntity()->GetStatus(&dynamics))
-	{
-		return; // Return early if we have a problem getting that data. 
-	}
+	pe_status_dynamics dynamics = GetDynamics();
+
 	Vec3 velocity = dynamics.v;
 
 	// Transform the velocity vector to view | Other than direction, we need a 3D position to project onto the 2D screen.
@@ -594,62 +590,57 @@ void CFlightController::AntiGravity(float frameTime)
 {
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "Anti-Gravity: ON");
 
-	if (m_pEntity)
+	pe_status_dynamics dynamics = GetDynamics();
+
+	// Get gravity vector
+	Vec3 gravity = gEnv->pPhysicalWorld->GetPhysVars()->gravity;
+	Vec3 antiGravityForce = -gravity * dynamics.mass;
+	float totalAlignment = 0.0f;
+	Vec3 totalScaledAntiGravityForce = Vec3(ZERO);
+	pe_action_impulse impulseAction;
+
+	// First pass: Calculate total alignment
+	for (const auto& axisAccelParamsPair : m_linearParamsMap) // Iterating over each axis within the linear set.
 	{
-		pe_status_dynamics dynamics;
+		const DynArray<AxisMotionParams>& axisParamsArray = axisAccelParamsPair.second;
 
-		if (m_pEntity->GetPhysicalEntity()->GetStatus(&dynamics))
+		for (const auto& accelParams : axisParamsArray)	// Iterate over the DynArray<AxisAccelParams> for the current AxisType
 		{
-			// Get gravity vector
-			Vec3 gravity = gEnv->pPhysicalWorld->GetPhysVars()->gravity;
-			Vec3 antiGravityForce = -gravity * dynamics.mass;
-			float totalAlignment = 0.0f;
-			Vec3 totalScaledAntiGravityForce = Vec3(ZERO);
-			pe_action_impulse impulseAction;
+			Vec3 localDirection = WorldToLocal(accelParams.localDirection);
 
-			// First pass: Calculate total alignment
-			for (const auto& axisAccelParamsPair : m_linearParamsMap) // Iterating over each axis within the linear set.
+			localDirection.Normalize(); // Normalize to have a range of -1 to 1, which indicates their alignment (1 = perfect / -1 = anti) 
+
+			float alignment = localDirection.Dot(gravity.GetNormalized()); // Get the alignment between localDirection and gravity, using this to scale the thrust amount
+			if (alignment > ZERO)
 			{
-				const DynArray<AxisMotionParams>& axisParamsArray = axisAccelParamsPair.second;
-				
-				for (const auto& accelParams : axisParamsArray)	// Iterate over the DynArray<AxisAccelParams> for the current AxisType
-				{
-					Vec3 localDirection = WorldToLocal(accelParams.localDirection);
-
-					localDirection.Normalize(); // Normalize to have a range of -1 to 1, which indicates their alignment (1 = perfect / -1 = anti) 
-					
-					float alignment = localDirection.Dot(gravity.GetNormalized()); // Get the alignment between localDirection and gravity, using this to scale the thrust amount
-					if (alignment > ZERO)
-					{
-						totalAlignment += alignment;
-					}
-				}
+				totalAlignment += alignment;
 			}
-
-			// Second pass: Apply impulses proportionally
-			for (const auto& axisAccelParamsPair : m_linearParamsMap)
-			{
-				const DynArray<AxisMotionParams>& axisParamsArray = axisAccelParamsPair.second;
-
-				for (const auto& accelParams : axisParamsArray)
-				{
-					Vec3 localDirection = WorldToLocal(accelParams.localDirection);
-					localDirection.Normalize();
-
-					float alignment = localDirection.Dot(gravity.GetNormalized());
-					if (alignment > ZERO)
-					{
-						float proportionalAlignment = alignment / totalAlignment;
-						Vec3 scaledAntiGravityForce = antiGravityForce * proportionalAlignment;
-						totalScaledAntiGravityForce += scaledAntiGravityForce;
-						impulseAction.impulse = scaledAntiGravityForce * frameTime;
-						m_pEntity->GetPhysicalEntity()->Action(&impulseAction);
-					}
-				}
-			}
-			m_totalImpulse += totalScaledAntiGravityForce.GetLength();
 		}
 	}
+
+	// Second pass: Apply impulses proportionally
+	for (const auto& axisAccelParamsPair : m_linearParamsMap)
+	{
+		const DynArray<AxisMotionParams>& axisParamsArray = axisAccelParamsPair.second;
+
+		for (const auto& accelParams : axisParamsArray)
+		{
+			Vec3 localDirection = WorldToLocal(accelParams.localDirection);
+			localDirection.Normalize();
+
+			float alignment = localDirection.Dot(gravity.GetNormalized());
+			if (alignment > ZERO)
+			{
+				float proportionalAlignment = alignment / totalAlignment;
+				Vec3 scaledAntiGravityForce = antiGravityForce * proportionalAlignment;
+				totalScaledAntiGravityForce += scaledAntiGravityForce;
+				impulseAction.impulse = scaledAntiGravityForce * frameTime;
+				m_pEntity->GetPhysicalEntity()->Action(&impulseAction);
+			}
+		}
+	}
+	m_totalImpulse += totalScaledAntiGravityForce.GetLength();
+
 }
 
 void CFlightController::BoostManager(bool isBoosting, float frameTime)

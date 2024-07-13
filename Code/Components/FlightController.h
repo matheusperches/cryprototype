@@ -4,6 +4,7 @@
 #include <numeric>
 
 #include <Components/FlightModifiers.h>
+#include <CryPhysics/physinterface.h>
 
 class CVehicleComponent;
 
@@ -120,8 +121,8 @@ public:
 		desc.AddMember(&CFlightController::m_PitchYawJerkDecelRate, 'pydr', "pyjerkdecel", "Pitch/Yaw Jerk decel rate", "Adjusts the decel rate", ZERO);
 
 		// Coupled mode log scaling for velocity
-		desc.AddMember(&CFlightController::m_logBase, 'lgbs', "logbase", "(Coupled Vel Scaling) Log base", "More aggressive scaling for smaller values if < 1", ZERO);
-		desc.AddMember(&CFlightController::m_logMaxDiscrepancy, 'mxds', "logmaxdiscrepancy", "(Coupled Vel Scaling) Max discrepancy", "Adjusts the maximum discrepancy taken into account", ZERO);
+		desc.AddMember(&CFlightController::m_linearLogBase, 'llb', "linearlogbase", "(Coupled) linear log base", "More aggressive scaling for smaller values < 1", ZERO);
+		desc.AddMember(&CFlightController::m_linearLogMaxDiscrepancy, 'llmd', "linearlogmaxdisc", "(Coupled) linear log max disc", "Adjusts the maximum discrepancy taken into account", ZERO);
 	}
 
 	// Axis Vector initializer
@@ -249,6 +250,8 @@ private:
 			linearJerkData(linearJerk), rollJerkData(rollJerk), pitchYawJerkData(pitchYawJerk) {}
 	};
 
+	// Getting the dynamics 
+	pe_status_dynamics GetDynamics();
 
 	// Getting the key states from the Vehicle
 	FlightModifierBitFlag GetFlightModifierState();
@@ -366,8 +369,8 @@ private:
 	float m_RollJerkDecelRate = 0.f;
 	float m_PitchYawJerkRate = 0.f;
 	float m_PitchYawJerkDecelRate = 0.f;
-	float m_logBase = 0.f;
-	float m_logMaxDiscrepancy = 0.f;
+	float m_linearLogBase = 0.f;
+	float m_linearLogMaxDiscrepancy = 0.f;
 
 	// Tracking the impulses generated
 	float m_totalImpulse = 0.f;
