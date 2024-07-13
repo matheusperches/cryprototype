@@ -44,7 +44,8 @@ Shift - Boost
  - Gravity assist: Can be toggled ON or OFF, and it is enforced in Coupled mode. Compensates for gravity by generating a proprotional counter force against gravity pull. 
  - Boost: a simple acceleration multiplier, applied at the generator of impulse (last stage of calculations)
 
-## Code snippets (full code available inside Code -> Components -> FlightController.cpp
+## Code snippets 
+#### (full code available inside Code -> Components -> FlightController.cpp)
 
 ### Axis maps and flight parameters, organizing their information to be used by the flight system 
 ```c++
