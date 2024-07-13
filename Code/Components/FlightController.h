@@ -84,6 +84,7 @@ public:
 		desc.SetDescription("Executes flight calculations.");
 
 		// Mouse sensitivity
+		desc.AddMember(&CFlightController::m_mouseScaling, 'pysc', "pitchyawscaling", "Enable mouse Pitch / Yaw Scaling", "Adjusts mouse sensitivity", ZERO);
 		desc.AddMember(&CFlightController::m_mouseSenseFactor, 'msf', "mouseSensFact", "Mouse Sensitivity Factor", "Adjusts mouse sensitivity", ZERO);
 
 		// Acceleration parameters
@@ -233,14 +234,20 @@ private:
 		Vec3 linearAccel;
 		Vec3 rollAccel;
 		Vec3 pitchYawAccel;
-		JerkAccelerationData& linearJerkData;
-		JerkAccelerationData& rollJerkData;
-		JerkAccelerationData& pitchYawJerkData;
+		JerkAccelerationData* linearJerkData;
+		JerkAccelerationData* rollJerkData;
+		JerkAccelerationData* pitchYawJerkData;
 
-		MotionData(Vec3 linear, Vec3 roll, Vec3 pitchYaw, JerkAccelerationData& linearJerk, JerkAccelerationData& rollJerk, JerkAccelerationData& pitchYawJerk)
-			: linearAccel(linear), rollAccel(roll), pitchYawAccel(pitchYaw), linearJerkData(linearJerk), rollJerkData(rollJerk), pitchYawJerkData(pitchYawJerk) {}
+		// Default constructor
+		MotionData()
+			: linearAccel(Vec3(ZERO)), rollAccel(Vec3(ZERO)), pitchYawAccel(Vec3(ZERO)),
+			linearJerkData(nullptr), rollJerkData(nullptr), pitchYawJerkData(nullptr) {}
+
+		// Parameterized constructor
+		MotionData(Vec3 linear, Vec3 roll, Vec3 pitchYaw, JerkAccelerationData* linearJerk, JerkAccelerationData* rollJerk, JerkAccelerationData* pitchYawJerk)
+			: linearAccel(linear), rollAccel(roll), pitchYawAccel(pitchYaw),
+			linearJerkData(linearJerk), rollJerkData(rollJerk), pitchYawJerkData(pitchYawJerk) {}
 	};
-
 
 
 	// Getting the key states from the Vehicle
@@ -253,7 +260,7 @@ private:
 	Vec3 WorldToLocal(const Vec3& localDirection);
 
 	// Clamping the input between -1 and 1, as well as implementing mouse sensitivity scale for the newtonian mode.
-	float ClampInput(float inputValue, float maxAxisAccel = 1.f, bool isMouse = false) const;
+	float ClampInput(float inputValue, float maxAxisAccel, bool mouseScaling = false) const;
 
 	/* This function is instrumental for the correct execution of UpdateAccelerationWithJerk()
 	*  This function is called by each axis group independently (Pitch / Yaw; Roll; Linear)
@@ -329,6 +336,7 @@ private:
 	const float m_debugColor[4] = { 1, 0, 0, 1 };
 
 	// Performance variables
+	bool m_mouseScaling = false;
 	float m_mouseSenseFactor = 0.f;
 
 	float m_fwdAccel = 0.f;

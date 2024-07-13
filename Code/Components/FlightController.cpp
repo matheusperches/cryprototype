@@ -151,18 +151,29 @@ Vec3 CFlightController::WorldToLocal(const Vec3& localDirection)
 	return worldDirection;
 }
 
-float CFlightController::ClampInput(float inputValue, float maxAxisAccel, bool isMouse) const
+float CFlightController::ClampInput(float inputValue, float maxAxisAccel, bool mouseScaling) const
 {
-	// Scale the input value by the sensitivity factor 
-	// If we are mouse, clamp the input based on the max axis accel being used.
-	if (isMouse)
+	// Normalize inputValue for both mouse and axis inputs
+	float normalizedInput;
+
+	// If the input value is within the expected axis range, treat it as an axis input
+	if (std::abs(inputValue) <= 1.0f)
 	{
-		inputValue *= m_mouseSenseFactor;
-		inputValue = CLAMP(inputValue, -maxAxisAccel, maxAxisAccel) / maxAxisAccel;
-		return inputValue;
+		normalizedInput = inputValue; // Axis input, already normalized
 	}
 	else
-		return CLAMP(inputValue, m_MIN_INPUT_VALUE, m_MAX_INPUT_VALUE);
+	{
+		// if mouse scaling is enabled, apply the sensitivity factor
+		if (mouseScaling)
+		normalizedInput = inputValue * m_mouseSenseFactor;
+
+		// Clamp the scaled input to the maxAxisAccel
+		normalizedInput = std::clamp(normalizedInput, -maxAxisAccel, maxAxisAccel);
+		// Normalize to the -1 to 1 range
+		normalizedInput /= maxAxisAccel;
+	}
+
+	return normalizedInput;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -172,7 +183,6 @@ ScaledMotion CFlightController::ScaleInput(const VectorMap<AxisType, DynArray<Ax
 {
 	// Initializing vectors for acceleration direction and desired acceleration
 	Vec3 localDirection(ZERO); // Calculate local thrust direction based on input value
-	float clampedInput(ZERO); // Normalize input values
 
 	// Vectors to accumulate the directions of the requested accelerations and velocities by the input magnitude.
 	Vec3 requestedAccelDirection(ZERO), requestedVelDirection(ZERO);
@@ -184,24 +194,16 @@ ScaledMotion CFlightController::ScaleInput(const VectorMap<AxisType, DynArray<Ax
 
 		for (const auto& motionParams : axisMotionParamsArray)	// Iterate over the DynArray<AxisAccelParams> for the current Axis
 		{
-			// Need proper mouse detection in the future for joystick support
-			switch (axisType)
+			float clampedInput(ZERO); // Clamping or normalizing input values
+			if (axisType == AxisType::PitchYaw)
 			{
-				case (AxisType::PitchYaw):
-				{
-					clampedInput = ClampInput(AxisGetter(motionParams.axisName), motionParams.AccelAmount, true); // Retrieve input value for the current axis and clamp to a range of -1 to 1
-				}
-				break;
-				case (AxisType::Roll):
-				{
-					clampedInput = ClampInput(AxisGetter(motionParams.axisName));
-				}
-				break;
-				default:
-				{
-					clampedInput = ClampInput(AxisGetter(motionParams.axisName));
-				}
+				// Applying a mouse sentitivity scaling for pitch and yaw, if it is enabled
+				clampedInput = ClampInput(AxisGetter(motionParams.axisName), motionParams.AccelAmount, m_mouseScaling); // Retrieve input value for the current axis and clamp to a range of -1 to 1
 			}
+			else
+				clampedInput = ClampInput(AxisGetter(motionParams.axisName), motionParams.AccelAmount);
+
+			CryLog("%s axisvalue: %f", motionParams.axisName, clampedInput);
 
 			localDirection = WorldToLocal(motionParams.localDirection); // Convert to local space
 			
@@ -258,8 +260,6 @@ Vec3 CFlightController::UpdateAccelerationWithJerk(AxisType axisType, JerkAccele
 	}
 	}
 
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 250, 2, m_debugColor, false, "jerk: %f", finalJerk.GetLength());
-
 	// Update current acceleration
 	Vec3 newAccel = accelData.currentJerkAccel + finalJerk; // Calculate new acceleration by adding jerk to current acceleration
 
@@ -277,50 +277,36 @@ ImpulseResult CFlightController::AccelToImpulse(const MotionData& motionData, fl
 	Vec3 linearImpulse = Vec3(ZERO);
 	Vec3 angImpulse = Vec3(ZERO);
 
-	// Create a copy of motionData to work with if mathOnly is true
-	MotionData simulatedMotionData = motionData;
+	// Pointer to the motion data to use, either original or simulated
+	const MotionData* pMotionData = &motionData;
+	MotionData simulatedMotionData;
+
+	if (mathOnly)
+	{
+		// Create a copy of motionData to work with if mathOnly is true
+		simulatedMotionData = motionData;
+		pMotionData = &simulatedMotionData;
+	}
 
 	// Infuse the acceleration value with the current jerk coefficient
-	if (mathOnly)
-	{
-		simulatedMotionData.linearJerkData.targetJerkAccel = simulatedMotionData.linearAccel;
-		simulatedMotionData.linearJerkData.currentJerkAccel = UpdateAccelerationWithJerk(AxisType::Linear, simulatedMotionData.linearJerkData, frameTime);
+	pMotionData->linearJerkData->targetJerkAccel = pMotionData->linearAccel;
+	pMotionData->linearJerkData->currentJerkAccel = UpdateAccelerationWithJerk(AxisType::Linear, *pMotionData->linearJerkData, frameTime);
 
-		simulatedMotionData.rollJerkData.targetJerkAccel = simulatedMotionData.rollAccel;
-		simulatedMotionData.rollJerkData.currentJerkAccel = UpdateAccelerationWithJerk(AxisType::Roll, simulatedMotionData.rollJerkData, frameTime);
+	pMotionData->rollJerkData->targetJerkAccel = pMotionData->rollAccel;
+	pMotionData->rollJerkData->currentJerkAccel = UpdateAccelerationWithJerk(AxisType::Roll, *pMotionData->rollJerkData, frameTime);
 
-		simulatedMotionData.pitchYawJerkData.targetJerkAccel = simulatedMotionData.pitchYawAccel;
-		simulatedMotionData.pitchYawJerkData.currentJerkAccel = UpdateAccelerationWithJerk(AxisType::PitchYaw, simulatedMotionData.pitchYawJerkData, frameTime);
-	}
-	else
-	{
-		// Use original motionData when mathOnly is false
-		motionData.linearJerkData.targetJerkAccel = motionData.linearAccel;
-		motionData.linearJerkData.currentJerkAccel = UpdateAccelerationWithJerk(AxisType::Linear, motionData.linearJerkData, frameTime);
-
-		motionData.rollJerkData.targetJerkAccel = motionData.rollAccel;
-		motionData.rollJerkData.currentJerkAccel = UpdateAccelerationWithJerk(AxisType::Roll, motionData.rollJerkData, frameTime);
-
-		motionData.pitchYawJerkData.targetJerkAccel = motionData.pitchYawAccel;
-		motionData.pitchYawJerkData.currentJerkAccel = UpdateAccelerationWithJerk(AxisType::PitchYaw, motionData.pitchYawJerkData, frameTime);
-	}
+	pMotionData->pitchYawJerkData->targetJerkAccel = pMotionData->pitchYawAccel;
+	pMotionData->pitchYawJerkData->currentJerkAccel = UpdateAccelerationWithJerk(AxisType::PitchYaw, *pMotionData->pitchYawJerkData, frameTime);
 
 	// Calculate impulses based on the jerk data
-	if (mathOnly)
-	{
-		linearImpulse = simulatedMotionData.linearJerkData.currentJerkAccel * dynamics.mass * frameTime; // Use simulated data
-		angImpulse = (simulatedMotionData.rollJerkData.currentJerkAccel + simulatedMotionData.pitchYawJerkData.currentJerkAccel) * dynamics.mass * frameTime;
-	}
-	else
-	{
-		linearImpulse = motionData.linearJerkData.currentJerkAccel * dynamics.mass * frameTime; // Use original data
-		angImpulse = (motionData.rollJerkData.currentJerkAccel + motionData.pitchYawJerkData.currentJerkAccel) * dynamics.mass * frameTime;
-	}
+	linearImpulse = pMotionData->linearJerkData->currentJerkAccel * dynamics.mass * frameTime;
+	angImpulse = (pMotionData->rollJerkData->currentJerkAccel + pMotionData->pitchYawJerkData->currentJerkAccel) * dynamics.mass * frameTime;
 
 	ApplyImpulse(linearImpulse, angImpulse, mathOnly);
 
 	return ImpulseResult(linearImpulse, angImpulse);
 }
+
 
 void CFlightController::ApplyImpulse(Vec3 linearImpulse, Vec3 angImpulse, bool mathOnly)
 {
@@ -339,14 +325,13 @@ void CFlightController::ApplyImpulse(Vec3 linearImpulse, Vec3 angImpulse, bool m
 		{
 			pPhysicalEntity->Action(&actionImpulse);
 			pPhysicalEntity->Action(&actionImpulse);
+			Vec3 impulse = (actionImpulse.impulse + actionImpulse.angImpulse) / m_frameTime; // Revert the frametime scaling to have the proper values
+			m_totalImpulse += impulse.GetLength();
 		}
+
 		// Update our impulse tracking variables to send over to the server
 		m_linearImpulse = linearImpulse;
 		m_angularImpulse = actionImpulse.angImpulse;
-
-
-		Vec3 impulse = (actionImpulse.impulse + actionImpulse.angImpulse) / m_frameTime; // Revert the frametime scaling to have the proper values
-		m_totalImpulse += impulse.GetLength();
 	}
 }
 
@@ -412,6 +397,7 @@ float CFlightController::LogScale(float discrepancyMagnitude, float maxDiscrepan
 	return logDiscrepancy / logMaxDiscrepancy;
 }
 
+// TODO: fix ship slowing moving when sitting still.
 Vec3 CFlightController::CalculateCorrection(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisAccelParamsMap, Vec3 requestedVelocity, Vec3 velDiscrepancy)
 {
 	pe_status_dynamics dynamics;
@@ -437,8 +423,14 @@ Vec3 CFlightController::CalculateCorrection(const VectorMap<AxisType, DynArray<A
 
 
 	// Initializing motionData for simulated calculation
-	MotionData motionData(Vec3(ZERO), Vec3(ZERO),
-		Vec3(ZERO), m_linearJerkData, m_rollJerkData, m_pitchYawJerkData);
+	MotionData motionData(
+		Vec3(ZERO),
+		Vec3(ZERO),
+		Vec3(ZERO),
+		&m_linearJerkData,
+		&m_rollJerkData,
+		&m_pitchYawJerkData
+	);
 
 	// Handle Linear Correction
 	for (const auto& axisAccelParamsPair : axisAccelParamsMap)
@@ -462,17 +454,11 @@ Vec3 CFlightController::CalculateCorrection(const VectorMap<AxisType, DynArray<A
 				// Predict future velocity based on current acceleration and jerk
 				predictedVelocity = dynamics.v + simulatedAccel; // Use the current acceleration for prediction
 			}
-			else if (axisType == AxisType::Roll)
+			else
 			{
 				motionData.rollAccel = totalCorrectiveAccel;
 				Vec3 simulatedAccel = AccelToImpulse(motionData, m_frameTime, true).GetAngularImpulse();
 				// Predict future velocity based on current acceleration and jerk
-				predictedVelocity = dynamics.w + simulatedAccel;
-			}
-			else if (axisType == AxisType::PitchYaw)
-			{
-				motionData.pitchYawAccel = totalCorrectiveAccel;
-				Vec3 simulatedAccel = AccelToImpulse(motionData, m_frameTime, true).GetAngularImpulse();
 				predictedVelocity = dynamics.w + simulatedAccel;
 			}
 		}
@@ -512,7 +498,7 @@ void CFlightController::DirectInput(float frameTime)
 	UpdateAccelerationState(m_pitchYawJerkData, pitchYawMagnitude);
 
 	MotionData motionData(linearAccelMagnitude, rollAccelMagnitude,
-		pitchYawMagnitude, m_linearJerkData, m_rollJerkData, m_pitchYawJerkData);
+		pitchYawMagnitude, &m_linearJerkData, &m_rollJerkData, &m_pitchYawJerkData);
 
 	// Send movement data to the server if we are connected, apply locally if not
 	if (!gEnv->bServer)
@@ -539,19 +525,19 @@ void CFlightController::CoupledFM(float frameTime)
 	// Updates our current requested motion state to compute jerk accordingly (based on input, not ship motion!)
 	UpdateAccelerationState(m_linearJerkData, linearVelMagnitude);
 
-	//CryLog("rollVelMagnitude: x=%f, y=%f, z=%f", rollVelMagnitude.x, rollVelMagnitude.y, rollVelMagnitude.z);
-	//CryLog("pitchYawVelMagnitude: x=%f, y=%f, z=%f", pitchYawVelMagnitude.x, pitchYawVelMagnitude.y, pitchYawVelMagnitude.z);
-
+	// Calculates the velocity discrepancy between the current velocity and the requested
 	Vec3 linearDiscrepancy = CalculateDiscrepancy(linearVelMagnitude).GetLinearDiscrepancy();
 	Vec3 rollDiscrepancy = CalculateDiscrepancy(rollVelMagnitude).GetAngularDiscrepancy();
 	Vec3 pitchYawDiscrepancy = CalculateDiscrepancy(pitchYawVelMagnitude).GetAngularDiscrepancy();
 
+	// Calculates a correction, accounting for overshoot
 	Vec3 linearCorrection = CalculateCorrection(m_linearParamsMap, linearVelMagnitude, linearDiscrepancy);
 	Vec3 rollCorrection = CalculateCorrection(m_rollParamsMap, rollVelMagnitude , rollDiscrepancy);
 	Vec3 pitchYawCorrection = CalculateCorrection(m_pitchYawParamsMap, pitchYawVelMagnitude, pitchYawDiscrepancy);
 
+	// Setting up the motion parameters 
 	MotionData motionData(linearCorrection, rollCorrection,
-		pitchYawCorrection, m_linearJerkData, m_rollJerkData, m_pitchYawJerkData);
+		pitchYawCorrection, &m_linearJerkData, &m_rollJerkData, &m_pitchYawJerkData);
 
 	AccelToImpulse(motionData, frameTime);
 }
@@ -593,7 +579,6 @@ void CFlightController::DrawDirectionIndicator(float frameTime)
 
 void CFlightController::DrawOnScreenDebugText(float frameTime)
 {
-	// Debug
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 60, 2, m_debugColor, false, "Velocity: %.2f", GetVelocity().GetLength());
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 90, 2, m_debugColor, false, "acceleration: %.2f", GetAcceleration(frameTime));
 	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 120, 2, m_debugColor, false, "total impulse: %.3f", GetImpulse());
@@ -722,7 +707,7 @@ bool CFlightController::RequestImpulseOnServer(SerializeImpulseData&& data, INet
 	if (pPhysicalEntity)
 	{
 		MotionData motionData(data.linearImpulse, data.rollImpulse,
-			data.pitchYawImpulse, m_linearJerkData, m_rollJerkData, m_pitchYawJerkData);
+			data.pitchYawImpulse, &m_linearJerkData, &m_rollJerkData, &m_pitchYawJerkData);
 		AccelToImpulse(motionData, m_frameTime);
 		SRmi<RMI_WRAP(&CFlightController::UpdateMovement)>::InvokeOnAllClients(this, std::move(data));
 
