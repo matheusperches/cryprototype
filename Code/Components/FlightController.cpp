@@ -375,7 +375,6 @@ float CFlightController::LogScale(float discrepancyMagnitude, float maxDiscrepan
 	return logDiscrepancy / logMaxDiscrepancy;
 }
 
-// TODO: fix ship slowing moving when sitting still.
 Vec3 CFlightController::CalculateCorrection(const VectorMap<AxisType, DynArray<AxisMotionParams>>& axisAccelParamsMap, Vec3 requestedVelocity, Vec3 velDiscrepancy)
 {
 	pe_status_dynamics dynamics = GetDynamics();
@@ -520,7 +519,18 @@ void CFlightController::CoupledFM(float frameTime)
 	MotionData motionData(linearCorrection, rollCorrection,
 		pitchYawCorrection, &m_linearJerkData, &m_rollJerkData, &m_pitchYawJerkData);
 
-	AccelToImpulse(motionData, frameTime);
+	// Send movement data to the server if we are connected, apply locally if not
+	if (!gEnv->bServer)
+	{
+		SRmi<RMI_WRAP(&CFlightController::RequestImpulseOnServer)>::InvokeOnServer(this, SerializeImpulseData{
+		Vec3(ZERO),
+		Quat(ZERO),
+		linearCorrection,
+		rollCorrection,
+		pitchYawCorrection });
+	}
+	else
+		AccelToImpulse(motionData, frameTime);
 }
 
 ///////////////////////////////////////////////////////////////////////////
