@@ -99,8 +99,6 @@ struct MotionData {
 		linearJerkData(linearJerk), rollJerkData(rollJerk), pitchYawJerkData(pitchYawJerk) {}
 };
 ```
-
-```
 ### Initialization of the input mapping and axis data (member variables received from the editor)
 ```c++
 void CFlightController::InitializeMotionParamsVectors()
