@@ -5,7 +5,7 @@
 
 ## [CryEngine Flight Controller study ]([https://github.com/matheusperches/6DoF-TimeAttack](https://github.com/matheusperches/cryprototype))
 
-#### A small CryEngine project with the goal to get experience using its tools and APIs.
+#### A small CryEngine project with the goal to get experience using the engine's tools and APIs while developing a flight system to be later used in a bigger project.
 
 ## Build instructions
 Make sure you have Visual Studio 2022 installed with the C++ game development add ons. 
