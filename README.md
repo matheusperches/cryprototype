@@ -46,7 +46,7 @@ Shift - Boost
 
 ## Code snippets (full code available inside Code -> Components -> FlightController.cpp
 
-### Axis maps, organizing their information to be used by the flight system 
+### Axis maps and flight parameters, organizing their information to be used by the flight system 
 ```c++
 enum class AxisType
 {
@@ -62,6 +62,44 @@ struct AxisMotionParams {
 	float velocityLimit;
 	Vec3 localDirection;
 };
+```
+```c++
+// Accel data structures. Jerk values for each are set in Initialize(), retrieved from the editor settings.
+struct JerkAccelerationData
+{
+	float jerk;
+	float jerkDecelRate;
+	Vec3 currentJerkAccel;
+	Vec3 targetJerkAccel;
+	EAccelState state;
+
+	JerkAccelerationData() : jerk(0.f), jerkDecelRate(0.f), currentJerkAccel(0.f), targetJerkAccel(0.f), state(EAccelState::Decelerating) {}
+};
+
+JerkAccelerationData m_linearJerkData = {};
+JerkAccelerationData m_rollJerkData = {};
+JerkAccelerationData m_pitchYawJerkData = {};
+
+struct MotionData {
+	Vec3 linearAccel;
+	Vec3 rollAccel;
+	Vec3 pitchYawAccel;
+	JerkAccelerationData* linearJerkData;
+	JerkAccelerationData* rollJerkData;
+	JerkAccelerationData* pitchYawJerkData;
+
+	// Default constructor
+	MotionData()
+		: linearAccel(Vec3(ZERO)), rollAccel(Vec3(ZERO)), pitchYawAccel(Vec3(ZERO)),
+		linearJerkData(nullptr), rollJerkData(nullptr), pitchYawJerkData(nullptr) {}
+
+	// Parameterized constructor
+	MotionData(Vec3 linear, Vec3 roll, Vec3 pitchYaw, JerkAccelerationData* linearJerk, JerkAccelerationData* rollJerk, JerkAccelerationData* pitchYawJerk)
+		: linearAccel(linear), rollAccel(roll), pitchYawAccel(pitchYaw),
+		linearJerkData(linearJerk), rollJerkData(rollJerk), pitchYawJerkData(pitchYawJerk) {}
+};
+```
+
 ```
 ### Initialization of the input mapping and axis data (member variables received from the editor)
 ```c++
