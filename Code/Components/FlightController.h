@@ -85,7 +85,6 @@ public:
 		desc.SetDescription("Executes flight calculations.");
 
 		// Mouse sensitivity
-		desc.AddMember(&CFlightController::m_mouseScaling, 'pysc', "pitchyawscaling", "Enable mouse Pitch / Yaw Scaling", "Adjusts mouse sensitivity", ZERO);
 		desc.AddMember(&CFlightController::m_mouseSenseFactor, 'msf', "mouseSensFact", "Mouse Sensitivity Factor", "Adjusts mouse sensitivity", ZERO);
 
 		// Acceleration parameters
@@ -339,7 +338,6 @@ private:
 	const float m_debugColor[4] = { 1, 0, 0, 1 };
 
 	// Performance variables
-	bool m_mouseScaling = false;
 	float m_mouseSenseFactor = 0.f;
 
 	float m_fwdAccel = 0.f;

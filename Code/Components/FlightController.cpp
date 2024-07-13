@@ -39,7 +39,6 @@ void CFlightController::Initialize()
 	m_pVehicleComponent = m_pEntity->GetOrCreateComponent<CVehicleComponent>();
 
 	GetEntity()->GetNetEntity()->EnableDelegatableAspect(eEA_GameClientA, false);
-	GetEntity()->GetNetEntity()->EnableDelegatableAspect(eEA_Physics, false);
 
 	SRmi<RMI_WRAP(&CFlightController::RequestImpulseOnServer)>::Register(this, eRAT_Urgent, false, eNRT_ReliableOrdered);
 	SRmi<RMI_WRAP(&CFlightController::UpdateMovement)>::Register(this, eRAT_Urgent, false, eNRT_ReliableOrdered);
@@ -75,11 +74,6 @@ void CFlightController::ProcessEvent(const SEntityEvent& event)
 			ResetImpulseCounter();
 			FlightModifierHandler(GetFlightModifierState(), m_frameTime);
 		}
-	}
-	break;
-	case Cry::Entity::EEvent::Reset:
-	{
-
 	}
 	break;
 	}
@@ -166,27 +160,16 @@ Vec3 CFlightController::WorldToLocal(const Vec3& localDirection)
 
 float CFlightController::ClampInput(float inputValue, float maxAxisAccel, bool mouseScaling) const
 {
-	// Normalize inputValue for both mouse and axis inputs
-	float normalizedInput;
-
-	// If the input value is within the expected axis range, treat it as an axis input
-	if (std::abs(inputValue) <= 1.0f)
+	// Scale the input value by the sensitivity factor 
+	// If we are mouse, clamp the input based on the max axis accel being used.
+	if (mouseScaling)
 	{
-		normalizedInput = inputValue; // Axis input, already normalized
+		inputValue *= m_mouseSenseFactor;
+		inputValue = CLAMP(inputValue, -maxAxisAccel, maxAxisAccel) / maxAxisAccel;
+		return inputValue;
 	}
 	else
-	{
-		// if mouse scaling is enabled, apply the sensitivity factor
-		if (mouseScaling)
-		normalizedInput = inputValue * m_mouseSenseFactor;
-
-		// Clamp the scaled input to the maxAxisAccel
-		normalizedInput = std::clamp(normalizedInput, -maxAxisAccel, maxAxisAccel);
-		// Normalize to the -1 to 1 range
-		normalizedInput /= maxAxisAccel;
-	}
-
-	return normalizedInput;
+		return CLAMP(inputValue, m_MIN_INPUT_VALUE, m_MAX_INPUT_VALUE);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -211,7 +194,7 @@ ScaledMotion CFlightController::ScaleInput(const VectorMap<AxisType, DynArray<Ax
 			if (axisType == AxisType::PitchYaw)
 			{
 				// Applying a mouse sentitivity scaling for pitch and yaw, if it is enabled
-				clampedInput = ClampInput(AxisGetter(motionParams.axisName), motionParams.AccelAmount, m_mouseScaling); // Retrieve input value for the current axis and clamp to a range of -1 to 1
+				clampedInput = ClampInput(AxisGetter(motionParams.axisName), motionParams.AccelAmount, true); // Retrieve input value for the current axis and clamp to a range of -1 to 1
 			}
 			else
 				clampedInput = ClampInput(AxisGetter(motionParams.axisName), motionParams.AccelAmount);
@@ -482,7 +465,7 @@ Vec3 CFlightController::CalculateCorrection(const VectorMap<AxisType, DynArray<A
 
 void CFlightController::DirectInput(float frameTime)
 {
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 30, 2, m_debugColor, false, "Newtonian");
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 30, 2, m_debugColor, false, "(V) Newtonian");
 
 
 	Vec3 linearAccelMagnitude = ScaleInput(m_linearParamsMap).GetAcceleration();
@@ -514,7 +497,7 @@ void CFlightController::DirectInput(float frameTime)
 
 void CFlightController::CoupledFM(float frameTime)
 {
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 30, 2, m_debugColor, false, "Coupled");
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 30, 2, m_debugColor, false, "(V) Coupled");
 
 	Vec3 linearVelMagnitude = ScaleInput(m_linearParamsMap).GetVelocity(); // Scale and set the target velocity for linear movement
 	Vec3 rollVelMagnitude = ScaleInput(m_rollParamsMap).GetVelocity();
@@ -587,7 +570,7 @@ void CFlightController::DrawOnScreenDebugText(float frameTime)
 
 void CFlightController::AntiGravity(float frameTime)
 {
-	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "Anti-Gravity: ON");
+	gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "(G) Anti-Gravity: ON");
 
 	pe_status_dynamics dynamics = GetDynamics();
 
@@ -647,12 +630,12 @@ void CFlightController::BoostManager(bool isBoosting, float frameTime)
 	if (isBoosting)
 	{
 		m_isBoosting = true;
-		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 150, 2, m_debugColor, false, "Boost: ON");
+		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 150, 2, m_debugColor, false, "(Shift) Boost: ON");
 	}
 	else
 	{
 		m_isBoosting = false;
-		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 150, 2, m_debugColor, false, "Boost: OFF");
+		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 150, 2, m_debugColor, false, "(Shift) Boost: OFF");
 	}
 	// Adds a multiplier to the jerk values to enhance the ship's responsiveness, removes the multiplier when not using.
 }
@@ -681,7 +664,7 @@ void CFlightController::FlightModifierHandler(FlightModifierBitFlag bitFlag, flo
 		AntiGravity(frameTime);
 	}
 	else
-		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "Anti-Gravity: OFF");
+		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "(G) Anti-Gravity: OFF");
 
 	// Debug stuff
 	DrawOnScreenDebugText(frameTime);
