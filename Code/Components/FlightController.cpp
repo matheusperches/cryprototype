@@ -676,7 +676,7 @@ void CFlightController::FlightModifierHandler(FlightModifierBitFlag bitFlag, flo
 	else
 		gEnv->pAuxGeomRenderer->Draw2dLabel(50, 180, 2, m_debugColor, false, "(G) Anti-Gravity: OFF");
 
-	// Debug stuff
+	// Debug stuff - Includes 2d velocity vector display
 	DrawOnScreenDebugText(frameTime);
 }
 
